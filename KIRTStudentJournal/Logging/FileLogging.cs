@@ -15,5 +15,8 @@ namespace KIRTStudentJournal.Logging
             var filePath = Path.Combine(executingAssemblyDirectoryPath, LOGS_DIRECTORY_NAME, $"log-{DateTime.Now.ToString(_LOG_FILE_NAME_FORMAT)}.txt");
             return File.CreateText(filePath);
         }
+
+        public static StreamWriterLogger CreateLogger() => new StreamWriterLogger(CreateLogFile());
+        
     }
 }
