@@ -1,0 +1,5 @@
+{
+  "database": {
+    "connectionString": "server=localhost;UserId=root;Password=root;database=kirtstudentjournal"
+  }
+}
