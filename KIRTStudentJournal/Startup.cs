@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using KIRTStudentJournal.Controllers.API;
 using Microsoft.IdentityModel.Protocols;
+using KIRTStudentJournal.Infrastructure;
 
 namespace KIRTStudentJournal
 {
@@ -48,11 +49,11 @@ namespace KIRTStudentJournal
                     options.TokenValidationParameters = new TokenValidationParameters()
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = UserController.ISSUER,
+                        ValidIssuer = Jwt.ISSUER,
                         ValidateAudience = true,
-                        ValidAudience = UserController.AUDIENCE,
+                        ValidAudience = Jwt.AUDIENCE,
                         ValidateLifetime = true,
-                        IssuerSigningKey = UserController.GetSymmetricSecurityKey(),
+                        IssuerSigningKey = Jwt.GetSymmetricSecurityKey(),
                         ValidateIssuerSigningKey = true
                     };
                 });
@@ -77,6 +78,7 @@ namespace KIRTStudentJournal
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
+            app.Use(async (context, next) =>  await new Infrastructure.CheckJwtMiddleware().Invoke(context, next));
             app.UseMvc(r =>
             {
                 r.MapRoute(
@@ -91,7 +93,5 @@ namespace KIRTStudentJournal
             lifetime.ApplicationStarted.Register(() => ApplicationStarted());
             lifetime.ApplicationStopped.Register(() => ApplicationStopped());
         }
-
-        
     }
 }

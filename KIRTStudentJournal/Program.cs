@@ -36,23 +36,26 @@ namespace KIRTStudentJournal
                     }
                     string dbConnectionString = config["database"]["connectionString"].ToObject<string>();
                     Database.DatabaseContext.ConnectionString = dbConnectionString;
-                    //using (var db = new Database.DatabaseContext())
-                    //{
-                    //    db.Accounts.Add(new Database.Account()
-                    //    {
-                    //        Login = "12345",
-                    //        PasswordHash = "c4ca4238a0b923820dcc509a6f75849b", // md5(1)
-                    //        Person = new Database.Person()
-                    //        {
-                    //            FirstName = "1",
-                    //            LastName = "1",
-                    //            Patronymic = "1",
-                    //            PhoneNumber = "1",
-                    //        },
-                    //        Role = Database.Role.Admin
-                    //    });
-                    //    db.SaveChanges();
-                    //}
+                    using (var db = new Database.DatabaseContext())
+                    {
+                        if (db.Accounts.Where(a => a.Login == "12345").FirstOrDefault() == default)
+                        {
+                            db.Accounts.Add(new Database.Account()
+                            {
+                                Login = "12345",
+                                PasswordHash = "xMpCOKC5I4INzFCab3WEmw==", // md5(1)
+                                Person = new Database.Person()
+                                {
+                                    FirstName = "1",
+                                    LastName = "1",
+                                    Patronymic = "1",
+                                    PhoneNumber = "1",
+                                },
+                                Role = Database.Role.Admin
+                            });
+                            db.SaveChanges();
+                        }
+                    }
                 }
                 catch (UnauthorizedAccessException)
                 {

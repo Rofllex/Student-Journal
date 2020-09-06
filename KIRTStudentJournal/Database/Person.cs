@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Security.Policy;
 using System.Threading.Tasks;
@@ -60,11 +61,16 @@ namespace KIRTStudentJournal.Database
 
     public class Account
     {
-        
+        /// <summary>
+        /// Логин аккаунта
+        /// </summary>
         [Key]
         [Required(AllowEmptyStrings = false)]
         [MinLength(5)]
         public string Login { get; set; }
+        /// <summary>
+        /// Хэш аккаунта
+        /// </summary>
         [Required(AllowEmptyStrings = false)]
         [MaxLength(32)]
         [MinLength(32)]
@@ -72,5 +78,10 @@ namespace KIRTStudentJournal.Database
         [Required]
         public Role Role { get; set; }
         public Person Person { get; set; }
+
+        public bool Compare(Account other) => other != null
+                                                && Login == other.Login 
+                                                && PasswordHash == other.PasswordHash;
+        
     }
 }

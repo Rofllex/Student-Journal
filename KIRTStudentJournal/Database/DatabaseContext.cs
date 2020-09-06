@@ -9,6 +9,7 @@ namespace KIRTStudentJournal.Database
     public class DatabaseContext : DbContext
     {
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<JwtToken> Tokens { get; set; }
 
         public DatabaseContext()
         {
