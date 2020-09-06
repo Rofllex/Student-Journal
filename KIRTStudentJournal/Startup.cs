@@ -16,18 +16,29 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using KIRTStudentJournal.Controllers.API;
+using Microsoft.IdentityModel.Protocols;
+
 namespace KIRTStudentJournal
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        /// <summary>
+        /// Событие когда web сервер запущен
+        /// </summary>
+        public static event Action ApplicationStarted = () => { };
+        /// <summary>
+        /// Событие когда web сервер завершен
+        /// </summary>
+        public static event Action ApplicationStopped = () => { };
 
-        public IConfiguration Configuration { get; }
+        // Убрано за ненадобностью
+        //public Startup(IConfiguration configuration)
+        //{
+        //    Configuration = configuration;
+        //}
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        //public IConfiguration Configuration { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -59,14 +70,10 @@ namespace KIRTStudentJournal
             }).AddNewtonsoftJson();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
-
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
@@ -77,11 +84,14 @@ namespace KIRTStudentJournal
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+            lifetime.ApplicationStarted.Register(() => ApplicationStarted());
+            lifetime.ApplicationStopped.Register(() => ApplicationStopped());
         }
+
+        
     }
 }
