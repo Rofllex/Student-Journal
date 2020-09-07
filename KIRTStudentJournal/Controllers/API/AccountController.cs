@@ -155,10 +155,10 @@ namespace KIRTStudentJournal.Controllers.API
         {
             List<Claim> claims = new List<Claim>()
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, login),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, Enum.GetName(typeof(Role), role))
+                new Claim(Jwt.DEFAULT_LOGIN_TYPE, login),
+                new Claim(Jwt.DEFAULT_ROLE_TYPE, Enum.GetName(typeof(Role), role))
             };
-            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token", Jwt.DEFAULT_LOGIN_TYPE, Jwt.DEFAULT_ROLE_TYPE);
             expireDate = DateTime.Now.AddHours(Jwt.HOURS_LIFETIME);
             JwtSecurityToken jwtToken = new JwtSecurityToken(
                     issuer: Jwt.ISSUER,
