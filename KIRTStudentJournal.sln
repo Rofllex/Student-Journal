@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KIRTStudentJournal", "KIRTS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KIRTStudentJournal.NetLib", "KIRTStudentJournal.NetLib\KIRTStudentJournal.NetLib.csproj", "{9B559C64-2699-4C10-9292-A00BA7453C68}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KIRTStudentJournal.NetLib.Test", "KIRTStudentJournal.NetLib.Test\KIRTStudentJournal.NetLib.Test.csproj", "{A174B704-70B4-48FE-80AB-873562A8BCB2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{9B559C64-2699-4C10-9292-A00BA7453C68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B559C64-2699-4C10-9292-A00BA7453C68}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B559C64-2699-4C10-9292-A00BA7453C68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A174B704-70B4-48FE-80AB-873562A8BCB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A174B704-70B4-48FE-80AB-873562A8BCB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A174B704-70B4-48FE-80AB-873562A8BCB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A174B704-70B4-48FE-80AB-873562A8BCB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
