@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-
 namespace KIRTStudentJournal.Database
 {
     /// <summary>
