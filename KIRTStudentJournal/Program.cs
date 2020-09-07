@@ -43,7 +43,7 @@ namespace KIRTStudentJournal
                             db.Accounts.Add(new Database.Account()
                             {
                                 Login = "12345",
-                                PasswordHash = "xMpCOKC5I4INzFCab3WEmw==", // md5(1)
+                                PasswordHash = Infrastructure.Hash.GetHashFromString("1"), // sha256(1)
                                 Person = new Database.Person()
                                 {
                                     FirstName = "1",
