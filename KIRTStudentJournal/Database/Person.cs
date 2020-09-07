@@ -72,8 +72,8 @@ namespace KIRTStudentJournal.Database
         /// Хэш аккаунта
         /// </summary>
         [Required(AllowEmptyStrings = false)]
-        [MaxLength(32)]
-        [MinLength(32)]
+        [MaxLength(64)]
+        [MinLength(64)]
         public string PasswordHash { get; set; }
         [Required]
         public Role Role { get; set; }
