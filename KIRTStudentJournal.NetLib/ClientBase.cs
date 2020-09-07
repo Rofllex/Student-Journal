@@ -24,6 +24,7 @@ namespace KIRTStudentJournal.NetLib
         /// Токен доступа.
         /// </summary>
         protected string Token { get; set; }
+        protected string RefreshToken { get; set; }
 
         protected TimeSpan ExecuteQueryTimeout { get; set; } = TimeSpan.FromSeconds(1);
 
@@ -109,8 +110,10 @@ namespace KIRTStudentJournal.NetLib
             builder.Query = getArgsLine;
             return builder.Uri;
         }
-
-        public abstract void RefreshToken();
+        /// <summary>
+        /// Обновить токен.
+        /// </summary>
+        public abstract void Refresh();
 
         public virtual void Dispose() 
         {
@@ -125,7 +128,7 @@ namespace KIRTStudentJournal.NetLib
         {
         }
 
-        public override void RefreshToken()
+        public override void Refresh()
         {
             throw new NotImplementedException();
         }
@@ -154,9 +157,11 @@ namespace KIRTStudentJournal.NetLib
                     if (!contentJObject.ContainsKey("error_message"))
                     {
                         string token = contentJObject["token"].ToObject<string>(),
-                                role = contentJObject["role"].ToObject<string>();
+                                role = contentJObject["role"].ToObject<string>(),
+                                refresh_token = contentJObject["refresh_token"].ToObject<string>();
                         client.Token = token;
                         client.Role = role;
+                        client.RefreshToken = refresh_token;
                         return client;
                     }
                     else

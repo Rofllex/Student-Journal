@@ -47,7 +47,7 @@ namespace KIRTStudentJournal.NetLib.Test
 
         public static Uri BuildUriTest(Uri baseUri, string method, params string[] args) => ClientBase.BuildUri(baseUri, method, args);
 
-        public override void RefreshToken()
+        public override void Refresh()
         {
             throw new NotImplementedException();
         }
