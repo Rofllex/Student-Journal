@@ -46,7 +46,8 @@ namespace KIRTStudentJournal.Infrastructure
             if (jwtToken != default)
             {
                 using var db = new DatabaseContext();
-                var token = db.Tokens.Where(t => t.Token == jwtToken).FirstOrDefault();
+                var parsedToken = new ParsedJwtToken(jwtToken);
+                var token = db.Tokens.Where(t => t.Sign == parsedToken.Sign && t.Payload == parsedToken.Payload).FirstOrDefault();
                 if (token != null && token.ExpireDate <= DateTime.Now)
                 {
                     db.Tokens.Remove(token);

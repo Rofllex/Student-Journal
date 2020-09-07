@@ -1,4 +1,6 @@
-﻿using System;
+﻿using KIRTStudentJournal.Infrastructure;
+using Microsoft.VisualBasic.CompilerServices;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace KIRTStudentJournal.Database
@@ -9,11 +11,29 @@ namespace KIRTStudentJournal.Database
     public class JwtToken
     {
         /// <summary>
-        /// Токен доступа
+        /// Заголовок токена
+        /// </summary>
+        [StringLength(100)]
+        public string Header { get; set; }
+        /// <summary>
+        /// Полезная нагрузка
+        /// </summary>
+        [Required(AllowEmptyStrings = false)]
+        [StringLength(300)]
+        public string Payload { get; set; }
+        /// <summary>
+        /// Подпись
         /// </summary>
         [Key]
-        [StringLength(500)]
-        public string Token { get; set; }
+        [Required(AllowEmptyStrings = false)]
+        [StringLength(100)]
+        public string Sign { get; set; }
+        /// <summary>
+        /// Токен обновления
+        /// </summary>
+        [Required(AllowEmptyStrings = false)]
+        [StringLength(64)]
+        public string RefreshToken { get; set; }
         /// <summary>
         /// Аккаунт для кого выдан
         /// </summary>

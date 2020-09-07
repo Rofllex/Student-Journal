@@ -25,6 +25,8 @@ namespace KIRTStudentJournal.Controllers.API
     [Route(template: Infrastructure.API.CONTROLLER_ROUTE)]
     public class AccountController : Controller
     {
+        private static RandomNumberGenerator _rng;
+
         /// <summary>
         /// Метод авторизации пользователя
         /// </summary>
@@ -63,17 +65,23 @@ namespace KIRTStudentJournal.Controllers.API
                     //    signingCredentials: new SigningCredentials(Jwt.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
                     //var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwtToken);
                     #endregion
-                    var encodedJwt = createToken(login, account.Role, out DateTime jwtTokenExpireDate);
+                    var tokenString = createToken(login, account.Role, out DateTime jwtTokenExpireDate);
+                    var parsedJwtToken = new ParsedJwtToken(tokenString);
+                    string refreshToken = getHashFromString(parsedJwtToken.Sign + "." + account.Login);
                     db.Tokens.Add(new JwtToken()
                     {
-                        Token = encodedJwt,
+                        Header = parsedJwtToken.Header,
+                        Payload = parsedJwtToken.Payload,
+                        Sign = parsedJwtToken.Sign,
+                        RefreshToken = refreshToken,
                         ExpireDate = jwtTokenExpireDate,
                         GrantedFor = account
-                    });
+                    }) ;
                     await db.SaveChangesAsync();
                     dynamic response = new ExpandoObject();
-                    response.token = encodedJwt;
+                    response.token = tokenString;
                     response.role = Enum.GetName(typeof(Role), account.Role);
+                    response.refresh_token = refreshToken;
                     return Json(response);
                 }
                 else
@@ -92,7 +100,8 @@ namespace KIRTStudentJournal.Controllers.API
                 if (jwtToken != default)
                 {
                     using var db = new DatabaseContext();
-                    var token = db.Tokens.Where(t => t.Token == jwtToken).FirstOrDefault();
+                    ParsedJwtToken parsedJwtToken = new ParsedJwtToken(jwtToken);
+                    var token = db.Tokens.Where(t => t.Sign == parsedJwtToken.Sign && t.Payload == parsedJwtToken.Payload).FirstOrDefault();
                     if (token != default)
                     {
                         db.Tokens.Remove(token);
@@ -107,21 +116,23 @@ namespace KIRTStudentJournal.Controllers.API
                 Logging.Logger.Instance.Error($"Авторизация пройдена, но клайма с логином нет. IP: \"{ HttpContext.Connection.RemoteIpAddress }\" ");
             return Forbid();
         }
+
         [Authorize]
         public async Task<IActionResult> RefreshToken()
         {
-            string tokenString = JwtUtils.GetJwtTokenFromHeaderDictionary(Request.Headers);
-            if (tokenString != default)
-            {
-                using var db = new DatabaseContext();
-                var token = db.Tokens.Where(t => t.Token == tokenString).FirstOrDefault();
-                string newToken = createToken(token.GrantedFor.Login, token.GrantedFor.Role, out DateTime expireDate);
-                token.Token = newToken;
-                await db.SaveChangesAsync();
-                return StatusCode(StatusCodes.Status200OK);
-            }
-            else
-                return StatusCode(StatusCodes.Status401Unauthorized);
+            //string tokenString = JwtUtils.GetJwtTokenFromHeaderDictionary(Request.Headers);
+            //if (tokenString != default)
+            //{
+            //    using var db = new DatabaseContext();
+            //    var token = db.Tokens.Where(t => t.Token == tokenString).FirstOrDefault();
+            //    string newToken = createToken(token.GrantedFor.Login, token.GrantedFor.Role, out DateTime expireDate);
+            //    token.Token = newToken;
+            //    await db.SaveChangesAsync();
+            //    return StatusCode(StatusCodes.Status200OK);
+            //}
+            //else
+            //    return StatusCode(StatusCodes.Status401Unauthorized);
+            throw new NotImplementedException();
         }
         [Authorize(Roles = "Admin")]
         public IActionResult TestAuth()
