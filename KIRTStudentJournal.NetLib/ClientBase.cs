@@ -35,22 +35,50 @@ namespace KIRTStudentJournal.NetLib
             BaseUri = baseUri;
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        /// <exception cref="ExecuteQueryException"></exception>
         protected async Task<HttpResponseMessage> ExecuteQuery(Uri uri)
         {
             HttpResponseMessage message;
             using (HttpClient httpClient = new HttpClient() { Timeout = ExecuteQueryTimeout })
             {
-                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-                message = await httpClient.GetAsync(uri);
+                try
+                {
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+                    message = await httpClient.GetAsync(uri);
+                    return message;
+                }
+                catch (Exception e) 
+                {
+                    throw new ExecuteQueryException(e);
+                }
             }
-            return message;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        /// <exception cref="ExecuteQueryException"></exception>
         protected async Task<HttpResponseMessage> ExecuteQueryWithoutToken(Uri uri)
         {
             HttpResponseMessage message;
             using (HttpClient httpClient = new HttpClient() { Timeout = ExecuteQueryTimeout })
-                message = await httpClient.GetAsync(uri);
-            return message;
+            {
+                try
+                {
+                    message = await httpClient.GetAsync(uri);
+                    return message;
+                }
+                catch (Exception e)
+                {
+                    throw new ExecuteQueryException(e);
+                }
+            }        
         }
         /// <summary>
         /// Легкий способ построить Uri
@@ -61,7 +89,7 @@ namespace KIRTStudentJournal.NetLib
         /// <example>
         /// Пример использования.
         /// <code>    
-        /// Uri uri = new Uri("http://localhost:5001/");
+        /// Uri uri = new Uri("https://localhost:5001/");
         /// BuildUri(uri, "Test/Method", "arg1=1&arg2=2");
         /// </code>
         /// </example>
@@ -115,7 +143,7 @@ namespace KIRTStudentJournal.NetLib
         public static async Task<JournalClient> SignInAsync(Uri baseUri, string login, string password)
         {
             JournalClient client = new JournalClient(baseUri);
-            Uri uri = BuildUri(baseUri, "Account/SignIn", "login=" + login, "pass=" + password);
+            Uri uri = BuildUri(baseUri, "api/Account/SignIn", "login=" + login, "pass=" + password);
             HttpResponseMessage response = await client.ExecuteQueryWithoutToken(uri);
             string contentString = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
