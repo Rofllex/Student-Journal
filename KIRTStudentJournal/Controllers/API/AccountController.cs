@@ -36,7 +36,7 @@ namespace KIRTStudentJournal.Controllers.API
         /// </returns>
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> SigIn([FromQuery(Name = "login")] string login, [FromQuery(Name = "pass")] string password)
+        public async Task<IActionResult> SignIn([FromQuery(Name = "login")] string login, [FromQuery(Name = "pass")] string password)
         {
             if (JwtUtils.GetJwtTokenFromHeaderDictionary(Request.Headers) == default)
             {
