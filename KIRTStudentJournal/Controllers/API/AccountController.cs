@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http;
 using KIRTStudentJournal.Infrastructure;
 using System.Diagnostics;
 using KIRTStudentJournal.Models;
+using System.Collections;
 
 namespace KIRTStudentJournal.Controllers.API
 {
@@ -81,6 +82,7 @@ namespace KIRTStudentJournal.Controllers.API
                     dynamic response = new ExpandoObject();
                     response.token = tokenString;
                     response.role = Enum.GetName(typeof(Role), account.Role);
+                    response.role_id = (int)account.Role;
                     response.refresh_token = refreshToken;
                     return Json(response);
                 }
@@ -134,7 +136,7 @@ namespace KIRTStudentJournal.Controllers.API
         /// }
         /// </returns>
         [Authorize]
-        public async Task<IActionResult> RefreshToken([FromQuery(Name = "refresh_token")] string refreshToken)
+        public async Task<IActionResult> Refresh([FromQuery(Name = "refresh_token")] string refreshToken)
         {
             string jwtTokenString = JwtUtils.GetJwtTokenFromHeaderDictionary(Request.Headers);
             var parsedJwtToken = new ParsedJwtToken(jwtTokenString);
@@ -158,6 +160,7 @@ namespace KIRTStudentJournal.Controllers.API
                     response.token = newToken;
                     response.refresh_token = refreshToken;
                     response.role = Enum.GetName(typeof(Role), token.GrantedFor.Role);
+                    response.role_id = (int)token.GrantedFor.Role;
                     return Json(response);
                 }
                 else
@@ -170,6 +173,25 @@ namespace KIRTStudentJournal.Controllers.API
         public IActionResult TestAuth()
         {
             return Content("success!");
+        }
+
+        [Authorize("Admin")]
+        public IActionResult GetRoles()
+        {
+            dynamic response = new ExpandoObject();
+            Type roleType = typeof(Role);
+            Array valuesArray = Enum.GetValues(roleType),
+                  namesArray = Enum.GetNames(roleType);
+            dynamic[] roles = new dynamic[valuesArray.Length];
+            for (int i = 0; i < roles.Length ; i++)
+            {
+                dynamic role = new ExpandoObject();
+                role.name = namesArray.GetValue(i);
+                role.id = valuesArray.GetValue(i);
+                roles[i] = role;
+            }
+            response.roles = roles;
+            return Json(response);
         }
 
         /// <summary>
