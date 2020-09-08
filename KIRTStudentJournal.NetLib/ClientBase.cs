@@ -113,7 +113,7 @@ namespace KIRTStudentJournal.NetLib
         /// <summary>
         /// Обновить токен.
         /// </summary>
-        public abstract void Refresh();
+        public abstract Task RefreshAsync();
 
         public virtual void Dispose() 
         {
@@ -128,9 +128,33 @@ namespace KIRTStudentJournal.NetLib
         {
         }
 
-        public override void Refresh()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ExecuteQueryException"></exception>
+        /// <exception cref="RequestErrorException"></exception>
+        public override async Task RefreshAsync()
         {
-            throw new NotImplementedException();
+            var response = await ExecuteQuery(BuildUri(BaseUri, "api/Account/Refresh", "refresh_token=" + RefreshToken));
+            if (response.IsSuccessStatusCode)
+            {
+                var responseString = await response.Content.ReadAsStringAsync();
+                JObject jObject = JsonConvert.DeserializeObject<JObject>(responseString);
+                if (!Error.IsError(jObject))
+                {
+                    RefreshToken = jObject["refresh_token"].ToObject<string>();
+                    Token = jObject["token"].ToObject<string>();
+                }
+                else
+                {
+                    // Выбрасывает исключение но компилятор об этом не знает.
+                    jObject.ToObject<Error>().Throw();
+                    return;
+                }
+            }
+            else
+                throw new ExecuteQueryException(response.StatusCode);
         }
 
         /// <summary>
