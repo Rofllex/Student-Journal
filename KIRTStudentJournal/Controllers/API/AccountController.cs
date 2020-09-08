@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using KIRTStudentJournal.Infrastructure;
+using System.Diagnostics;
+using KIRTStudentJournal.Models;
 
 namespace KIRTStudentJournal.Controllers.API
 {
@@ -25,8 +27,6 @@ namespace KIRTStudentJournal.Controllers.API
     [Route(template: Infrastructure.API.CONTROLLER_ROUTE)]
     public class AccountController : Controller
     {
-        private static RandomNumberGenerator _rng;
-
         /// <summary>
         /// Метод авторизации пользователя
         /// </summary>
@@ -42,7 +42,7 @@ namespace KIRTStudentJournal.Controllers.API
         {
             if (JwtUtils.GetJwtTokenFromHeaderDictionary(Request.Headers) == default)
             {
-                string pwdHash = getHashFromString(password);
+                string pwdHash = Hash.GetHashFromString(password);
                 Account account;
                 using var db = new DatabaseContext();
                 account = db.Accounts.Where(a => a.Login == login && a.PasswordHash == pwdHash).FirstOrDefault();
@@ -67,7 +67,7 @@ namespace KIRTStudentJournal.Controllers.API
                     #endregion
                     var tokenString = createToken(login, account.Role, out DateTime jwtTokenExpireDate);
                     var parsedJwtToken = new ParsedJwtToken(tokenString);
-                    string refreshToken = getHashFromString(parsedJwtToken.Sign + "." + account.Login);
+                    string refreshToken = Jwt.CreateRefreshToken(account, tokenString);
                     db.Tokens.Add(new JwtToken()
                     {
                         Header = parsedJwtToken.Header,
@@ -85,15 +85,19 @@ namespace KIRTStudentJournal.Controllers.API
                     return Json(response);
                 }
                 else
-                    return new Models.Error("Неверный логин или пароль").ToActionResult();
+                    return new Error("Неверный логин или пароль").ToActionResult();
             }
             else
                 return StatusCode(StatusCodes.Status400BadRequest);
         }
+        /// <summary>
+        /// Выход из системы и обнуление токена.
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         public async Task<IActionResult> Logout()
         {
-            var claim = User.Claims.Where(c => c.Type == ClaimsIdentity.DefaultNameClaimType).FirstOrDefault();
+            Claim claim = User.Claims.Where(c => c.Type == ClaimsIdentity.DefaultNameClaimType).FirstOrDefault();
             if (claim != default)
             {
                 string jwtToken = JwtUtils.GetJwtTokenFromHeaderDictionary(Request.Headers);
@@ -116,23 +120,51 @@ namespace KIRTStudentJournal.Controllers.API
                 Logging.Logger.Instance.Error($"Авторизация пройдена, но клайма с логином нет. IP: \"{ HttpContext.Connection.RemoteIpAddress }\" ");
             return Forbid();
         }
-
+        /// <summary>
+        /// Метод обновления токена по токену обновления.
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        /// <returns>
+        /// При каких-либо ошибках вернет <see cref="Error"/>
+        /// При удачном результате вернет
+        /// {
+        ///     token: "",
+        ///     refresh_token: "",
+        ///     role: "";
+        /// }
+        /// </returns>
         [Authorize]
-        public async Task<IActionResult> RefreshToken()
+        public async Task<IActionResult> RefreshToken([FromQuery(Name = "refresh_token")] string refreshToken)
         {
-            //string tokenString = JwtUtils.GetJwtTokenFromHeaderDictionary(Request.Headers);
-            //if (tokenString != default)
-            //{
-            //    using var db = new DatabaseContext();
-            //    var token = db.Tokens.Where(t => t.Token == tokenString).FirstOrDefault();
-            //    string newToken = createToken(token.GrantedFor.Login, token.GrantedFor.Role, out DateTime expireDate);
-            //    token.Token = newToken;
-            //    await db.SaveChangesAsync();
-            //    return StatusCode(StatusCodes.Status200OK);
-            //}
-            //else
-            //    return StatusCode(StatusCodes.Status401Unauthorized);
-            throw new NotImplementedException();
+            string jwtTokenString = JwtUtils.GetJwtTokenFromHeaderDictionary(Request.Headers);
+            var parsedJwtToken = new ParsedJwtToken(jwtTokenString);
+            Claim loginClaim = User.FindFirst(Jwt.DEFAULT_LOGIN_TYPE);
+            using var db = new DatabaseContext();
+            var token = db.Tokens.Where(t => t.GrantedFor.Login == loginClaim.Value).FirstOrDefault();
+            if (token != null)
+            {
+                if (token.RefreshToken == refreshToken)
+                {
+                    string newToken = createToken(token.GrantedFor.Login, token.GrantedFor.Role, out DateTime expireDate);
+                    parsedJwtToken.JwtToken = newToken;
+                    refreshToken = Jwt.CreateRefreshToken(token.GrantedFor, newToken);
+                    token.ExpireDate = expireDate;
+                    token.Header = parsedJwtToken.Header;
+                    token.Payload = parsedJwtToken.Payload;
+                    token.Sign = parsedJwtToken.Sign;
+                    token.RefreshToken = refreshToken;
+                    await db.SaveChangesAsync();
+                    dynamic response = new ExpandoObject();
+                    response.token = newToken;
+                    response.refresh_token = refreshToken;
+                    response.role = Enum.GetName(typeof(Role), token.GrantedFor.Role);
+                    return Json(response);
+                }
+                else
+                    return new Error("Неверный refresh токен").ToActionResult();
+            }
+            else
+                return new Error("Токен не найден").ToActionResult();
         }
         [Authorize(Roles = "Admin")]
         public IActionResult TestAuth()
@@ -140,21 +172,6 @@ namespace KIRTStudentJournal.Controllers.API
             return Content("success!");
         }
 
-
-        private static readonly HashAlgorithm _hashAlgorithm = SHA256.Create();
-        /// <summary>
-        /// Получить токен MD5 из строки
-        /// </summary>
-        /// <param name="inputString"></param>
-        /// <returns></returns>
-        private string getHashFromString(string inputString)
-        {
-            byte[] buffer = _hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
-            string str = string.Empty;
-            for (int i = 0; i < buffer.Length; i++)
-                str += buffer[i].ToString("x2");
-            return str;
-        }
         /// <summary>
         /// Создание JWT токена.
         /// </summary>
@@ -181,6 +198,5 @@ namespace KIRTStudentJournal.Controllers.API
             string jwtTokenString = new JwtSecurityTokenHandler().WriteToken(jwtToken);
             return jwtTokenString;
         }
-
     }
 }
