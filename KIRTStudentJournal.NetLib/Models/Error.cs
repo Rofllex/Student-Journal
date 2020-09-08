@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace KIRTStudentJournal.NetLib.Models
 {
@@ -15,5 +16,9 @@ namespace KIRTStudentJournal.NetLib.Models
         public Error()
         {
         }
+
+        public void Throw() => throw new RequestErrorException(this);
+
+        public static bool IsError(JObject jObject) => jObject.ContainsKey("error_message");
     }
 }
