@@ -8,6 +8,7 @@ using System.Collections;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using KIRTStudentJournal.NetLib.Models;
+using System.Threading;
 
 namespace KIRTStudentJournal.NetLib
 {
@@ -24,8 +25,13 @@ namespace KIRTStudentJournal.NetLib
         /// Токен доступа.
         /// </summary>
         protected string Token { get; set; }
+        /// <summary>
+        /// Ключ обновления токена.
+        /// </summary>
         protected string RefreshToken { get; set; }
-
+        /// <summary>
+        ///  Таймаут выполнения запроса
+        /// </summary>
         protected TimeSpan ExecuteQueryTimeout { get; set; } = TimeSpan.FromSeconds(1);
 
         protected ClientBase(string baseUrl) : this (new Uri(baseUrl))
@@ -127,7 +133,7 @@ namespace KIRTStudentJournal.NetLib
         private JournalClient(Uri baseUrl) : base (baseUrl)
         {
         }
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -178,14 +184,11 @@ namespace KIRTStudentJournal.NetLib
                 if (contentString != string.Empty)
                 {
                     JObject contentJObject = JsonConvert.DeserializeObject<JObject>(contentString);
-                    if (!contentJObject.ContainsKey("error_message"))
+                    if (!Error.IsError(contentJObject))
                     {
-                        string token = contentJObject["token"].ToObject<string>(),
-                                role = contentJObject["role"].ToObject<string>(),
-                                refresh_token = contentJObject["refresh_token"].ToObject<string>();
-                        client.Token = token;
-                        client.Role = role;
-                        client.RefreshToken = refresh_token;
+                        client.Token = contentJObject["token"].ToObject<string>();
+                        client.Role = contentJObject["role"].ToObject<string>();
+                        client.RefreshToken = contentJObject["refresh_token"].ToObject<string>();
                         return client;
                     }
                     else
