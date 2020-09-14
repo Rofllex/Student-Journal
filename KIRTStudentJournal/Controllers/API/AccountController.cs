@@ -69,7 +69,7 @@ namespace KIRTStudentJournal.Controllers.API
                     var tokenString = createToken(login, account.Role, out DateTime jwtTokenExpireDate);
                     var parsedJwtToken = new ParsedJwtToken(tokenString);
                     string refreshToken = Jwt.CreateRefreshToken(account, tokenString);
-                    db.Tokens.Add(new JwtToken()
+                    var jwtToken = new JwtToken()
                     {
                         Header = parsedJwtToken.Header,
                         Payload = parsedJwtToken.Payload,
@@ -77,14 +77,16 @@ namespace KIRTStudentJournal.Controllers.API
                         RefreshToken = refreshToken,
                         ExpireDate = jwtTokenExpireDate,
                         GrantedFor = account
-                    }) ;
+                    };
+                    db.Tokens.Add(jwtToken);
                     await db.SaveChangesAsync();
-                    dynamic response = new ExpandoObject();
-                    response.token = tokenString;
-                    response.role = Enum.GetName(typeof(Role), account.Role);
-                    response.role_id = (int)account.Role;
-                    response.refresh_token = refreshToken;
-                    return Json(response);
+                    //dynamic response = new ExpandoObject();
+                    //response.token = tokenString;
+                    //response.role = Enum.GetName(typeof(Role), account.Role);
+                    //response.role_id = (int)account.Role;
+                    //response.refresh_token = refreshToken;
+                    AccountModel accountModel = new AccountModel(account, jwtToken);
+                    return Json(accountModel);
                 }
                 else
                     return new Error("Неверный логин или пароль").ToActionResult();
@@ -156,12 +158,15 @@ namespace KIRTStudentJournal.Controllers.API
                     token.Sign = parsedJwtToken.Sign;
                     token.RefreshToken = refreshToken;
                     await db.SaveChangesAsync();
-                    dynamic response = new ExpandoObject();
-                    response.token = newToken;
-                    response.refresh_token = refreshToken;
-                    response.role = Enum.GetName(typeof(Role), token.GrantedFor.Role);
-                    response.role_id = (int)token.GrantedFor.Role;
-                    return Json(response);
+                    
+                    //dynamic response = new ExpandoObject();
+                    //response.token = newToken;
+                    //response.refresh_token = refreshToken;
+                    //response.role = Enum.GetName(typeof(Role), token.GrantedFor.Role);
+                    //response.role_id = (int)token.GrantedFor.Role;
+
+                    AccountModel accountModel = new AccountModel(new RoleModel(token.GrantedFor.Role), new TokenModel(token));
+                    return Json(accountModel);
                 }
                 else
                     return new Error("Неверный refresh токен").ToActionResult();
@@ -175,7 +180,7 @@ namespace KIRTStudentJournal.Controllers.API
             return Content("success!");
         }
 
-        [Authorize("Admin")]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetRoles()
         {
             dynamic response = new ExpandoObject();

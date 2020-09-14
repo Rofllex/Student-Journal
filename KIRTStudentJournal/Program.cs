@@ -13,12 +13,16 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
 using System.Diagnostics;
+using KIRTStudentJournal.Database.Journal;
+using System.Runtime.CompilerServices;
 
 namespace KIRTStudentJournal
 {
     public class Program
     {
         public static readonly string ExecutableRootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        
 
         public static void Main(string[] args)
         {
@@ -31,27 +35,26 @@ namespace KIRTStudentJournal
                 {
                     JToken config;
                     using (var reader = File.OpenText(configPath))
-                    {
                         config = JsonConvert.DeserializeObject<JToken>(reader.ReadToEnd());
-                    }
                     string dbConnectionString = config["database"]["connectionString"].ToObject<string>();
                     Database.DatabaseContext.ConnectionString = dbConnectionString;
-                    using (var db = new Database.DatabaseContext())
+                    using (Database.DatabaseContext db = new Database.DatabaseContext())
                     {
+                        db.Database.EnsureCreated();
                         if (db.Accounts.Where(a => a.Login == "12345").FirstOrDefault() == default)
                         {
                             db.Accounts.Add(new Database.Account()
                             {
                                 Login = "12345",
                                 PasswordHash = Infrastructure.Hash.GetHashFromString("1"), // sha256(1)
-                                Person = new Database.Person()
+                                Person = new Person()
                                 {
                                     FirstName = "1",
                                     LastName = "1",
                                     Patronymic = "1",
                                     PhoneNumber = "1",
                                 },
-                                Role = Database.Role.Admin
+                                Role = Role.Admin
                             });
                             db.SaveChanges();
                         }
@@ -60,6 +63,12 @@ namespace KIRTStudentJournal
                 catch (UnauthorizedAccessException)
                 {
                     Logger.Instance.Fatal("Не удалось прочитать файл конфигурации");
+                    Console.ReadKey(true);
+                    return;
+                }
+                catch (Exception e)
+                {
+                    Logger.Instance.Fatal(e);
                     Console.ReadKey(true);
                     return;
                 }
@@ -72,7 +81,7 @@ namespace KIRTStudentJournal
             }
             CreateHostBuilder(args).Build().Run();
         }
-
+        
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Logger.Instance.Fatal("Необработанное исключение");
