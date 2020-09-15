@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace KIRTStudentJournal.NetLib.Test
@@ -47,7 +48,8 @@ namespace KIRTStudentJournal.NetLib.Test
 
         public static Uri BuildUriTest(Uri baseUri, string method, params string[] args) => ClientBase.BuildUri(baseUri, method, args);
 
-        public override void Refresh()
+        
+        public override Task RefreshAsync()
         {
             throw new NotImplementedException();
         }

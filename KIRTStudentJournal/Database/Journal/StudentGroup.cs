@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.SignalR;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KIRTStudentJournal.Database.Journal
 {
@@ -8,40 +10,39 @@ namespace KIRTStudentJournal.Database.Journal
     /// </summary>
     public class StudentGroup
     {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
         /// <summary>
         /// Номер курса
         /// </summary>
         /// <example>
         /// 4
         /// </example>
-        [Required(AllowEmptyStrings = false)]
+        [Required]
         public byte Course { get; set; }
+     
         /// <summary>
         /// Подгруппа 
         /// </summary>
         /// <example>
         /// 2
         /// </example>
-        [Required(AllowEmptyStrings = false)]
+        [Required]
         public byte SubGroup { get; set; }
+
         /// <summary>
-        /// Специальность
+        /// Специализация.
         /// </summary>
-        /// <example>
-        /// Компьютерные системы и комплексы
-        /// </example>
-        [Required(AllowEmptyStrings = false)]
-        public string Specialty { get; set; }
+        [Required]
+        public virtual Specialization Specialization { get; set; }
+
         /// <summary>
-        /// Короткое название специальности
+        /// Куратор группы. Может быть null.
         /// </summary>
-        /// <example>
-        /// КС
-        /// </example>
-        [Required(AllowEmptyStrings = false)]
-        public string ShortSpecialty { get; set; }
-        
-        public List<Person> Students { get; set; }
+        public virtual Person Curator { get; set; }
+
+        public virtual List<Person> Students { get; set; }
 
         public StudentGroup()
         {
@@ -55,12 +56,11 @@ namespace KIRTStudentJournal.Database.Journal
         /// <param name="subgroup">Номер подгруппы</param>
         /// <param name="specialty">Специальность</param>
         /// <param name="shortSpecialty">Короткое название специальнеости</param>
-        public StudentGroup(byte course, byte subgroup, string specialty, string shortSpecialty)
+        public StudentGroup(byte course, byte subgroup,  Specialization specialization)
         {
             Course = course;
             SubGroup = subgroup;
-            Specialty = specialty;
-            ShortSpecialty = shortSpecialty;
+            Specialization = specialization;
         }
     }
 }

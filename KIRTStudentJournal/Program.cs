@@ -40,24 +40,8 @@ namespace KIRTStudentJournal
                     Database.DatabaseContext.ConnectionString = dbConnectionString;
                     using (Database.DatabaseContext db = new Database.DatabaseContext())
                     {
-                        db.Database.EnsureCreated();
-                        if (db.Accounts.Where(a => a.Login == "12345").FirstOrDefault() == default)
-                        {
-                            db.Accounts.Add(new Database.Account()
-                            {
-                                Login = "12345",
-                                PasswordHash = Infrastructure.Hash.GetHashFromString("1"), // sha256(1)
-                                Person = new Person()
-                                {
-                                    FirstName = "1",
-                                    LastName = "1",
-                                    Patronymic = "1",
-                                    PhoneNumber = "1",
-                                },
-                                Role = Role.Admin
-                            });
-                            db.SaveChanges();
-                        }
+                        if (db.Database.EnsureCreated())
+                            createDefaultEntities(db);
                     }
                 }
                 catch (UnauthorizedAccessException)
@@ -82,6 +66,48 @@ namespace KIRTStudentJournal
             CreateHostBuilder(args).Build().Run();
         }
         
+        private static void createDefaultEntities(Database.DatabaseContext dbContext) 
+        {
+            var specialization = new Specialization()
+            {
+                Name = "testSpecialization",
+                ShortName = "ts"
+            };
+            dbContext.Specializations.Add(specialization);
+
+            var group = new StudentGroup(1, 1, specialization);
+            dbContext.StudentGroups.Add(group);
+
+            var account = new Database.Account()
+            {
+                Login = "12345",
+                PasswordHash = Infrastructure.Hash.GetHashFromString("1"), // sha256(1)
+                Person = new Student()
+                {
+                    FirstName = "1",
+                    LastName = "1",
+                    Patronymic = "1",
+                    PhoneNumber = "1",
+                },
+                Role = Role.Admin
+            };
+            account.Person.Account = account;
+            dbContext.Accounts.Add(account);
+
+            group.Students = new List<Person>();
+            group.Students.Add(account.Person);
+
+            dbContext.Subjects.Add(new Subject()
+            {
+                Name = "testSubject",
+                ShortName = "testSubj"
+            });
+            
+            
+
+            dbContext.SaveChanges();
+        }
+
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Logger.Instance.Fatal("Необработанное исключение");

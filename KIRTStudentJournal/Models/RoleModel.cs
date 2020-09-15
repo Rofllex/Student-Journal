@@ -1,4 +1,4 @@
-﻿using KIRTStudentJournal.Database;
+﻿using KIRTStudentJournal.Database.Journal;
 using Newtonsoft.Json;
 using System;
 

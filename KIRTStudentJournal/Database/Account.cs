@@ -8,24 +8,40 @@ namespace KIRTStudentJournal.Database
         /// <summary>
         /// Логин аккаунта
         /// </summary>
-        [Key]
-        [Required(AllowEmptyStrings = false)]
-        [MinLength(5)]
+        [Key, Required(AllowEmptyStrings = false), MinLength(5)]
         public string Login { get; set; }
+        
         /// <summary>
         /// Хэш пароля
         /// </summary>
-        [Required(AllowEmptyStrings = false)]
-        [MaxLength(64)]
-        [MinLength(64)]
+        [Required(AllowEmptyStrings = false), MinLength(64), MaxLength(64)]
         public string PasswordHash { get; set; }
+        
         /// <summary>
         /// Роль
         /// </summary>
         [Required]
         public Role Role { get; set; }
         
-        public virtual Person Person { get; set; }
+        /// <summary>
+        /// Персона к которой привязан аккаунт.
+        /// </summary>
+        public Person Person { get; set; }
+
+        public virtual int PersonId { get; set; }
+        
+        public Account(string login, string passwordHash, Role role, Person person)
+        {
+            Login = login;
+            PasswordHash = passwordHash;
+            Role = role;
+            Person = person;
+        }
+
+        public Account()
+        {
+        }
+        
         /// <summary>
         /// Метод сравнения аккаунта.
         /// </summary>

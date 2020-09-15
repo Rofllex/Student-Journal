@@ -184,7 +184,7 @@ namespace KIRTStudentJournal.Controllers.API
         public IActionResult GetRoles()
         {
             dynamic response = new ExpandoObject();
-            Type roleType = typeof(Role);
+            Type roleType = typeof(Database.Journal.Role);
             Array valuesArray = Enum.GetValues(roleType),
                   namesArray = Enum.GetNames(roleType);
             dynamic[] roles = new dynamic[valuesArray.Length];
@@ -206,12 +206,12 @@ namespace KIRTStudentJournal.Controllers.API
         /// <param name="role"></param>
         /// <param name="expireDate"></param>
         /// <returns></returns>
-        private string createToken(string login, Role role, out DateTime expireDate)
+        private string createToken(string login, Database.Journal.Role role, out DateTime expireDate)
         {
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(Jwt.DEFAULT_LOGIN_TYPE, login),
-                new Claim(Jwt.DEFAULT_ROLE_TYPE, Enum.GetName(typeof(Role), role))
+                new Claim(Jwt.DEFAULT_ROLE_TYPE, Enum.GetName(typeof(Database.Journal.Role), role))
             };
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token", Jwt.DEFAULT_LOGIN_TYPE, Jwt.DEFAULT_ROLE_TYPE);
             expireDate = DateTime.Now.AddHours(Jwt.HOURS_LIFETIME);

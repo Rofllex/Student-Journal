@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.30330.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KIRTStudentJournal", "KIRTStudentJournal\KIRTStudentJournal.csproj", "{A580A300-AFB7-4689-B65F-A9D241761333}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KIRTStudentJournal.NetLib", "KIRTStudentJournal.NetLib\KIRTStudentJournal.NetLib.csproj", "{9B559C64-2699-4C10-9292-A00BA7453C68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KIRTStudentJournal.NetLib", "KIRTStudentJournal.NetLib\KIRTStudentJournal.NetLib.csproj", "{9B559C64-2699-4C10-9292-A00BA7453C68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KIRTStudentJournal.NetLib.Test", "KIRTStudentJournal.NetLib.Test\KIRTStudentJournal.NetLib.Test.csproj", "{A174B704-70B4-48FE-80AB-873562A8BCB2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KIRTStudentJournal.NetLib.Test", "KIRTStudentJournal.NetLib.Test\KIRTStudentJournal.NetLib.Test.csproj", "{A174B704-70B4-48FE-80AB-873562A8BCB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
