@@ -171,7 +171,7 @@ namespace KIRTStudentJournal.Controllers.API
         public IActionResult GetRoles()
         {
             dynamic response = new ExpandoObject();
-            Type roleType = typeof(Database.Role);
+            Type roleType = typeof(Role);
             Array valuesArray = Enum.GetValues(roleType),
                   namesArray = Enum.GetNames(roleType);
             dynamic[] roles = new dynamic[valuesArray.Length];

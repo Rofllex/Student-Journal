@@ -30,9 +30,7 @@ namespace KIRTStudentJournal.Controllers.API
                 using (var db = new DatabaseContext())
                     account = db.Accounts.FirstOrDefault(a => a.Login == userLogin);
                 if (account != null)
-                {
                     return Json(new RoleModel(account.Role));
-                }
                 else
                 {
                     Logging.Logger.Instance.Error("Аккаунт не найден при авторизированном запросе!");
