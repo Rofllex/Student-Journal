@@ -1,26 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Newtonsoft.Json.Linq;
 using System.Dynamic;
-using KIRTStudentJournal.Database;
-using System.Security.Cryptography;
-using Microsoft.IdentityModel.JsonWebTokens;
+using System.Threading.Tasks;
+using System.Security.Claims;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
-using KIRTStudentJournal.Infrastructure;
-using System.Diagnostics;
 using KIRTStudentJournal.Models;
-using System.Collections;
+using KIRTStudentJournal.Database;
+using KIRTStudentJournal.Infrastructure;
 
 namespace KIRTStudentJournal.Controllers.API
 {
@@ -67,7 +58,7 @@ namespace KIRTStudentJournal.Controllers.API
                     //var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwtToken);
                     #endregion
                     var tokenString = createToken(login, account.Role, out DateTime jwtTokenExpireDate);
-                    var parsedJwtToken = new ParsedJwtToken(tokenString);
+                    ParsedJwtToken parsedJwtToken = new ParsedJwtToken(tokenString);
                     string refreshToken = Jwt.CreateRefreshToken(account, tokenString);
                     var jwtToken = new JwtToken()
                     {
