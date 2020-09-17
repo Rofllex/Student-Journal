@@ -1,13 +1,10 @@
-﻿using KIRTStudentJournal.Database;
-using KIRTStudentJournal.Infrastructure;
-using KIRTStudentJournal.Models;
+﻿using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using KIRTStudentJournal.Database;
+using KIRTStudentJournal.Infrastructure;
+using KIRTStudentJournal.Models;
 
 namespace KIRTStudentJournal.Controllers.API
 {
