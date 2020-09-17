@@ -94,6 +94,7 @@ namespace KIRTStudentJournal.Controllers.API
             else
                 return StatusCode(StatusCodes.Status400BadRequest);
         }
+        
         /// <summary>
         /// Выход из системы и обнуление токена.
         /// </summary>
@@ -124,6 +125,7 @@ namespace KIRTStudentJournal.Controllers.API
                 Logging.Logger.Instance.Error($"Авторизация пройдена, но клайма с логином нет. IP: \"{ HttpContext.Connection.RemoteIpAddress }\" ");
             return Forbid();
         }
+        
         /// <summary>
         /// Метод обновления токена по токену обновления.
         /// </summary>
@@ -158,13 +160,6 @@ namespace KIRTStudentJournal.Controllers.API
                     token.Sign = parsedJwtToken.Sign;
                     token.RefreshToken = refreshToken;
                     await db.SaveChangesAsync();
-                    
-                    //dynamic response = new ExpandoObject();
-                    //response.token = newToken;
-                    //response.refresh_token = refreshToken;
-                    //response.role = Enum.GetName(typeof(Role), token.GrantedFor.Role);
-                    //response.role_id = (int)token.GrantedFor.Role;
-
                     AccountModel accountModel = new AccountModel(new RoleModel(token.GrantedFor.Role), new TokenModel(token));
                     return Json(accountModel);
                 }
@@ -174,6 +169,7 @@ namespace KIRTStudentJournal.Controllers.API
             else
                 return new Error("Токен не найден").ToActionResult();
         }
+        
         [Authorize(Roles = "Admin")]
         public IActionResult TestAuth()
         {
@@ -184,7 +180,7 @@ namespace KIRTStudentJournal.Controllers.API
         public IActionResult GetRoles()
         {
             dynamic response = new ExpandoObject();
-            Type roleType = typeof(Database.Journal.Role);
+            Type roleType = typeof(Database.Role);
             Array valuesArray = Enum.GetValues(roleType),
                   namesArray = Enum.GetNames(roleType);
             dynamic[] roles = new dynamic[valuesArray.Length];
@@ -206,12 +202,12 @@ namespace KIRTStudentJournal.Controllers.API
         /// <param name="role"></param>
         /// <param name="expireDate"></param>
         /// <returns></returns>
-        private string createToken(string login, Database.Journal.Role role, out DateTime expireDate)
+        private string createToken(string login, Database.Role role, out DateTime expireDate)
         {
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(Jwt.DEFAULT_LOGIN_TYPE, login),
-                new Claim(Jwt.DEFAULT_ROLE_TYPE, Enum.GetName(typeof(Database.Journal.Role), role))
+                new Claim(Jwt.DEFAULT_ROLE_TYPE, Enum.GetName(typeof(Database.Role), role))
             };
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token", Jwt.DEFAULT_LOGIN_TYPE, Jwt.DEFAULT_ROLE_TYPE);
             expireDate = DateTime.Now.AddHours(Jwt.HOURS_LIFETIME);

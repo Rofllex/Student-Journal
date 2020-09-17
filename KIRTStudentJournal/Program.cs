@@ -89,7 +89,7 @@ namespace KIRTStudentJournal
                     Patronymic = "1",
                     PhoneNumber = "1",
                 },
-                Role = Role.Admin
+                Role = Database.Role.Admin
             };
             account.Person.Account = account;
             dbContext.Accounts.Add(account);

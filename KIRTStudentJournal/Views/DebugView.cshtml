@@ -2,9 +2,9 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    string getRoleName(KIRTStudentJournal.Database.Journal.Role role)
+    string getRoleName(KIRTStudentJournal.Database.Role role)
     {
-        Type roleType = typeof(KIRTStudentJournal.Database.Journal.Role);
+        Type roleType = typeof(KIRTStudentJournal.Database.Role);
         return Enum.GetName(roleType, role);
     }
 }
@@ -23,7 +23,11 @@
 @{ 
     using (var db = new KIRTStudentJournal.Database.DatabaseContext())
     {
-        foreach (var account in db.Accounts)
+        var accounts = db.Accounts.ToArray();
+        var persons = db.Persons.ToArray();
+        var groups = db.StudentGroups.ToArray();
+
+        foreach (var account in accounts)
         {
             <tr>
                 <td>@account.Login</td>
@@ -31,6 +35,14 @@
                 @{
                     if (account.Person != null)
                     {
+                        if (account.Person is KIRTStudentJournal.Database.Journal.Student student)
+                        {
+                            <td>Студент</td>
+                            if (student.Group != null)
+                            {
+                                <td>Группа: @(student.Group.Specialization.ShortName )</td>
+                            }
+                        }
                         <td>@account.Person.GetType().Name</td>
                     }
                     else

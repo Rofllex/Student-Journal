@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using KIRTStudentJournal.Database.Journal;
 
 namespace KIRTStudentJournal.Database
@@ -26,7 +27,8 @@ namespace KIRTStudentJournal.Database
         /// <summary>
         /// Персона к которой привязан аккаунт.
         /// </summary>
-        public Person Person { get; set; }
+        [ForeignKey(nameof(PersonId))]
+        public virtual Person Person { get; set; }
 
         public virtual int PersonId { get; set; }
         

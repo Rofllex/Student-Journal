@@ -5,10 +5,10 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using KIRTStudentJournal.NetLib.Models;
 using System.Threading;
+using System.Linq;
+using KIRTStudentJournal.NetLib.Extensions;
 
 namespace KIRTStudentJournal.NetLib
 {
@@ -21,14 +21,9 @@ namespace KIRTStudentJournal.NetLib
         /// Базовый адрес.
         /// </summary>
         public Uri BaseUri { get; private set; }
-        /// <summary>
-        /// Токен доступа.
-        /// </summary>
-        protected string Token { get; set; }
-        /// <summary>
-        /// Ключ обновления токена.
-        /// </summary>
-        protected string RefreshToken { get; set; }
+
+        protected TokenModel _Token;
+
         /// <summary>
         ///  Таймаут выполнения запроса
         /// </summary>
@@ -37,11 +32,14 @@ namespace KIRTStudentJournal.NetLib
         protected ClientBase(string baseUrl) : this (new Uri(baseUrl))
         {
         }
+        
         protected ClientBase(Uri baseUri)
         {
             BaseUri = baseUri;
         }
-        
+
+        #region protected
+
         /// <summary>
         /// 
         /// </summary>
@@ -55,7 +53,7 @@ namespace KIRTStudentJournal.NetLib
             {
                 try
                 {
-                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _Token.Token);
                     message = await httpClient.GetAsync(uri);
                     return message;
                 }
@@ -65,6 +63,7 @@ namespace KIRTStudentJournal.NetLib
                 }
             }
         }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -87,6 +86,7 @@ namespace KIRTStudentJournal.NetLib
                 }
             }        
         }
+        
         /// <summary>
         /// Легкий способ построить Uri
         /// </summary>
@@ -100,7 +100,7 @@ namespace KIRTStudentJournal.NetLib
         /// BuildUri(uri, "Test/Method", "arg1=1&arg2=2");
         /// </code>
         /// </example>
-        protected static Uri BuildUri(Uri baseUri, string relativeMethod, params string[] getArgs)
+        protected virtual Uri BuildUri(Uri baseUri, string relativeMethod, params string[] getArgs)
         {
             UriBuilder builder = new UriBuilder(baseUri) { Path = relativeMethod };
             string getArgsLine;
@@ -116,89 +116,40 @@ namespace KIRTStudentJournal.NetLib
             builder.Query = getArgsLine;
             return builder.Uri;
         }
+        
+        /// <summary>
+        /// Метод создания Uri строки.
+        /// Данная реализация неявно вызывает <see cref="BuildUri(Uri, string, string[])"/>
+        /// </summary>
+        /// <param name="baseUri">Базовый адрес</param>
+        /// <param name="relativeMethod">Метод который необходимо вызвать</param>
+        /// <param name="getArgs">get аргументы</param>
+        /// <returns>Экземпляр класса <see cref="Uri"></see>/></returns>
+        protected virtual Uri BuildUri(Uri baseUri, string relativeMethod, IEnumerable<KeyValuePair<string,string>> getArgs)
+        {
+            using (var enumerator = getArgs.GetEnumerator())
+            {
+                int argsCount = getArgs.Count();
+                string[] args = new string[argsCount];
+                if (argsCount > 0)
+                    for (int i = 0; enumerator.MoveNext(); i++)
+                        args[i] = $"{enumerator.Current.Key}={enumerator.Current.Value}";
+                return BuildUri(baseUri, relativeMethod, getArgs);
+            }
+        }
+
+        #endregion
+
         /// <summary>
         /// Обновить токен.
         /// </summary>
         public abstract Task RefreshAsync();
 
-        public virtual void Dispose() 
-        {
-        }
-    }
-
-    public sealed class JournalClient : ClientBase
-    {
-        public string Role { get; private set; }
-
-        private JournalClient(Uri baseUrl) : base (baseUrl)
-        {
-        }
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="ExecuteQueryException"></exception>
-        /// <exception cref="RequestErrorException"></exception>
-        public override async Task RefreshAsync()
-        {
-            var response = await ExecuteQuery(BuildUri(BaseUri, "api/Account/Refresh", "refresh_token=" + RefreshToken));
-            if (response.IsSuccessStatusCode)
-            {
-                var responseString = await response.Content.ReadAsStringAsync();
-                JObject jObject = JsonConvert.DeserializeObject<JObject>(responseString);
-                if (!Error.IsError(jObject))
-                {
-                    RefreshToken = jObject["refresh_token"].ToObject<string>();
-                    Token = jObject["token"].ToObject<string>();
-                }
-                else
-                {
-                    // Выбрасывает исключение но компилятор об этом не знает.
-                    jObject.ToObject<Error>().Throw();
-                    return;
-                }
-            }
-            else
-                throw new ExecuteQueryException(response.StatusCode);
-        }
+        public abstract Task Logout();
 
         /// <summary>
-        /// Асинхронный метод авторизации на сервере
+        /// Освободить ресурсы(если необходимо)
         /// </summary>
-        /// <param name="baseUri">Базовый адрес</param>
-        /// <param name="login">Логин</param>
-        /// <param name="password">Пароль</param>
-        /// <returns></returns>
-        /// <exception cref="RequestErrorException"></exception>
-        /// <exception cref="ExecuteQueryException"></exception>
-        /// <exception cref="Exception"></exception>
-        public static async Task<JournalClient> SignInAsync(Uri baseUri, string login, string password)
-        {
-            JournalClient client = new JournalClient(baseUri);
-            Uri uri = BuildUri(baseUri, "api/Account/SignIn", "login=" + login, "pass=" + password);
-            HttpResponseMessage response = await client.ExecuteQueryWithoutToken(uri);
-            string contentString = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                if (contentString != string.Empty)
-                {
-                    JObject contentJObject = JsonConvert.DeserializeObject<JObject>(contentString);
-                    if (!Error.IsError(contentJObject))
-                    {
-                        client.Token = contentJObject["token"].ToObject<string>();
-                        client.Role = contentJObject["role"].ToObject<string>();
-                        client.RefreshToken = contentJObject["refresh_token"].ToObject<string>();
-                        return client;
-                    }
-                    else
-                        throw new RequestErrorException(contentJObject.ToObject<Error>());
-                }
-                else
-                    throw new Exception("Ответ от сервера был пустым");
-            }
-            else
-                throw new ExecuteQueryException(response.StatusCode);
-        }
+        public abstract void Dispose();
     }
 }

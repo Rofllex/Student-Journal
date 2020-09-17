@@ -19,6 +19,6 @@ namespace KIRTStudentJournal.NetLib.Models
 
         public void Throw() => throw new RequestErrorException(this);
 
-        public static bool IsError(JObject jObject) => jObject.ContainsKey("error_message");
+        public static bool IsError(JToken jToken) => jToken["error_message"] != null;
     }
 }
