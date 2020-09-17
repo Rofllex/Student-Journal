@@ -15,6 +15,7 @@ namespace KIRTStudentJournal.Infrastructure
         public const string DEFAULT_LOGIN_TYPE = "login";
         public const string DEFAULT_ROLE_TYPE = "type";
         public static SymmetricSecurityKey GetSymmetricSecurityKey() => new SymmetricSecurityKey(Encoding.ASCII.GetBytes(KEY));
+        
         /// <summary>
         /// Создать токен обновления из аккаунта и JWT токена.
         /// </summary>
@@ -22,6 +23,7 @@ namespace KIRTStudentJournal.Infrastructure
         /// <param name="fullJwtToken"></param>
         /// <returns></returns>
         public static string CreateRefreshToken(Account account, string fullJwtToken) => CreateRefreshToken(account.Login, fullJwtToken);
+        
         public static string CreateRefreshToken(string login, string fullJwtToken)
         {
             string[] splittedJwtToken = fullJwtToken.Split('.');
@@ -64,5 +66,4 @@ namespace KIRTStudentJournal.Infrastructure
             return false;
         }
     }
-
 }
