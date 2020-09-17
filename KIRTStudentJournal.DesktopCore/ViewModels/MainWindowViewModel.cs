@@ -3,6 +3,7 @@ using KIRTStudentJournal.NetLib;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Input;
 
 namespace KIRTStudentJournal.DesktopCore.ViewModels
 {
@@ -19,6 +20,19 @@ namespace KIRTStudentJournal.DesktopCore.ViewModels
             {
                 _journalClient = value;
                 OnPropertyChanged();
+            }
+        }
+
+        private ICommand _openLeftSideMenuCommand;
+        public ICommand OpenLeftSideMenuCommand
+        {
+            get
+            {
+                return _openLeftSideMenuCommand ??
+                    (_openLeftSideMenuCommand = new RelayCommand(obj =>
+                    {
+                        
+                    }));
             }
         }
     }
