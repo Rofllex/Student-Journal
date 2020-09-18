@@ -9,6 +9,7 @@ using KIRTStudentJournal.NetLib.Models;
 using System.Threading;
 using System.Linq;
 using KIRTStudentJournal.NetLib.Extensions;
+using KIRTStudentJournal.Shared.Models;
 
 namespace KIRTStudentJournal.NetLib
 {
@@ -46,7 +47,7 @@ namespace KIRTStudentJournal.NetLib
         /// <param name="uri"></param>
         /// <returns></returns>
         /// <exception cref="ExecuteQueryException"></exception>
-        protected async Task<HttpResponseMessage> ExecuteQuery(Uri uri)
+        public async Task<HttpResponseMessage> ExecuteQuery(Uri uri)
         {
             HttpResponseMessage message;
             using (HttpClient httpClient = new HttpClient() { Timeout = ExecuteQueryTimeout })
@@ -70,7 +71,7 @@ namespace KIRTStudentJournal.NetLib
         /// <param name="uri"></param>
         /// <returns></returns>
         /// <exception cref="ExecuteQueryException"></exception>
-        protected async Task<HttpResponseMessage> ExecuteQueryWithoutToken(Uri uri)
+        public async Task<HttpResponseMessage> ExecuteQueryWithoutToken(Uri uri)
         {
             HttpResponseMessage message;
             using (HttpClient httpClient = new HttpClient() { Timeout = ExecuteQueryTimeout })
@@ -86,6 +87,10 @@ namespace KIRTStudentJournal.NetLib
                 }
             }        
         }
+
+
+        public virtual Uri BuildUri(string relativeMethod, params string[] getArgs) => BuildUri(BaseUri, relativeMethod, getArgs);
+        public virtual Uri BuildUri(string relativeMethod, IEnumerable<KeyValuePair<string, string>> getArgs) => BuildUri(BaseUri, relativeMethod, getArgs);
         
         /// <summary>
         /// Легкий способ построить Uri

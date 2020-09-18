@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using System.Reflection;
 using System.Diagnostics;
 using KIRTStudentJournal.Database.Journal;
+using KIRTStudentJournal.Shared.Models;
 using System.Runtime.CompilerServices;
 
 namespace KIRTStudentJournal
@@ -89,7 +90,7 @@ namespace KIRTStudentJournal
                     Patronymic = "1",
                     PhoneNumber = "1",
                 },
-                Role = Database.Role.Admin
+                Role = Role.Admin
             };
             account.Person.Account = account;
             dbContext.Accounts.Add(account);

@@ -1,4 +1,4 @@
-﻿namespace KIRTStudentJournal.Database
+﻿namespace KIRTStudentJournal.Shared.Models
 {
     /// <summary>
     /// Роли

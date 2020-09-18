@@ -22,7 +22,7 @@ namespace KIRTStudentJournal.Database
         /// Роль
         /// </summary>
         [Required]
-        public Role Role { get; set; }
+        public Shared.Models.Role Role { get; set; }
         
         /// <summary>
         /// Персона к которой привязан аккаунт.
@@ -32,7 +32,7 @@ namespace KIRTStudentJournal.Database
 
         public virtual int PersonId { get; set; }
         
-        public Account(string login, string passwordHash, Role role, Person person)
+        public Account(string login, string passwordHash, Shared.Models.Role role, Person person)
         {
             Login = login;
             PasswordHash = passwordHash;

@@ -2,9 +2,9 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    string getRoleName(KIRTStudentJournal.Database.Role role)
+    string getRoleName(KIRTStudentJournal.Shared.Models.Role role)
     {
-        Type roleType = typeof(KIRTStudentJournal.Database.Role);
+        Type roleType = typeof(KIRTStudentJournal.Shared.Models.Role);
         return Enum.GetName(roleType, role);
     }
 }

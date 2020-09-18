@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KIRTStudentJournal.NetLib.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KIRTStudentJournal.Test", "KIRTStudentJournal.Test\KIRTStudentJournal.Test.csproj", "{0695041B-19AD-457E-B34C-24D239CB5586}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KIRTStudentJournal.DesktopCore", "KIRTStudentJournal.DesktopCore\KIRTStudentJournal.DesktopCore.csproj", "{8FAE059F-9DE8-49C9-B229-5F1A99A2DD24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KIRTStudentJournal.DesktopCore", "KIRTStudentJournal.DesktopCore\KIRTStudentJournal.DesktopCore.csproj", "{8FAE059F-9DE8-49C9-B229-5F1A99A2DD24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KIRTStudentJournal.Shared", "KIRTStudentJournal.Shared\KIRTStudentJournal.Shared.csproj", "{6CDA5946-82D7-4D4C-8D04-A8115D407AA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{8FAE059F-9DE8-49C9-B229-5F1A99A2DD24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FAE059F-9DE8-49C9-B229-5F1A99A2DD24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FAE059F-9DE8-49C9-B229-5F1A99A2DD24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CDA5946-82D7-4D4C-8D04-A8115D407AA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CDA5946-82D7-4D4C-8D04-A8115D407AA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CDA5946-82D7-4D4C-8D04-A8115D407AA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CDA5946-82D7-4D4C-8D04-A8115D407AA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

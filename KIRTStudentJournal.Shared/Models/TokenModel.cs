@@ -1,8 +1,7 @@
-﻿using KIRTStudentJournal.Database;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 
-namespace KIRTStudentJournal.Models
+namespace KIRTStudentJournal.Shared.Models
 {
     public class TokenModel
     {
@@ -12,17 +11,16 @@ namespace KIRTStudentJournal.Models
         public string RefreshToken { get; set; }
         [JsonProperty("expire_date")]
         public DateTime ExpireDate { get; set; }
+
+        public TokenModel()
+        {
+        }
+
         public TokenModel(string token, string refreshToken, DateTime expireDate)
         {
             Token = token;
             RefreshToken = refreshToken;
             ExpireDate = expireDate;
-        }
-        public TokenModel(JwtToken token)
-        {
-            Token = $"{token.Header}.{token.Payload}.{token.Sign}";
-            RefreshToken = token.RefreshToken;
-            ExpireDate = token.ExpireDate;
         }
     }
 }

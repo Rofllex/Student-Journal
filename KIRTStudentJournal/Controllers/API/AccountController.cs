@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 using KIRTStudentJournal.Models;
 using KIRTStudentJournal.Database;
 using KIRTStudentJournal.Infrastructure;
-
+using KIRTStudentJournal.Shared.Models;
 namespace KIRTStudentJournal.Controllers.API
 {
     [Controller]
@@ -76,7 +76,7 @@ namespace KIRTStudentJournal.Controllers.API
                     //response.role = Enum.GetName(typeof(Role), account.Role);
                     //response.role_id = (int)account.Role;
                     //response.refresh_token = refreshToken;
-                    AccountModel accountModel = new AccountModel(account, jwtToken);
+                    AccountModel accountModel = new AccountModel(new TokenModel(tokenString, jwtToken.RefreshToken, jwtToken.ExpireDate), new RoleModel());
                     return Json(accountModel);
                 }
                 else
@@ -151,7 +151,7 @@ namespace KIRTStudentJournal.Controllers.API
                     token.Sign = parsedJwtToken.Sign;
                     token.RefreshToken = refreshToken;
                     await db.SaveChangesAsync();
-                    AccountModel accountModel = new AccountModel(new RoleModel(token.GrantedFor.Role), new TokenModel(token));
+                    AccountModel accountModel = new AccountModel(new TokenModel(token.FullToken, token.RefreshToken, expireDate), new RoleModel(token.GrantedFor.Role));
                     return Json(accountModel);
                 }
                 else
@@ -193,12 +193,12 @@ namespace KIRTStudentJournal.Controllers.API
         /// <param name="role"></param>
         /// <param name="expireDate"></param>
         /// <returns></returns>
-        private string createToken(string login, Database.Role role, out DateTime expireDate)
+        private string createToken(string login, Role role, out DateTime expireDate)
         {
             List<Claim> claims = new List<Claim>()
             {
                 new Claim(Jwt.DEFAULT_LOGIN_TYPE, login),
-                new Claim(Jwt.DEFAULT_ROLE_TYPE, Enum.GetName(typeof(Database.Role), role))
+                new Claim(Jwt.DEFAULT_ROLE_TYPE, Enum.GetName(typeof(Role), role))
             };
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token", Jwt.DEFAULT_LOGIN_TYPE, Jwt.DEFAULT_ROLE_TYPE);
             expireDate = DateTime.Now.AddHours(Jwt.HOURS_LIFETIME);

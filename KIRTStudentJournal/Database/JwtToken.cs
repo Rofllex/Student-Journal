@@ -2,6 +2,7 @@
 using Microsoft.VisualBasic.CompilerServices;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace KIRTStudentJournal.Database
 {
@@ -10,6 +11,8 @@ namespace KIRTStudentJournal.Database
     /// </summary>
     public class JwtToken
     {
+        [NotMapped]
+        public string FullToken => $"{Header}.{Payload}.{Sign}";
         /// <summary>
         /// Заголовок токена
         /// </summary>

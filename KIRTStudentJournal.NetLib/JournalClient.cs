@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using KIRTStudentJournal.NetLib.Models;
 using KIRTStudentJournal.NetLib.Extensions;
-
+using KIRTStudentJournal.Shared.Models;
 namespace KIRTStudentJournal.NetLib
 {
     public sealed class JournalClient : ClientBase
@@ -15,10 +15,19 @@ namespace KIRTStudentJournal.NetLib
         /// </summary>
         public Role Role { get; private set; }
 
+        public PersonClientModule Person { get; private set; }
+
         private JournalClient(Uri baseUrl) : base (baseUrl)
         {
+            Person = new PersonClientModule(this);
         }
-        
+
+        protected override Uri BuildUri(Uri baseUri, string relativeMethod, params string[] getArgs)
+        {
+            relativeMethod = "api/" + relativeMethod;
+            return base.BuildUri(baseUri, relativeMethod, getArgs);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -74,7 +83,7 @@ namespace KIRTStudentJournal.NetLib
         public static async Task<JournalClient> SignInAsync(Uri baseUri, string login, string password)
         {
             JournalClient client = new JournalClient(baseUri);
-            Uri uri = client.BuildUri(baseUri, "api/Account/SignIn", "login=" + login, "pass=" + password);
+            Uri uri = client.BuildUri(baseUri, "Account/SignIn", "login=" + login, "pass=" + password);
             HttpResponseMessage response = await client.ExecuteQueryWithoutToken(uri);
             string contentString = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
@@ -96,6 +105,22 @@ namespace KIRTStudentJournal.NetLib
             }
             else
                 throw new ExecuteQueryException(response.StatusCode);
+        }
+    }
+
+    public class PersonClientModule
+    {
+        private JournalClient client;
+        public PersonClientModule(JournalClient client)
+        {
+            this.client = client;
+        }
+
+        public async Task DEBUG_GetMe()
+        {
+            var uri = client.BuildUri("Person/GetMe");
+            var resposne = await client.ExecuteQuery(uri);
+            
         }
     }
 }

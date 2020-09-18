@@ -1,9 +1,7 @@
-﻿using KIRTStudentJournal.Database;
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 
-namespace KIRTStudentJournal.Models
+namespace KIRTStudentJournal.Shared.Models
 {
     public class RoleModel
     {
@@ -18,5 +16,12 @@ namespace KIRTStudentJournal.Models
             Name = Enum.GetName(roleType, role);
             Id = (int)role;
         }
+
+        public RoleModel()
+        {
+        }
+
+
+        public static implicit operator Role(RoleModel model) => (Role)model.Id;
     }
 }

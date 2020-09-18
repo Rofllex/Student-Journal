@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using KIRTStudentJournal.Database;
 using KIRTStudentJournal.Infrastructure;
 using KIRTStudentJournal.Models;
+using KIRTStudentJournal.Shared.Models;
 
 namespace KIRTStudentJournal.Controllers.API
 {

@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Sdk;
+using KIRTStudentJournal.Shared.Models;
 
 namespace KIRTStudentJournal.NetLib.Test
 {
@@ -35,7 +36,7 @@ namespace KIRTStudentJournal.NetLib.Test
         public async void SuccessAuth()
         {
             var journal = await JournalClient.SignInAsync(new Uri("https://localhost:5001"), "12345", "1");
-            Assert.Equal(Models.Role.Admin, journal.Role);
+            Assert.Equal(Role.Admin, journal.Role);
         } 
         
         [Fact]
@@ -64,6 +65,23 @@ namespace KIRTStudentJournal.NetLib.Test
             }
         }
         
+    }
+
+    public class PersonModuleTest
+    {
+        private JournalClient client;
+        public PersonModuleTest()
+        {
+            var signTask = JournalClient.SignInAsync(new Uri("https://localhost:5001"), "12345", "1");
+            signTask.Wait();
+            client = signTask.Result;
+        }
+
+        [Fact]
+        public async Task GetMe()
+        {
+            await client.Person.DEBUG_GetMe();
+        }
     }
 
     public class MockClientBase : ClientBase
