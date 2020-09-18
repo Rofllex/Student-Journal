@@ -35,5 +35,16 @@ namespace KIRTStudentJournal.DesktopCore.ViewModels
                     }));
             }
         }
+
+        private bool _visibleLeftSideMenu = false;
+        public bool VisibleLeftSideMenu
+        {
+            get => _visibleLeftSideMenu;
+            set
+            {
+                _visibleLeftSideMenu = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }

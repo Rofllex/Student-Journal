@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KIRTStudentJournal.DesktopCore.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,15 +21,16 @@ namespace KIRTStudentJournal.DesktopCore
     /// </summary>
     public partial class MainWindow : Window
     {
+        public MainWindowViewModel ViewModel => (MainWindowViewModel)DataContext;
+
         public MainWindow()
         {
             InitializeComponent();
             frame.Navigate(new Uri("Views/AuthPage.xaml", UriKind.Relative));
+            ((MainWindowViewModel)DataContext).VisibleLeftSideMenu = false;
         }
-
-        public void NavigateToRelative(string relativePath)
-        {
-            frame.Navigate(new Uri(relativePath, UriKind.Relative));
-        }
+    
+        public void NavigateToRelative(string relativePath) => frame.Navigate(new Uri(relativePath, UriKind.Relative));
+        
     }
 }
