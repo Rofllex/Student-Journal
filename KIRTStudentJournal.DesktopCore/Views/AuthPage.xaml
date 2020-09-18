@@ -18,6 +18,8 @@
             <!--<Setter Property="Control.Height" Value="20" />-->
             <Setter Property="Control.FontFamily" Value="{StaticResource RobotoRegular}" />
             <Setter Property="Control.FontSize" Value="20" />
+            <Setter Property="TextBox.HorizontalContentAlignment" Value="Center" />
+            <Setter Property="PasswordBox.HorizontalContentAlignment" Value="Center" />
             <Style.Resources>
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="5"/>
