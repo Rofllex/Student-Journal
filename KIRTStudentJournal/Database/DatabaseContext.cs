@@ -31,7 +31,8 @@ namespace KIRTStudentJournal.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySql(ConnectionString);
+            optionsBuilder.UseMySQL(ConnectionString);
+            
         }
 
 
