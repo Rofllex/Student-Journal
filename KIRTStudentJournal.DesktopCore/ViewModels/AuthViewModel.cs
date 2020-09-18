@@ -66,8 +66,14 @@ namespace KIRTStudentJournal.DesktopCore.ViewModels
                         try
                         {
                             JournalClient journal = await JournalClient.SignInAsync(new Uri("https://localhost:5001"), AuthModel.Login, password);
-                            ((MainWindowViewModel)App.Current.MainWindow.DataContext).JournalClient = journal;
-                            ((MainWindow)App.Current.MainWindow).NavigateToRelative("Views/ProfilePage.xaml");
+
+                            MainWindow mainWindow = (MainWindow)App.Current.MainWindow;
+                            var mainWindowViewModel = (MainWindowViewModel)mainWindow.DataContext;
+                            mainWindowViewModel.JournalClient = journal;
+                            mainWindowViewModel.VisibleLeftSideMenu = true;
+                            mainWindow.NavigateToRelative("Views/ProfilePage.xaml");
+                            //((MainWindowViewModel)App.Current.MainWindow.DataContext).JournalClient = journal;
+                            //((MainWindow)App.Current.MainWindow).NavigateToRelative("Views/ProfilePage.xaml");
                         }
                         catch (RequestErrorException e)
                         {
