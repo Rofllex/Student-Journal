@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:KIRTStudentJournal.DesktopCore"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <FontFamily x:Key="RobotoRegular">pack://application:,,,/Resources/Fonts/#Roboto</FontFamily>
     </Application.Resources>
 </Application>

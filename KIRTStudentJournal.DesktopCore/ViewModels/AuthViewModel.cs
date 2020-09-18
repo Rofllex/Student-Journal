@@ -102,13 +102,10 @@ namespace KIRTStudentJournal.DesktopCore.ViewModels
             }
         }
 
-       
         public AuthViewModel()
         {
         }
     }
-
-    
 
     public class RelayCommand : ICommand
     {
@@ -127,5 +124,4 @@ namespace KIRTStudentJournal.DesktopCore.ViewModels
 
         public void Execute(object parameter) => _execute(parameter);
     }
-
 }
