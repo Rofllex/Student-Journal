@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KIRTStudentJournal.Shared.Models;
 
 namespace KIRTStudentJournal.Controllers.API
 {
@@ -28,7 +29,13 @@ namespace KIRTStudentJournal.Controllers.API
                 Person person;
                 using (var db = new DatabaseContext())
                     person = db.Persons.FirstOrDefault(p => p.Account.Login == login);
-                return Content("");
+                if (person != null)
+                    return Json(new PersonModel(person.FirstName, person.LastName, person.Patronymic, person.PhoneNumber));
+                else
+                {
+                    Logging.Logger.Instance.Error($"Пользователь авторизован хотя Person в бд не найден. Login: \"{ login }\"");
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+                }
             }
             else
             {

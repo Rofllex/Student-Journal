@@ -116,11 +116,11 @@ namespace KIRTStudentJournal.NetLib
             this.client = client;
         }
 
-        public async Task DEBUG_GetMe()
+        public async Task<PersonModel> GetMe()
         {
             var uri = client.BuildUri("Person/GetMe");
-            var resposne = await client.ExecuteQuery(uri);
-            
+            var response = await client.ExecuteQuery(uri);
+            return await response.Content.ReadAsJsonAndThrowIfError<PersonModel>();
         }
     }
 }
