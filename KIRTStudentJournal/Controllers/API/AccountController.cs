@@ -13,12 +13,18 @@ using KIRTStudentJournal.Models;
 using KIRTStudentJournal.Database;
 using KIRTStudentJournal.Infrastructure;
 using KIRTStudentJournal.Shared.Models;
+
 namespace KIRTStudentJournal.Controllers.API
 {
     [Controller]
     [Route(template: Infrastructure.API.CONTROLLER_ROUTE)]
     public class AccountController : Controller
     {
+        public AccountController()
+        {
+
+        }
+
         /// <summary>
         /// Метод авторизации пользователя
         /// </summary>
@@ -160,22 +166,20 @@ namespace KIRTStudentJournal.Controllers.API
             else
                 return new Error("Токен не найден").ToActionResult();
         }
-        
-        [Authorize(Roles = "Admin")]
-        public IActionResult TestAuth()
-        {
-            return Content("success!");
-        }
 
+        /// <summary>
+        /// Получить список ролей.
+        /// </summary>
+        /// <returns></returns>
         [Authorize(Roles = "Admin")]
-        public IActionResult GetRoles()
+        public Task<IActionResult> GetRoles()
         {
             dynamic response = new ExpandoObject();
             Type roleType = typeof(Role);
             Array valuesArray = Enum.GetValues(roleType),
                   namesArray = Enum.GetNames(roleType);
             dynamic[] roles = new dynamic[valuesArray.Length];
-            for (int i = 0; i < roles.Length ; i++)
+            for (int i = 0; i < roles.Length; i++)
             {
                 dynamic role = new ExpandoObject();
                 role.name = namesArray.GetValue(i);
@@ -184,6 +188,39 @@ namespace KIRTStudentJournal.Controllers.API
             }
             response.roles = roles;
             return Json(response);
+        }
+
+        /// <summary>
+        /// Метод изменения пароля.
+        /// </summary>
+        /// <param name="newPassword">Новый пароль</param>
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromQuery(Name = "oldPass")] string oldPass, [FromQuery(Name = "newPass")] string newPassword)
+        {
+            string login = User.Claims.FirstOrDefault(c => c.Type == Jwt.DEFAULT_LOGIN_TYPE)?.Value;
+            if (login != null)
+            {
+                using (var db = new DatabaseContext())
+                {
+                    Account account = db.Accounts.FirstOrDefault(a => a.Login == login && a.PasswordHash == Hash.GetHashFromString(oldPass));
+                    if (account != null)
+                    {
+                        var otherTokens = db.Tokens.Where(t => t.GrantedFor.Login == login && t.FullToken != JwtUtils.GetJwtTokenFromHeaderDictionary(Request.Headers));
+                        if (otherTokens.Count() > 0)
+                            db.Tokens.RemoveRange(otherTokens);
+                        account.PasswordHash = Hash.GetHashFromString(newPassword);
+                        await db.SaveChangesAsync();
+                        return StatusCode(StatusCodes.Status200OK);
+                    }
+                    else
+                        return Json(new Error("Неверный пароль"));
+                }
+            }
+            else
+            {
+                Logging.Logger.Instance.Error("Пользователь авторизирован, хотя клайм логина null.");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         /// <summary>
