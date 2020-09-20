@@ -116,6 +116,9 @@ namespace KIRTStudentJournal.NetLib
             this.client = client;
         }
 
+        /// <summary>
+        /// Получение информации о человеке привязанном к этому аккаунту.
+        /// </summary>
         public async Task<PersonModel> GetMe()
         {
             var uri = client.BuildUri("Person/GetMe");

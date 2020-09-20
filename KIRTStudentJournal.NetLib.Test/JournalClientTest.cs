@@ -80,7 +80,7 @@ namespace KIRTStudentJournal.NetLib.Test
         [Fact]
         public async Task GetMe()
         {
-            await client.Person.GetMe();
+            var person = await client.Person.GetMe();
         }
     }
 
