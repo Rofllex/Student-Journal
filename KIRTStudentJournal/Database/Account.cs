@@ -1,15 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using KIRTStudentJournal.Database.Journal;
-
+using KIRTStudentJournal.Shared.Models;
 namespace KIRTStudentJournal.Database
 {
     public class Account
     {
         /// <summary>
+        /// Идентификатор. Генерируется автоматически в базе данных.
+        /// </summary>
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        /// <summary>
         /// Логин аккаунта
         /// </summary>
-        [Key, Required(AllowEmptyStrings = false), MinLength(5)]
+        [Required(AllowEmptyStrings = false), MinLength(5)]
         public string Login { get; set; }
         
         /// <summary>
@@ -22,7 +28,7 @@ namespace KIRTStudentJournal.Database
         /// Роль
         /// </summary>
         [Required]
-        public Shared.Models.Role Role { get; set; }
+        public Role Role { get; set; }
         
         /// <summary>
         /// Персона к которой привязан аккаунт.
@@ -32,7 +38,7 @@ namespace KIRTStudentJournal.Database
 
         public virtual int PersonId { get; set; }
         
-        public Account(string login, string passwordHash, Shared.Models.Role role, Person person)
+        public Account(string login, string passwordHash, Role role, Person person)
         {
             Login = login;
             PasswordHash = passwordHash;
@@ -49,8 +55,6 @@ namespace KIRTStudentJournal.Database
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
-        public bool Compare(Account other) => other != null
-                                                && Login == other.Login
-                                                && PasswordHash == other.PasswordHash;
+        public bool Compare(Account other) => Login == (other?.Login ?? string.Empty);
     }
 }
