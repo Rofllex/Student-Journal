@@ -14,7 +14,9 @@ namespace KIRTStudentJournal.NetLib
         /// Роль клиента.
         /// </summary>
         public Role Role { get; private set; }
-
+        /// <summary>
+        /// Взаимодействие с личностными параметрами.
+        /// </summary>
         public PersonClientModule Person { get; private set; }
 
         private JournalClient(Uri baseUrl) : base (baseUrl)

@@ -1,7 +1,9 @@
 ﻿using KIRTStudentJournal.Database;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,7 +15,7 @@ namespace KIRTStudentJournal.Infrastructure
         /// Получить JWT токен из <see cref="IHeaderDictionary"/>
         /// </summary>
         /// <returns>
-        /// Если не удалось считать JWT токен вернет <see cref="default"/>
+        /// Если не удалось считать JWT токен вернет <see cref="default(string)"/>
         /// </returns>
         public static string GetJwtTokenFromHeaderDictionary(IHeaderDictionary headerDictionary)
         {
@@ -33,26 +35,24 @@ namespace KIRTStudentJournal.Infrastructure
     /// Middleware для проверки токена из базы данных.
     /// Если токен не указан в заголовке(или указан в неверном формате) то пропускает дальше. Если токен указан верно и он истек то не пропустит дальше выдав ошибку. <see cref="StatusCodes.Status403Forbidden"/>
     /// </summary>
-    public class CheckJwtMiddleware
+    public static class CheckJwtMiddleware
     {
-        public CheckJwtMiddleware()
-        {
-
-        }
-
-        public async Task Invoke(HttpContext httpContext, Func<Task> next)
+        public static async Task Invoke(HttpContext httpContext, Func<Task> next)
         {
             string jwtToken = JwtUtils.GetJwtTokenFromHeaderDictionary(httpContext.Request.Headers);
             if (jwtToken != default)
             {
-                using var db = new DatabaseContext();
                 var parsedToken = new ParsedJwtToken(jwtToken);
-                var token = db.Tokens.Where(t => t.Sign == parsedToken.Sign && t.Payload == parsedToken.Payload).FirstOrDefault();
-                if (token != null && token.ExpireDate <= DateTime.Now)
+                JwtToken token;
+                using (var db = new DatabaseContext())
                 {
-                    db.Tokens.Remove(token);
-                    await db.SaveChangesAsync();
-                    token = null;
+                    token = db.Tokens.FirstOrDefault(t => t.Sign == parsedToken.Sign);
+                    if (token != null && token.ExpireDate <= DateTime.Now)
+                    {
+                        db.Tokens.Remove(token);
+                        await db.SaveChangesAsync();
+                        token = null;
+                    }
                 }
                 if (token == null)
                 {

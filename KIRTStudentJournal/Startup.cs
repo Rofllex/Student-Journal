@@ -79,7 +79,7 @@ namespace KIRTStudentJournal
             app.UseRouting();
             app.UseAuthentication();
             app.UseStaticFiles();
-            app.Use(async (context, next) =>  await new Infrastructure.CheckJwtMiddleware().Invoke(context, next));
+            app.Use(async (context, next) =>  await CheckJwtMiddleware.Invoke(context, next));
             app.UseMvc(r =>
             {
                 r.MapRoute(
