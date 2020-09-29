@@ -10,7 +10,28 @@ namespace KIRTStudentJournal.Database
         /// Идентификатор. Генерируется автоматически в базе данных.
         /// </summary>
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        
+        public int _Id { get; set; }
+
+        [NotMapped]
+        public uint Id
+        {
+            get
+            {
+                unchecked
+                {
+                    return (uint)_Id;
+                }
+            }
+            set 
+            {
+                unchecked
+                {
+                    _Id = (int)value;
+                }
+            }
+        }
+
 
         /// <summary>
         /// Логин аккаунта

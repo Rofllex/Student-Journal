@@ -41,7 +41,7 @@ namespace KIRTStudentJournal.NetLib
             var response = await ExecuteQuery(BuildUri(BaseUri, "api/Account/Refresh", "refresh_token=" + _Token.RefreshToken));
             if (response.IsSuccessStatusCode)
             {
-                var accountModel = await response.Content.ReadAsJsonAndThrowIfError<AccountModel>();
+                var accountModel = await response.Content.ReadAsJsonAndThrowIfError<AccountAuthorized>();
                 _Token = accountModel.Token;
                 Role = accountModel.Role;
             }

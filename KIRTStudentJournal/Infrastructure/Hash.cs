@@ -6,6 +6,7 @@ namespace KIRTStudentJournal.Infrastructure
     public static class Hash
     {
         private static readonly HashAlgorithm _hashAlgorithm = SHA256.Create();
+        
         /// <summary>
         /// Получение хэша из строки.
         /// </summary>

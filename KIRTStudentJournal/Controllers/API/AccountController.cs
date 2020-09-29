@@ -77,12 +77,7 @@ namespace KIRTStudentJournal.Controllers.API
                     };
                     db.Tokens.Add(jwtToken);
                     await db.SaveChangesAsync();
-                    //dynamic response = new ExpandoObject();
-                    //response.token = tokenString;
-                    //response.role = Enum.GetName(typeof(Role), account.Role);
-                    //response.role_id = (int)account.Role;
-                    //response.refresh_token = refreshToken;
-                    AccountModel accountModel = new AccountModel(new TokenModel(tokenString, jwtToken.RefreshToken, jwtToken.ExpireDate), new RoleModel());
+                    AccountAuthorized accountModel = new AccountAuthorized(account.Id, new TokenModel(tokenString, jwtToken.RefreshToken, jwtToken.ExpireDate), new RoleModel());
                     return Json(accountModel);
                 }
                 else
@@ -157,7 +152,7 @@ namespace KIRTStudentJournal.Controllers.API
                     token.Sign = parsedJwtToken.Sign;
                     token.RefreshToken = refreshToken;
                     await db.SaveChangesAsync();
-                    AccountModel accountModel = new AccountModel(new TokenModel(token.FullToken, token.RefreshToken, expireDate), new RoleModel(token.GrantedFor.Role));
+                    AccountAuthorized accountModel = new AccountAuthorized(token.GrantedFor.Id, new TokenModel(token.FullToken, token.RefreshToken, expireDate), new RoleModel(token.GrantedFor.Role));
                     return Json(accountModel);
                 }
                 else
@@ -194,7 +189,7 @@ namespace KIRTStudentJournal.Controllers.API
         /// Метод изменения пароля.
         /// </summary>
         /// <param name="newPassword">Новый пароль</param>
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ChangePassword([FromQuery(Name = "oldPass")] string oldPass, [FromQuery(Name = "newPass")] string newPassword)
         {
             string login = User.Claims.FirstOrDefault(c => c.Type == Jwt.DEFAULT_LOGIN_TYPE)?.Value;
@@ -221,6 +216,26 @@ namespace KIRTStudentJournal.Controllers.API
                 Logging.Logger.Instance.Error("Пользователь авторизирован, хотя клайм логина null.");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
+        }
+
+        /// <summary>
+        /// Метод получения аккаунтов
+        /// </summary>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetAccounts([FromQuery(Name = "offset")] int offset, [FromQuery(Name = "count")] int count)
+        {
+            List<Account> accountsList;
+            using (var db = new DatabaseContext())
+                accountsList = db.Accounts.Skip(offset).Take(count).ToList();
+            var accounts = accountsList.ConvertAll(a => new AccountModel(a.Id, new RoleModel(a.Role)));
+            return Json(new
+            {
+                count = accounts.Count,
+                accounts
+            });
         }
 
         /// <summary>

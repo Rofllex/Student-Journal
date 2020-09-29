@@ -29,9 +29,17 @@
                     </Style>
                 </ColumnDefinition.Style>
             </ColumnDefinition>
+            <ColumnDefinition Width="{Binding }" />
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
 
+        <Menu Grid.Column="0">
+            <Menu.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Vertical"/>
+                </ItemsPanelTemplate>
+            </Menu.ItemsPanel>
+        </Menu>
         <Button Grid.Column="0" Height="20" Width="15">></Button>
 
         <Frame x:Name="frame" Grid.Row="1" Grid.Column="1" NavigationUIVisibility="Hidden" />

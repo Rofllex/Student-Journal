@@ -46,5 +46,16 @@ namespace KIRTStudentJournal.DesktopCore.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        private int _leftSideMenuWidth = 0;
+        public int LeftSideMenuWidth
+        {
+            get => _leftSideMenuWidth;
+            set
+            {
+                _leftSideMenuWidth = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }

@@ -1,9 +1,12 @@
 ﻿using Newtonsoft.Json;
 
+using System.Collections.Generic;
+using System.Text;
+
 namespace KIRTStudentJournal.Shared.Models
 {
-    public class AccountModel
-    {
+    public class AccountAuthorized
+    {   
         /// <summary>
         /// Идентификатор аккаунта
         /// </summary>
@@ -11,21 +14,26 @@ namespace KIRTStudentJournal.Shared.Models
         public uint Id { get; set; }
 
         /// <summary>
+        /// Токен доступа
+        /// </summary>
+        [JsonProperty("token")]
+        public TokenModel Token { get; set; }
+        
+        /// <summary>
         /// Роль
         /// </summary>
         [JsonProperty("role")]
         public RoleModel Role { get; set; }
 
-
-        [JsonConstructor]
-        public AccountModel()
+        public AccountAuthorized()
         {
         }
 
-        public AccountModel(uint id, RoleModel role)
+        public AccountAuthorized(uint id, TokenModel token, RoleModel role)
         {
-            Id = id;
+            Token = token;
             Role = role;
+            Id = id;
         }
     }
 }

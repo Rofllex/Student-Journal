@@ -20,7 +20,7 @@ namespace KIRTStudentJournal.Controllers.API
 
         }
         
-        [Authorize()]
+        [Authorize]
         public IActionResult GetMe()
         {
             string login = User.Claims.FirstOrDefault(c => c.Type == Infrastructure.Jwt.DEFAULT_LOGIN_TYPE)?.Value;
