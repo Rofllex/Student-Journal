@@ -2,13 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,7 +16,8 @@ namespace Server
     public class Program
     {
         public static JToken Config { get; private set; }
-        public static void Main(string[] args)
+
+        static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             InitializeLogging();
@@ -50,7 +47,6 @@ namespace Server
             using (JournalDbContext dbContext = new Database.JournalDbContext())
             {
                 IEnumerable<string> rolesToCreate;
-
                 if (dbContext.Database.EnsureCreated())
                     rolesToCreate = Role.DefaultRoles;
                 else
