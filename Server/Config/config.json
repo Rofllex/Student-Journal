@@ -1,1 +1,5 @@
-﻿
+﻿{
+  "db": {
+    "connection_string": "Server=localhost; Database=studentjournal; Uid=root; Pwd=root"
+  }
+}
