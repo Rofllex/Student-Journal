@@ -17,13 +17,13 @@ namespace Server.Database
         /// </summary>
         [Required(AllowEmptyStrings = false)]
         public string FirstName { get; set; }
-        
+
         /// <summary>
         /// Фамилия
         /// </summary>
         [Required(AllowEmptyStrings = false)]
         public string Surname { get; set; }
-        
+
         /// <summary>
         /// Отчество
         /// </summary>
@@ -34,7 +34,7 @@ namespace Server.Database
         /// </summary>
         [Required(AllowEmptyStrings = false)]
         public string Login { get; set; }
-        
+
         /// <summary>
         /// Хэш пароля
         /// </summary>
