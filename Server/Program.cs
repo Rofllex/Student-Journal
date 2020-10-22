@@ -44,7 +44,7 @@ namespace Server
         {
             string connectionString = Config["db"]["connection_string"].ToObject<string>();
             JournalDbContext.SetConnectionString(connectionString);
-            using (JournalDbContext dbContext = new Database.JournalDbContext())
+            using (JournalDbContext dbContext = JournalDbContext.CreateContext())
             {
                 IEnumerable<string> rolesToCreate;
                 if (dbContext.Database.EnsureCreated())

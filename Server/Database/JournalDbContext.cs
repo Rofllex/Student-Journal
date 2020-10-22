@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using System;
+
 namespace Server.Database
 {
     /// <summary>
@@ -10,11 +12,16 @@ namespace Server.Database
     public class JournalDbContext : DbContext
     {
         public virtual DbSet<User> Users { get; set; }
+        
         public virtual DbSet<Role> Roles { get; set; }
+        
         public virtual DbSet<UserToRole> UsersToRoles { get; set; }
 
-        public JournalDbContext()
+
+        private readonly string _connectionString;
+        private JournalDbContext(string connectionString)
         {
+            _connectionString = connectionString;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseMySQL(_connectionString);
@@ -34,10 +41,10 @@ namespace Server.Database
         }
 
 
-        private static string _connectionString = string.Empty;
-        public static void SetConnectionString(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
+        public static void SetConnectionString(string connectionString) => _createJournalDbContext = () => new JournalDbContext(connectionString); 
+        
+
+        private static Func<JournalDbContext> _createJournalDbContext = () => { throw new InvalidOperationException("Подключение к базе данных не настроено"); };
+        public static JournalDbContext CreateContext() => _createJournalDbContext(); 
     }
 }
