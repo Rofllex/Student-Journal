@@ -17,6 +17,13 @@ namespace Server.Database
         
         public virtual DbSet<UserToRole> UsersToRoles { get; set; }
 
+        public virtual DbSet<Rating> Ratings { get; set; }
+
+        public virtual DbSet<Specialty> Specialties { get; set; }
+
+        public virtual DbSet<StudentGroup> Groups { get; set; }
+
+        public virtual DbSet<TimetableDay> TimetableDays { get; set; }
 
         private readonly string _connectionString;
         private JournalDbContext(string connectionString)

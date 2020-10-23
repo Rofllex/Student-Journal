@@ -40,4 +40,7 @@ namespace Server.Database
             Name = name;
         }
     }
+
+    
+    
 }
