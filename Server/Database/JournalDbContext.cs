@@ -24,6 +24,7 @@ namespace Server.Database
         public virtual DbSet<StudentGroup> Groups { get; set; }
 
         public virtual DbSet<TimetableDay> TimetableDays { get; set; }
+        
 
         private readonly string _connectionString;
         private JournalDbContext(string connectionString)
@@ -34,6 +35,11 @@ namespace Server.Database
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseMySQL(_connectionString);
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            ManyToManyForUserToRole(modelBuilder);    
+        }
+
+        private void ManyToManyForUserToRole(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserToRole>()
                 .HasKey(u => new { u.UserId, u.RoleId });
