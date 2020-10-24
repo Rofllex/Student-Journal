@@ -2,44 +2,48 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 
 
 namespace Server.Database
 {
-    public class Timetable
-    {
-        [Required]
-        public User ApprovedBy { get; set; }
-        [Required]
-        public StudentGroup Group { get; set; }
-        [Required]
-        public DateTime Date { get; set; }
-
-    }
-
+    /// <summary>
+    /// Дань расписания.
+    /// </summary>
     public class TimetableDay
     {
+        /// <summary>
+        /// Идентификатор дня.ы
+        /// </summary>
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        /// <summary>
+        /// Кем утверждено.
+        /// </summary>
         [Required]
         public User ApprovedBy { get; set; }
+        
+        /// <summary>
+        /// Расписание на день.
+        /// </summary>
         [Required]
         public DateTime Date { get; set; }
 
+        /// <summary>
+        /// Предметы.
+        /// </summary>
         public ICollection<TimetableDaySubject> Subjects { get; set; }
-    }
 
-    public class TimetableDaySubject
-    {
-        [Key, Required]
-        public byte SubjectIndex { get; set; }
-        [Key, Required]
-        public Subject Subject { get; set; }
-        [Key]
-        public TimetableDay Day { get; set; }
+
+        /// <summary>
+        /// Если расписание было изменено
+        /// </summary>
+        public bool IsChanged { get; set; } = false;
+
+        /// <summary>
+        /// Дата изменения
+        /// </summary>
+        public DateTime? ChangeDate { get; set; } = DateTime.MinValue;
     }
 }
