@@ -1,8 +1,8 @@
 ﻿<Application x:Class="Win_client.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Win_client"
-             StartupUri="MainWindow.xaml">
+             xmlns:local="clr-namespace:Win_client.Windows"
+             StartupUri="Windows/MainWindow.xaml">
     <Application.Resources>
          
     </Application.Resources>
