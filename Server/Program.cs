@@ -61,8 +61,26 @@ namespace Server
                             Role role = new Role(roleName);
                             dbContext.Roles.Add(role);
                         } while (enumerator.MoveNext());
-                        dbContext.SaveChanges();
                     }
+                    dbContext.SaveChanges();
+                }
+                if (dbContext.Users.FirstOrDefault(u => u.Login == "admin") == default)
+                {
+                    User user = new User
+                    {
+                        FirstName = "admin",
+                        Surname = "admin",
+                        Login = "admin",
+                        PasswordHash = Security.Hash.GetString("admin"),
+                        PasswordChanged = DateTime.Now
+                    };
+                    dbContext.Users.Add(user);
+                    user.UserRole.Add(new UserToRole
+                    {
+                        Role = dbContext.Roles.First(r => r.Name == Role.ADMIN_ROLE_NAME),
+                        User = user
+                    });
+                    dbContext.SaveChanges();
                 }
             }
             Logging.Logger.Instance.Info("База данных инициализирована");
