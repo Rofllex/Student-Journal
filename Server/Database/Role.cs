@@ -9,10 +9,11 @@ namespace Server.Database
     /// </summary>
     public class Role
     {
+        public const string ADMIN_ROLE_NAME = "Admin";
         /// <summary>
         /// Роли по умолчанию.
         /// </summary>
-        public static IReadOnlyCollection<string> DefaultRoles = new string[] { "Student", "Teacher", "Curator", "SysAdmin" };
+        public static IReadOnlyCollection<string> DefaultRoles = new string[] { ADMIN_ROLE_NAME, "Student", "Teacher", "Curator" };
 
         /// <summary>
         /// Идентификатор роли.
