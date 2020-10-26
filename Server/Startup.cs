@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using Server.Database;
 using Server.Security;
 
 namespace Server
@@ -31,7 +33,7 @@ namespace Server
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.RequireHttpsMetadata = true;
+                    options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -43,11 +45,12 @@ namespace Server
                         ValidateIssuerSigningKey = true
                     };
                 });
-            services.AddRazorPages();
-            services.AddMvc(s => 
+            //services.AddRazorPages();
+            services.AddMvc(s =>
             {
                 s.EnableEndpointRouting = false;
             });
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,6 +66,9 @@ namespace Server
                 app.UseHsts();
             }
 
+            app.UseAuthorization();
+            app.UseAuthentication();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -73,7 +79,6 @@ namespace Server
                     template: "/{controller=View}/{action=Index}/");
             });
 
-            app.UseAuthorization();
 
             //app.UseEndpoints(endpoints =>
             //{
