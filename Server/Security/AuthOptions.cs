@@ -26,7 +26,7 @@ namespace Server.Security
         public static readonly TimeSpan LIFETIME = new TimeSpan(1, 0, 0);
 
 
-        private const string KEY = "testkey";
+        private const string KEY = "8ih0w03dk0s5in697mpw5ombjt92z9ho";
         public static SymmetricSecurityKey GetSymmetricSecurityKey() => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(KEY));
     }
 }
