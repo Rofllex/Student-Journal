@@ -49,10 +49,23 @@ namespace Server.Controllers
         }
 
         [Authorize]
-        public IActionResult ChangePassword([FromQuery(Name = "newPassword")] string newPassword)
+        public async Task<IActionResult> ChangePassword([FromQuery(Name = "oldPassword")] string oldPassword, [FromQuery(Name = "newPassword")] string newPassword)
         {
-            var user = User;
-            return Content("not implemented");
+            if (!string.IsNullOrWhiteSpace(oldPassword) 
+                && !string.IsNullOrWhiteSpace(newPassword)
+                && oldPassword != newPassword)
+            {
+                Claim loginClaim = User.Claims.First(c => c.Type == Security.TokenOptions.NAME_TYPE);
+                User user = dbContext.Users.First(u => u.Login == loginClaim.Value);
+                user.PasswordHash = Security.Hash.GetString(newPassword);
+                user.PasswordChanged = DateTime.Now;
+                await dbContext.SaveChangesAsync();
+                return JWTActionResult(GenerateJWT(user, out DateTime expireDate), expireDate);
+            }
+            else
+            {
+                return Content("Неверные входые параметры");
+            }
         }
 
         private User AuthenticateUser(string login, string password)
@@ -67,7 +80,7 @@ namespace Server.Controllers
             return user;
         }
 
-        private string GenerateJWT(User user)
+        private string GenerateJWT(User user, out DateTime expireDate)
         {
             
             List<Claim> claims = new List<Claim>() { new Claim(Security.TokenOptions.NAME_TYPE, user.Login) };
@@ -84,9 +97,20 @@ namespace Server.Controllers
                 audience: Security.AuthOptions.AUDIENCE,
                 claims: claimsIdentity.Claims,
                 notBefore: DateTime.Now,
-                expires: DateTime.Now.Add(Security.AuthOptions.LIFETIME),
+                expires: (expireDate = DateTime.Now.Add(Security.AuthOptions.LIFETIME)),
                 signingCredentials: new SigningCredentials(key: Security.AuthOptions.GetSymmetricSecurityKey(), algorithm: SecurityAlgorithms.HmacSha256));
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+    
+        private IActionResult JWTActionResult(string token, DateTime expireDate)
+        {
+            return Json(new
+            {
+                token,
+                expire = expireDate
+            });
+        }
+    
+        private IActionResult GenerateJWTAndActionResult(User user, out string token) => JWTActionResult((token = GenerateJWT(user, out DateTime expireDate)), expireDate);
     }
 }
