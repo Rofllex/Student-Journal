@@ -51,7 +51,7 @@ namespace Server.Database
         /// <summary>
         /// Дата смены пароля.
         /// </summary>
-        [Required(AllowEmptyStrings = false)]
+        [Required]
         public DateTime PasswordChanged { get; set; }
 
         public virtual List<UserToRole> UserRole { get; set; } = new List<UserToRole>(); 
