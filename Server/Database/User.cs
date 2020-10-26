@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.RegularExpressions;
 
 namespace Server.Database
 {
@@ -31,33 +31,41 @@ namespace Server.Database
         public string LastName { get; set; }
 
         /// <summary>
+        /// Номер телефона.
+        /// </summary>
+        public string PhoneNumber { get; set; }
+
+        /// <summary>
         /// Логин
         /// </summary>
-        [Required(AllowEmptyStrings = false)]
+        [Required(AllowEmptyStrings = false), MinLength(5)]
         public string Login { get; set; }
 
         /// <summary>
-        /// Хэш пароля
+        /// Хэш пароля.
+        /// Не может быть null.
         /// </summary>
-        [MaxLength(length: 64)]
+        [Required(AllowEmptyStrings = false)]
         public string PasswordHash { get; set; }
 
         /// <summary>
-        /// Связь многие-ко-многим с ролями.
+        /// Дата смены пароля.
         /// </summary>
-        public List<UserToRole> UserRole { get; set; } = new List<UserToRole>();
+        public DateTime PasswordChanged { get; set; }
+
+        public virtual List<UserToRole> UserRole { get; set; } = new List<UserToRole>(); 
 
         public User()
         {
         }
 
-        public User(string firstName, string surname, string lastName, string login, string passwordHash = "")
+        public User(string firstName, string surname, string login, string passwordHash)
         {
             FirstName = firstName;
             Surname = surname;
-            LastName = lastName;
             Login = login;
             PasswordHash = passwordHash;
+            PasswordChanged = DateTime.Now;
         }
     }
 }
