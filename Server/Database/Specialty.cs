@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 
 namespace Server.Database
 {
     /// <summary>
     /// Специальность
     /// </summary>
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public class Specialty
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -23,7 +25,7 @@ namespace Server.Database
         /// Максимальный курс
         /// </summary>
         [Required]
-        public byte MaxCourse { get; set; }
+        public int MaxCourse { get; set; }
 
         public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
 
@@ -36,5 +38,7 @@ namespace Server.Database
         {
 
         }
+
+        private string GetDebuggerDisplay() => $"Specialty: {Id} \"{Name}\"";
     }
 }
