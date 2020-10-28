@@ -34,16 +34,22 @@ namespace Server.Database
         [Required]
         public User User { get; set; }
 
+        /// <summary>
+        /// Причина выставления оценки
+        /// </summary>
+        public string Reason { get; set; }
+
         public Rating()
         {
         }
 
-        public Rating(Subject subject, User user, RatingLevel level, DateTime? timestamp = null)
+        public Rating(Subject subject, User user, RatingLevel level, DateTime? timestamp = null, string reason = null)
         {
             Subject = subject;
             User = user;
             Level = level;
             Timestamp = timestamp.HasValue ? timestamp.Value : DateTime.Now;
+            Reason = reason;
         }
     }
 
