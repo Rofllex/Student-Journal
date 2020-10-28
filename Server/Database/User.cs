@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 
 namespace Server.Database
 {
     /// <summary>
     /// Модель пользователя в БД.
     /// </summary>
+    [DebuggerDisplay("User - {Id} {Login} {FirstName} {Surname} {LastName}")]
     public class User
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -53,6 +55,11 @@ namespace Server.Database
         /// </summary>
         [Required]
         public DateTime PasswordChanged { get; set; }
+
+        /// <summary>
+        /// Токен обновления для токена.
+        /// </summary>
+        public string RefreshToken { get; set; }
 
         public virtual List<UserToRole> UserRole { get; set; } = new List<UserToRole>(); 
 
