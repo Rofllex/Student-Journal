@@ -91,7 +91,7 @@ namespace Server.Controllers
         /// <returns></returns>
         private User GetUserFromClaims()
         {
-            Claim loginClaim = User.Claims.FirstOrDefault(c => c.Type == Security.TokenOptions.NAME_TYPE);
+            Claim loginClaim = User.Claims.FirstOrDefault(c => c.Type == Security.JwtTokenOptions.NAME_TYPE);
             Debug.Assert(loginClaim != null);
             return dbContext.Users.First(u => u.Login == loginClaim.Value);
         }
@@ -119,21 +119,21 @@ namespace Server.Controllers
         /// <param name="expireDate">Дата истечения токена</param>
         private string GenerateJWT(User user, out DateTime expireDate)
         {
-            List<Claim> claims = new List<Claim>() { new Claim(Security.TokenOptions.NAME_TYPE, user.Login) };
+            List<Claim> claims = new List<Claim>() { new Claim(Security.JwtTokenOptions.NAME_TYPE, user.Login) };
             UserToRole[] userToRoles = dbContext.UsersToRoles.Where(u => u.UserId == user.Id).ToArray();
             foreach (var role in userToRoles)
                 claims.Add(new Claim("role", dbContext.Roles.First(r => r.Id == role.RoleId).Name));
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(
                 claims: claims,
                 authenticationType: "Token",
-                nameType: Security.TokenOptions.NAME_TYPE,
-                roleType: Security.TokenOptions.ROLE_TYPE);
+                nameType: Security.JwtTokenOptions.NAME_TYPE,
+                roleType: Security.JwtTokenOptions.ROLE_TYPE);
             JwtSecurityToken token = new JwtSecurityToken(
                 issuer: Security.AuthOptions.ISSUER,
                 audience: Security.AuthOptions.AUDIENCE,
                 claims: claimsIdentity.Claims,
                 notBefore: DateTime.Now,
-                expires: (expireDate = DateTime.Now.Add(Security.AuthOptions.TOKEN_LIFETIME)),
+                expires: (expireDate = DateTime.Now.Add(Security.AuthOptions.JWT_TOKEN_LIFETIME)),
                 signingCredentials: new SigningCredentials(key: Security.AuthOptions.GetSymmetricSecurityKey(), algorithm: SecurityAlgorithms.HmacSha256));
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
@@ -146,7 +146,7 @@ namespace Server.Controllers
         /// <param name="refreshTokenExpire">Дата истечения токена</param>
         private string GenerateRefreshToken(User user, string token, out DateTime refreshTokenExpire) 
         {
-            refreshTokenExpire = DateTime.Now.Add(Security.AuthOptions.REFRESH_TOKEN_LIFETIME);
+            refreshTokenExpire = DateTime.Now.Add(Security.AuthOptions.JWT_REFRESH_TOKEN_LIFETIME);
             return Security.Hash.GetString(string.Concat(token.Substring(token.Length - 16, 16), ".", user.Login));
         }
 

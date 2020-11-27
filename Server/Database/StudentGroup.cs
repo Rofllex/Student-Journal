@@ -28,6 +28,11 @@ namespace Server.Database
         /// </summary>
         public int CurrentCource { get; set; }
 
+        /// <summary>
+        /// Подгруппа.
+        /// </summary>
+        public int Subgroup { get; set; }
+
         public ICollection<Student> Students { get; set; } = new List<Student>();
         
 

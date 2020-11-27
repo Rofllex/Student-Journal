@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using MySql.Data.EntityFrameworkCore.Extensions;
+
 using System;
 
 namespace Server.Database
@@ -24,6 +26,8 @@ namespace Server.Database
         public virtual DbSet<StudentGroup> Groups { get; set; }
 
         public virtual DbSet<TimetableDay> TimetableDays { get; set; }
+
+        public virtual DbSet<Subject> Subjects { get; set; }
         
 
         private readonly string _connectionString;
@@ -32,12 +36,10 @@ namespace Server.Database
             _connectionString = connectionString;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseMySQL(_connectionString);
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            ManyToManyForUserToRole(modelBuilder);    
-        }
+        protected override void OnConfiguring( DbContextOptionsBuilder optionsBuilder ) => optionsBuilder.UseMySQL( _connectionString );
+        
+        protected override void OnModelCreating(ModelBuilder modelBuilder) => ManyToManyForUserToRole(modelBuilder);    
+        
 
         private void ManyToManyForUserToRole(ModelBuilder modelBuilder)
         {
@@ -54,10 +56,13 @@ namespace Server.Database
         }
 
 
+        #region public static
+        
         public static void SetConnectionString(string connectionString) => _createJournalDbContext = () => new JournalDbContext(connectionString); 
         
-
         private static Func<JournalDbContext> _createJournalDbContext = () => { throw new InvalidOperationException("Подключение к базе данных не настроено"); };
-        public static JournalDbContext CreateContext() => _createJournalDbContext(); 
+        public static JournalDbContext CreateContext() => _createJournalDbContext();
+        
+        #endregion
     }
 }

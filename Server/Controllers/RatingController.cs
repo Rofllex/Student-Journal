@@ -22,7 +22,7 @@ namespace Server.Controllers
             dbContext = JournalDbContext.CreateContext();
         }
 
-        
+        //public IActionResult PasteRating()
         
     }
 }

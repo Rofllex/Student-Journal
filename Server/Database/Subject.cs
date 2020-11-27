@@ -8,7 +8,9 @@ namespace Server.Database
     /// </summary>
     public class Subject
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key
+            , DatabaseGenerated(DatabaseGeneratedOption.Identity)
+            , Newtonsoft.Json.JsonIgnore]
         public int Id { get; set; }
 
         /// <summary>

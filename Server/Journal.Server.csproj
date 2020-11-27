@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="BuisnesLogick\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

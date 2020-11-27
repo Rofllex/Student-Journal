@@ -19,11 +19,18 @@ namespace Server.Security
         /// <summary>
         /// Время жизни токена
         /// </summary>
-        public static readonly TimeSpan TOKEN_LIFETIME = new TimeSpan(hours: 0, minutes: 15, seconds: 0);
+        public static readonly TimeSpan JWT_TOKEN_LIFETIME = new TimeSpan(hours: 0, minutes: 15, seconds: 0);
 
-        public static readonly TimeSpan REFRESH_TOKEN_LIFETIME = new TimeSpan(hours: 24, minutes: 0, seconds: 0);
+        /// <summary>
+        /// Время жизни токена обновления.
+        /// </summary>
+        public static readonly TimeSpan JWT_REFRESH_TOKEN_LIFETIME = new TimeSpan(hours: 24, minutes: 0, seconds: 0);
 
         private const string KEY = "8ih0w03dk0s5in697mpw5ombjt92z9ho";
+        /// <summary>
+        /// Получить симметричный ключ безопасности.
+        /// </summary>
+        /// <returns></returns>
         public static SymmetricSecurityKey GetSymmetricSecurityKey() => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(KEY));
     }
 }
