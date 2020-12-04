@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace Server.Database
 {
@@ -10,7 +11,7 @@ namespace Server.Database
     /// Модель пользователя в БД.
     /// </summary>
     [DebuggerDisplay("User - {Id} {Login} {FirstName} {Surname} {LastName}")]
-    public class User
+    public class User : Journal.Common.Entities.IUser
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -40,27 +41,34 @@ namespace Server.Database
         /// <summary>
         /// Логин
         /// </summary>
-        [Required(AllowEmptyStrings = false), MinLength(5)]
+        [Required(AllowEmptyStrings = false), 
+            MinLength(5), 
+            JsonIgnore]
+        
         public string Login { get; set; }
 
         /// <summary>
         /// Хэш пароля.
         /// Не может быть null.
         /// </summary>
-        [Required(AllowEmptyStrings = false)]
+        [Required(AllowEmptyStrings = false),
+            JsonIgnore]
         public string PasswordHash { get; set; }
 
         /// <summary>
         /// Дата смены пароля.
         /// </summary>
-        [Required]
+        [Required, 
+            JsonIgnore]
         public DateTime PasswordChanged { get; set; }
 
         /// <summary>
         /// Токен обновления для токена.
         /// </summary>
+        [JsonIgnore]
         public string RefreshToken { get; set; }
 
+        [JsonIgnore]
         public virtual List<UserToRole> UserRole { get; set; } = new List<UserToRole>(); 
 
         public User()

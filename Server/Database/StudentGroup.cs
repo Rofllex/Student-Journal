@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using Journal.Common.Entities;
+
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace Server.Database
 {
     /// <summary>
     /// Группа студентов.
     /// </summary>
-    public class StudentGroup
+    public class StudentGroup : IStudentGroup
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -26,15 +29,27 @@ namespace Server.Database
         /// <summary>
         /// Курс 
         /// </summary>
-        public int CurrentCource { get; set; }
+        public int CurrentCourse { get; set; }
 
         /// <summary>
         /// Подгруппа.
         /// </summary>
         public int Subgroup { get; set; }
 
-        public ICollection<Student> Students { get; set; } = new List<Student>();
-        
+        public IReadOnlyList<Student> Students { get; set; } = new List<Student>();
 
+        #region IStudentGroup implementation
+
+        IUser IStudentGroup.Curator => Curator;
+
+        ISpecialty IStudentGroup.Specialty => Specialty;
+
+        int IStudentGroup.CurrentCourse => CurrentCourse;
+
+        int IStudentGroup.Subgroup => Subgroup;
+
+        IReadOnlyList<IStudent> IStudentGroup.GetStudentsList() => Students;
+
+        #endregion
     }
 }

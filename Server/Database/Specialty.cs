@@ -15,7 +15,7 @@ namespace Server.Database
     /// </summary>
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")
         , MySqlCharset("utf8")]
-    public class Specialty
+    public class Specialty : Journal.Common.Entities.ISpecialty
     {
         [Key
             , DatabaseGenerated(DatabaseGeneratedOption.Identity)
