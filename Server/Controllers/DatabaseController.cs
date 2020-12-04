@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-using Server.Database;
+using Journal.Server.Database;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Server.Controllers
+namespace Journal.Server.Controllers
 {
     [ApiController
         , Route(Infrastructure.ApiControllersRouting.API_CONTROLLER_DEFAULT_ROUTE)
@@ -55,16 +55,14 @@ namespace Server.Controllers
                 && !string.IsNullOrWhiteSpace( code )
                 && maxCourse > 0 && maxCourse <= 4)
             {
-                var specialty = dbContext.Specialties.FirstOrDefault( s => s.Name == name || s.Code == code );
+                Specialty specialty = dbContext.Specialties.FirstOrDefault( s => s.Name == name || s.Code == code );
                 if (specialty == default)
                 {
                     specialty = new Specialty
                     {
                         Name = name
-                        ,
-                        Code = code
-                        ,
-                        MaxCourse = maxCourse
+                        , Code = code
+                        , MaxCourse = maxCourse
                     };
                     dbContext.Specialties.Add( specialty );
                     await dbContext.SaveChangesAsync( );

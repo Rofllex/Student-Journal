@@ -13,10 +13,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-using Server.Database;
-using Server.Security;
+using Journal.Server.Database;
+using Journal.Server.Security;
 
-namespace Server
+namespace Journal.Server
 {
     public class Startup
     {

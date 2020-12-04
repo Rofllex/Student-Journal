@@ -9,9 +9,9 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using Server.Database;
+using Journal.Server.Database;
 
-namespace Server
+namespace Journal.Server
 {
     public class Program
     {

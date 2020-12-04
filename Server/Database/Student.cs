@@ -1,6 +1,6 @@
 ﻿using Journal.Common.Entities;
 
-namespace Server.Database
+namespace Journal.Server.Database
 {
     /// <summary>
     /// Класс студента

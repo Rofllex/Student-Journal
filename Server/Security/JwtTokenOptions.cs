@@ -1,4 +1,4 @@
-﻿namespace Server.Security
+﻿namespace Journal.Server.Security
 {
     public static class JwtTokenOptions
     {

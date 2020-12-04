@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Server.Database
+namespace Journal.Server.Database
 {
     /// <summary>
     /// Оценка. 

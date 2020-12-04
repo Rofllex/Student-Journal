@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Server.Database
+namespace Journal.Server.Database
 {
     /// <summary>
     /// Предмет.

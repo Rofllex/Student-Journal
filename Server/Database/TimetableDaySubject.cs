@@ -2,7 +2,7 @@
 
 
 
-namespace Server.Database
+namespace Journal.Server.Database
 {
     /// <summary>
     /// Связь субъекта с расписанием.

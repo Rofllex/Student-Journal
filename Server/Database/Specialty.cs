@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 
-namespace Server.Database
+namespace Journal.Server.Database
 {
     /// <summary>
     /// Специальность

@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace Server.Database
+namespace Journal.Server.Database
 {
     /// <summary>
     /// Класс родителя.

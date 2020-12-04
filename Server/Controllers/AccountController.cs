@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-using Server.Database;
+using Journal.Server.Database;
 
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Server.Controllers
+namespace Journal.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
@@ -38,9 +37,7 @@ namespace Server.Controllers
                     return CreateJWTActionResult(token, tokenExpire, refreshToken, refreshTokenExpire, user.UserRole.ConvertAll(u => u.Role.Name).ToArray());
                 }
                 else
-                {
                     return Unauthorized();
-                }
             });
         }
 

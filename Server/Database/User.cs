@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using Newtonsoft.Json;
 
-namespace Server.Database
+namespace Journal.Server.Database
 {
     /// <summary>
     /// Модель пользователя в БД.

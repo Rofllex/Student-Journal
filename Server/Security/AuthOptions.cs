@@ -2,7 +2,7 @@
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Server.Security
+namespace Journal.Server.Security
 {
     public static class AuthOptions
     {

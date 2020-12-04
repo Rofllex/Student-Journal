@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Server.Infrastructure
+namespace Journal.Server.Infrastructure
 {
     public static class ApiControllersRouting
     {

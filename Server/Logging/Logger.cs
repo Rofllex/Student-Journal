@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace Server.Logging
+namespace Journal.Server.Logging
 {
     public abstract class Logger
     {

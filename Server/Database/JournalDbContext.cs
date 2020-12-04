@@ -4,7 +4,7 @@ using MySql.Data.EntityFrameworkCore.Extensions;
 
 using System;
 
-namespace Server.Database
+namespace Journal.Server.Database
 {
     /// <summary>
     /// Контекст для подключения к базе данных.

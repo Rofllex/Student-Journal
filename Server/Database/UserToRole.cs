@@ -1,4 +1,4 @@
-﻿namespace Server.Database
+﻿namespace Journal.Server.Database
 {
     /// <summary>
     /// Дерьмо случается эта хуйня не поддерживает по умолчанию многие-ко-многим 
