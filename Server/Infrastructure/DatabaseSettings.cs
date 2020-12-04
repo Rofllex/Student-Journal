@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Journal.Server.Infrastructure
+﻿namespace Journal.Server.Infrastructure
 {
+    /// <summary>
+    /// Настройки базы данных
+    /// </summary>
     public static class DatabaseSettings
     {
+        /// <summary>
+        /// Кодировка базы данных.
+        /// </summary>
         public const string DATABASE_CHARSET = "utf8";
     }
 }

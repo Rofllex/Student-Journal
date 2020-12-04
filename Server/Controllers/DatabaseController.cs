@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 using Journal.Server.Database;
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,7 +36,7 @@ namespace Journal.Server.Controllers
             }
             else
             {
-                return StatusCode( StatusCodes.Status400BadRequest , new Infrastructure.WrongParametersError( new Dictionary<string , string>
+                return StatusCode( StatusCodes.Status400BadRequest , new Common.Models.WrongParametersError( new Dictionary<string , string>
                 {
                     [nameof( count )] = count.ToString(),
                     [nameof( offset )] = offset.ToString()
@@ -69,21 +68,14 @@ namespace Journal.Server.Controllers
                     return Json( true );
                 }
                 else
-                {
-                    return Json( new Infrastructure.RequestError( )
-                    {
-                        Message = "Данная специальность уже присутствует в бд"
-                    } );
-                }
+                    return Json( new Common.Models.RequestError("Данная специальность уже присутствует в бд"));
             }
             else
             {
-                return StatusCode( StatusCodes.Status400BadRequest , new Infrastructure.WrongParametersError( new Dictionary<string , string>
+                return StatusCode( StatusCodes.Status400BadRequest , new Common.Models.WrongParametersError( new Dictionary<string , string>
                 {
-                    [nameof( name )] = name
-                    ,
-                    [nameof( code )] = code
-                    ,
+                    [nameof( name )] = name,
+                    [nameof( code )] = code,
                     [nameof( maxCourse )] = maxCourse.ToString( )
                 } ) );
             }
@@ -102,7 +94,7 @@ namespace Journal.Server.Controllers
             }
             else
             {
-                return StatusCode( StatusCodes.Status400BadRequest , new Infrastructure.WrongParametersError( new Dictionary<string , string>
+                return StatusCode( StatusCodes.Status400BadRequest , new Common.Models.WrongParametersError( new Dictionary<string , string>
                 {
                     [nameof( count )] = count.ToString( ) ,
                     [nameof( offset )] = offset.ToString( )
