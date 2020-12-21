@@ -12,6 +12,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
+#nullable enable
+
 namespace Journal.Server.Controllers
 {
     [ApiController]
@@ -29,12 +31,12 @@ namespace Journal.Server.Controllers
         {
             return Task.Run(() =>
             {
-                var user = AuthenticateUser(login, password);
-                if (user != default)
+                User? user = _AuthenticateUser(login, password);
+                if (user != null)
                 {
-                    string token = GenerateJWT(user, out DateTime tokenExpire),
-                            refreshToken = GenerateRefreshToken(user, token, out DateTime refreshTokenExpire);
-                    return CreateJWTActionResult(token, tokenExpire, refreshToken, refreshTokenExpire, user.UserRole.ConvertAll(u => u.Role.Name).ToArray());
+                    string token = _GenerateJWT(user, out DateTime tokenExpire),
+                            refreshToken = _GenerateRefreshToken(user, token, out DateTime refreshTokenExpire);
+                    return _CreateJWTActionResult(token, tokenExpire, refreshToken, refreshTokenExpire, user.UserRole.ConvertAll(u => u.Role.Name).ToArray());
                 }
                 else
                     return Unauthorized();
@@ -48,13 +50,13 @@ namespace Journal.Server.Controllers
                 && !string.IsNullOrWhiteSpace(newPassword)
                 && oldPassword != newPassword)
             {
-                User user = GetUserFromClaims();
+                User user = _GetUserFromClaims();
                 user.PasswordHash = Security.Hash.GetString(newPassword);
                 user.PasswordChanged = DateTime.Now;
                 await dbContext.SaveChangesAsync();
-                string token = GenerateJWT(user, out DateTime tokenExpire),
-                        refreshToken = GenerateRefreshToken(user, token, out DateTime refreshTokenExpire);
-                return CreateJWTActionResult(token, tokenExpire, refreshToken, refreshTokenExpire, user.UserRole.ConvertAll(u => u.Role.Name).ToArray());    
+                string token = _GenerateJWT(user, out DateTime tokenExpire),
+                        refreshToken = _GenerateRefreshToken(user, token, out DateTime refreshTokenExpire);
+                return _CreateJWTActionResult(token, tokenExpire, refreshToken, refreshTokenExpire, user.UserRole.ConvertAll(u => u.Role.Name).ToArray());    
             }
             else
                 return Content("Неверные входые параметры");
@@ -65,12 +67,12 @@ namespace Journal.Server.Controllers
         {
             return Task.Run(() =>
             {
-                User user = GetUserFromClaims();
+                User user = _GetUserFromClaims();
                 if (user.RefreshToken == refToken)
                 {
-                    string token = GenerateJWT(user, out DateTime tokenExpire),
-                            refreshToken = GenerateRefreshToken(user, token, out DateTime refreshTokenExpire);
-                    return CreateJWTActionResult(token, tokenExpire, refreshToken, refreshTokenExpire, user.UserRole.ConvertAll(u => u.Role.Name).ToArray());
+                    string token = _GenerateJWT(user, out DateTime tokenExpire),
+                            refreshToken = _GenerateRefreshToken(user, token, out DateTime refreshTokenExpire);
+                    return _CreateJWTActionResult(token, tokenExpire, refreshToken, refreshTokenExpire, user.UserRole.ConvertAll(u => u.Role.Name).ToArray());
                 }
                 else
                 {
@@ -82,11 +84,15 @@ namespace Journal.Server.Controllers
             });
         }
 
+        private bool _IsUserAuthenticated()
+            => User.Claims.FirstOrDefault(c => c.Type == Security.JwtTokenOptions.NAME_TYPE) != default;
+        
+
         /// <summary>
         /// Метод получения пользователя из клаймов
+        /// Данный метод следует вызывать только когда у метода есть атрибут <see cref="AuthorizeAttribute"/> иначе ебнет, охуеешь
         /// </summary>
-        /// <returns></returns>
-        private User GetUserFromClaims()
+        private User _GetUserFromClaims()
         {
             Claim loginClaim = User.Claims.FirstOrDefault(c => c.Type == Security.JwtTokenOptions.NAME_TYPE);
             Debug.Assert(loginClaim != null);
@@ -101,7 +107,7 @@ namespace Journal.Server.Controllers
         /// <returns>
         /// Вернет null если пользователь не аутентифицирован
         /// </returns>
-        private User AuthenticateUser(string login, string password)
+        private User? _AuthenticateUser(string login, string password)
         {
             var user = dbContext.Users.FirstOrDefault(u => u.Login == login && u.PasswordHash == Security.Hash.GetString(password, System.Text.Encoding.UTF8));
             if (user != default)
@@ -114,7 +120,7 @@ namespace Journal.Server.Controllers
         /// </summary>
         /// <param name="user">Пользователь</param>
         /// <param name="expireDate">Дата истечения токена</param>
-        private string GenerateJWT(User user, out DateTime expireDate)
+        private string _GenerateJWT(User user, out DateTime expireDate)
         {
             List<Claim> claims = new List<Claim>() { new Claim(Security.JwtTokenOptions.NAME_TYPE, user.Login) };
             UserToRole[] userToRoles = dbContext.UsersToRoles.Where(u => u.UserId == user.Id).ToArray();
@@ -141,7 +147,7 @@ namespace Journal.Server.Controllers
         /// <param name="user">Пользователь</param>
         /// <param name="token">Основной JWT токен</param>
         /// <param name="refreshTokenExpire">Дата истечения токена</param>
-        private string GenerateRefreshToken(User user, string token, out DateTime refreshTokenExpire) 
+        private string _GenerateRefreshToken(User user, string token, out DateTime refreshTokenExpire) 
         {
             refreshTokenExpire = DateTime.Now.Add(Security.AuthOptions.JWT_REFRESH_TOKEN_LIFETIME);
             return Security.Hash.GetString(string.Concat(token.Substring(token.Length - 16, 16), ".", user.Login));
@@ -156,7 +162,7 @@ namespace Journal.Server.Controllers
         /// <param name="refreshTokenExpire"></param>
         /// <param name="roles"></param>
         /// <returns></returns>
-        private IActionResult CreateJWTActionResult(string token, DateTime tokenExpire, string refreshToken, DateTime refreshTokenExpire, string[] roles)
+        private IActionResult _CreateJWTActionResult(string token, DateTime tokenExpire, string refreshToken, DateTime refreshTokenExpire, string[] roles)
             => Json(new
             {
                 token,
