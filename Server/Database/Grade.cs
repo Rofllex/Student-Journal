@@ -1,12 +1,16 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
+using Journal.Common.Entities;
+
+#nullable enable
+
 namespace Journal.Server.Database
 {
     /// <summary>
     /// Оценка. 
     /// </summary>
-    public class Rating
+    public class Grade : IGrade
     {
         public int Id { get; set; }
 
@@ -20,7 +24,7 @@ namespace Journal.Server.Database
         /// Уровень оценки
         /// </summary>
         [Required]
-        public RatingLevel Level { get; set; }
+        public GradeLevel GradeLevel { get; set; }
 
         /// <summary>
         /// Объект за который была выставлена оценка
@@ -32,59 +36,36 @@ namespace Journal.Server.Database
         /// Студент которому была выставлена оценка.
         /// </summary>
         [Required]
-        public User User { get; set; }
+        public Student Student { get; set; }
 
         /// <summary>
         /// Причина выставления оценки
         /// </summary>
-        public string Reason { get; set; }
+        public string? Reason { get; set; }
 
-        public Rating()
+        /// <summary>
+        /// Преподаватель который выставил оценку.
+        /// </summary>
+        public Teacher RatedBy { get; set; }
+
+        ITeacher IGrade.RatedBy => RatedBy;
+
+        ISubject IGrade.Subject => Subject;
+
+        IStudent IGrade.Student => Student;
+
+        public Grade()
         {
         }
 
-        public Rating(Subject subject, User user, RatingLevel level, DateTime? timestamp = null, string reason = null)
+        public Grade(Teacher ratedBy, Subject subject, Student student, GradeLevel level, DateTime? timestamp = null, string? reason = null)
         {
+            RatedBy = ratedBy;
             Subject = subject;
-            User = user;
-            Level = level;
+            Student = student;
+            GradeLevel = level;
             Timestamp = timestamp.HasValue ? timestamp.Value : DateTime.Now;
             Reason = reason;
         }
-    }
-
-    /// <summary>
-    /// Оценка. 
-    /// </summary>
-    public enum RatingLevel
-    {
-        /// <summary>
-        /// НБ
-        /// </summary>
-        Miss,
-        /// <summary>
-        /// Зачет
-        /// </summary>
-        Offset,
-        /// <summary>
-        /// Незачет
-        /// </summary>
-        Fail,
-        /// <summary>
-        /// Два
-        /// </summary>
-        Two,
-        /// <summary>
-        /// Три
-        /// </summary>
-        Three,
-        /// <summary>
-        /// Четыре
-        /// </summary>
-        Four,
-        /// <summary>
-        /// Пять
-        /// </summary>
-        Five
     }
 }

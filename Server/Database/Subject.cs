@@ -1,12 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using Journal.Common.Entities;
+
 namespace Journal.Server.Database
 {
     /// <summary>
     /// Предмет.
     /// </summary>
-    public class Subject
+    public class Subject : ISubject
     {
         [Key
             , DatabaseGenerated(DatabaseGeneratedOption.Identity)
@@ -24,5 +26,7 @@ namespace Journal.Server.Database
         /// </summary>
         [Required]
         public Specialty Specialty { get; set; }
+
+        ISpecialty ISubject.Specialty => Specialty;
     }
 }

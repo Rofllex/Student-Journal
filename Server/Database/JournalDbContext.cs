@@ -19,7 +19,7 @@ namespace Journal.Server.Database
         
         public virtual DbSet<UserToRole> UsersToRoles { get; set; }
 
-        public virtual DbSet<Rating> Ratings { get; set; }
+        public virtual DbSet<Grade> Ratings { get; set; }
 
         public virtual DbSet<Specialty> Specialties { get; set; }
 
