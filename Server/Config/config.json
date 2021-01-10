@@ -1,4 +1,5 @@
 ﻿{
+  "pause":  false,
   "db": {
     "connection_string": "Server=localhost; Database=studentjournal; Uid=root; Pwd=root; CharSet=utf8"
   }
