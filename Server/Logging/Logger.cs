@@ -8,6 +8,11 @@ namespace Journal.Server.Logging
 {
     public interface ILogger
     {
+        /// <summary>
+        /// Отладочный лог. Можно оставить пустым, если сборка Release.
+        /// </summary>
+        /// <param name="message"></param>
+        void Debug(string message);
         void Info(string message);
         void Warning(string message);
         void Warning(Exception e);
@@ -21,6 +26,7 @@ namespace Journal.Server.Logging
 
     public abstract class Logger : ILogger
     {
+        public abstract void Debug(string message);
         public abstract void Info(string message);
         public abstract void Warning(string message);
         public abstract void Warning(Exception e);
@@ -37,12 +43,15 @@ namespace Journal.Server.Logging
             if (Instance == null)
                 Instance = instance;
         }
+
     }
 
-
+    /// <summary>
+    /// Класс записи логов в консоль.
+    /// </summary>
     public class ConsoleLogger : Logger
     {
-        protected readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1);
+        public override void Debug(string message) => Log("Debug", message, ConsoleColor.Cyan);
 
         public override void Cause(Exception e) => Cause(e.ToString());
 
@@ -61,6 +70,11 @@ namespace Journal.Server.Logging
         public override void Warning(string message) => Log("Warning", message, ConsoleColor.Yellow);
 
         public override void Warning(Exception e) => Warning(e.ToString());
+
+        /// <summary>
+        /// Семафор синхронизации доступа к классу <see cref="Console"/>
+        /// </summary>
+        protected static readonly SemaphoreSlim Semaphore = new SemaphoreSlim(1);
 
         protected virtual void Log(string prefix, string text, ConsoleColor prefixTextColor)
         {
@@ -84,7 +98,6 @@ namespace Journal.Server.Logging
     /// </summary>
     public class StreamWriterLogger : ConsoleLogger
     {
-        
         public StreamWriterLogger(StreamWriter sw)
         {
             _sw = sw ?? throw new ArgumentNullException(nameof(sw));
@@ -95,7 +108,7 @@ namespace Journal.Server.Logging
             Semaphore.Wait();
 
             _sw.WriteLine($"{DateTime.Now:G} [{prefix}] {text}");
-
+            
             Semaphore.Release();
         }
 
@@ -104,6 +117,7 @@ namespace Journal.Server.Logging
 
     /// <summary>
     /// Комбинированный логгер.
+    /// Прослойка для возможности использования нескольких логгеров.
     /// Наследуется от <see cref="Logger"/>
     /// </summary>
     public class CombinedLogger : ILogger
@@ -123,16 +137,17 @@ namespace Journal.Server.Logging
         public CombinedLogger(IEnumerable<ILogger> loggersEnumerable) : this (loggersEnumerable.ToArray())
         {
         }
-        
-        public void Cause(Exception e)         => _OnLog(l => l.Cause(e));
-        public void Cause(string message)      => _OnLog(l => l.Cause(message));
-        public void Error(string message)      => _OnLog(l => l.Error(message));
-        public void Error(Exception e)         => _OnLog(l => l.Error(e));
-        public void Fatal(string message)      => _OnLog(l => l.Fatal(message));
-        public void Fatal(Exception e)         => _OnLog(l => l.Fatal(e));
-        public void Info(string message)       => _OnLog(l => l.Info(message));
-        public void Warning(string message)    => _OnLog(l => l.Warning(message));
-        public void Warning(Exception e)       => _OnLog(l => l.Warning(e));
+
+        public void Debug(string message)       => _OnLog(l => l.Debug(message));
+        public void Cause(Exception e)          => _OnLog(l => l.Cause(e));
+        public void Cause(string message)       => _OnLog(l => l.Cause(message));
+        public void Error(string message)       => _OnLog(l => l.Error(message));
+        public void Error(Exception e)          => _OnLog(l => l.Error(e));
+        public void Fatal(string message)       => _OnLog(l => l.Fatal(message));
+        public void Fatal(Exception e)          => _OnLog(l => l.Fatal(e));
+        public void Info(string message)        => _OnLog(l => l.Info(message));
+        public void Warning(string message)     => _OnLog(l => l.Warning(message));
+        public void Warning(Exception e)        => _OnLog(l => l.Warning(e));
 
         
         private readonly ILogger[] _loggers;
