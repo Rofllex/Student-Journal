@@ -10,11 +10,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{7FF32EA5-076E-4D78-AC80-3FDC80E51526}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.Server.Test", "Test\Journal.Server.Test.csproj", "{7FF32EA5-076E-4D78-AC80-3FDC80E51526}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.WinClient", "Journal.WinClient\Journal.WinClient.csproj", "{BF01821F-639A-4CBA-AD7D-61C2180CF341}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Journal.Common", "Journal.Common\Journal.Common.csproj", "{9684E4A2-205D-4785-B0BB-0B660E27B3B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.Common", "Journal.Common\Journal.Common.csproj", "{9684E4A2-205D-4785-B0BB-0B660E27B3B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.ClientLib", "Journal.ClientLib\Journal.ClientLib.csproj", "{0A533F84-1F9F-4425-B7C2-3AD21EB252F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{9684E4A2-205D-4785-B0BB-0B660E27B3B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9684E4A2-205D-4785-B0BB-0B660E27B3B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9684E4A2-205D-4785-B0BB-0B660E27B3B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A533F84-1F9F-4425-B7C2-3AD21EB252F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A533F84-1F9F-4425-B7C2-3AD21EB252F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A533F84-1F9F-4425-B7C2-3AD21EB252F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A533F84-1F9F-4425-B7C2-3AD21EB252F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -64,8 +64,19 @@ namespace Journal.Server.Controllers
                         , MaxCourse = maxCourse
                     };
                     dbContext.Specialties.Add( specialty );
-                    await dbContext.SaveChangesAsync( );
-                    return Json( true );
+
+                    try
+                    {
+                        await dbContext.SaveChangesAsync();
+                    }
+                    catch (System.Exception e)
+                    {
+                        var logInstance = Logging.Logger.Instance;
+                        logInstance.Error($"{nameof(DatabaseController)}.{nameof(CreateSpecialty)} Ошибка добавления специальности в бд.\n" + e);
+                        return StatusCode(StatusCodes.Status500InternalServerError);
+                    }
+
+                    return Json(specialty);
                 }
                 else
                     return Json( new Common.Models.RequestError("Данная специальность уже присутствует в бд"));

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
+
+using Journal.Common.Entities;
+
 using Newtonsoft.Json;
 
 namespace Journal.Server.Database
@@ -10,10 +13,11 @@ namespace Journal.Server.Database
     /// <summary>
     /// Модель пользователя в БД.
     /// </summary>
-    [DebuggerDisplay("User - {Id} {Login} {FirstName} {Surname} {LastName}")]
-    public class User : Journal.Common.Entities.IUser
+    [DebuggerDisplay("User - {Id} {Login} {Role} {FirstName} {Surname} {LastName}")]
+    public class User : IUser
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key
+            , DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         /// <summary>
@@ -51,9 +55,15 @@ namespace Journal.Server.Database
         /// Хэш пароля.
         /// Не может быть null.
         /// </summary>
-        [Required(AllowEmptyStrings = false),
-            JsonIgnore]
+        [Required(AllowEmptyStrings = false)
+            , JsonIgnore]
         public string PasswordHash { get; set; }
+
+        /// <summary>
+        /// Токен обновления.
+        /// </summary>
+        [JsonIgnore]
+        public string RefreshToken { get; set; }
 
         /// <summary>
         /// Дата смены пароля.
@@ -63,25 +73,31 @@ namespace Journal.Server.Database
         public DateTime PasswordChanged { get; set; }
 
         /// <summary>
-        /// Токен обновления для токена.
+        /// Роль пользователя.
+        /// По умолчанию <see cref="UserRole.Guest"/>
         /// </summary>
-        [JsonIgnore]
-        public string RefreshToken { get; set; }
+        [Required]
+        public UserRole? URole { get; set; }
 
-        [JsonIgnore]
-        public virtual List<UserToRole> UserRole { get; set; } = new List<UserToRole>(); 
+        [NotMapped]
+        UserRole IUser.Role { get => URole.Value; }
 
+        
         public User()
         {
         }
 
-        public User(string firstName, string surname, string login, string passwordHash)
+        public User(string firstName, string surname, string login, string passwordHash, UserRole role)
         {
             FirstName = firstName;
             Surname = surname;
             Login = login;
             PasswordHash = passwordHash;
             PasswordChanged = DateTime.Now;
+            URole = role;
         }
+
+        public bool IsInRole(UserRole role) 
+            => URole.HasValue ? URole.Value.HasFlag(role) : false;
     }
 }

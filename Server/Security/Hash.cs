@@ -16,7 +16,7 @@ namespace Journal.Server.Security
         /// Получить хэш строку из входной строки.
         /// </summary>
         /// <param name="encoding">Кодировка строки. Если равна null, то будет использована <see cref="Encoding.UTF8"/></param>
-        public static string GetString(string inputString, Encoding encoding = null)
+        public static string GetFromString(string inputString, Encoding encoding = null)
         {
             byte[] bytes = Get(encoding?.GetBytes(inputString) ?? Encoding.UTF8.GetBytes(inputString));
             StringBuilder sb = new StringBuilder();

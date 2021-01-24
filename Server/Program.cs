@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Journal.Server.Database;
+using Journal.Server.Logging;
 
 namespace Journal.Server
 {
@@ -17,20 +19,59 @@ namespace Journal.Server
     {
         public static JToken Config { get; private set; }
 
+        public static readonly string ExecutableDirectory = ExecutableDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        static Program() 
+        {
+        }
+
         static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            InitializeLogging();
-            LoadConfig();
-            InitializeDatabase();
-            
+            _InitializeLogging();
+            ILogger logger = Logger.Instance;
+            try
+            {
+                _LoadConfig();
+                logger.Info("Конфигурация загружена");
+
+                _InitializeDatabase();
+                logger.Info("База данных инициализирована");
+
+            }
+            catch (Exception e)
+            {
+                logger.Fatal("Ошибка при инициализации сервера.");
+                logger.Cause(e);
+                return;
+            }
+
+#if DEBUG
+            // Если в конфигурации прописано что необходимо поставить на паузу.
+            if (Server.Config.JournalConfiguration.Single.Pause 
+                // Или если это указано в аргументах
+                || args.FirstOrDefault(a => a == "+pause" && a == "+p") != default)
+            {
+                Console.WriteLine("Нажмите любую кнопку чтобы продолжить...");
+                Console.ReadKey(true);
+                Console.WriteLine("Продолжение выполнения приложения.");
+            }
+#endif
             CreateHostBuilder(args).Build().Run();
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Logging.Logger.Instance.Fatal("Необработанное исключение");
-            Logging.Logger.Instance.Fatal((Exception)e.ExceptionObject);
+            if (Logging.Logger.Instance != null)
+            {
+                Logging.Logger.Instance.Fatal("Необработанное исключение");
+                Logging.Logger.Instance.Fatal((Exception)e.ExceptionObject);
+            }
+            else
+            {
+                Console.WriteLine($"{DateTime.Now} [FATAL NO LOGGER] Необработанное исключение!\n{e.ExceptionObject.ToString()}");
+                Console.WriteLine(e.ExceptionObject.ToString());
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -40,60 +81,43 @@ namespace Journal.Server
                     webBuilder.UseStartup<Startup>();
                 });
 
-        private static void InitializeDatabase()
+
+        /// <summary>
+        /// Метод инициализации базы данных.
+        /// Если база данных была только что создана, то создается учетная записо root по умолчанию.
+        /// </summary>
+        private static void _InitializeDatabase()
         {
-            string connectionString = Config["db"]["connection_string"].ToObject<string>();
+            string connectionString = Server.Config.JournalConfiguration.Single.Database.ConnectionString;
             JournalDbContext.SetConnectionString(connectionString);
             using (JournalDbContext dbContext = JournalDbContext.CreateContext())
             {
-                IEnumerable<string> rolesToCreate;
                 if (dbContext.Database.EnsureCreated())
-                    rolesToCreate = Role.DefaultRoles;
-                else
-                    rolesToCreate = Role.DefaultRoles.Except(dbContext.Roles.ToList().ConvertAll(u => u.Name));
-                using (IEnumerator<string> enumerator = rolesToCreate.GetEnumerator())
                 {
-                    if (enumerator.MoveNext())
+                    dbContext.Users.Add(new User()
                     {
-                        do
-                        {
-                            string roleName = enumerator.Current;
-                            Role role = new Role(roleName);
-                            dbContext.Roles.Add(role);
-                        } while (enumerator.MoveNext());
-                    }
-                    dbContext.SaveChanges();
-                }
-                if (dbContext.Users.FirstOrDefault(u => u.Login == "admin") == default)
-                {
-                    User user = new User
-                    {
-                        FirstName = "admin",
-                        Surname = "admin",
-                        Login = "admin",
-                        PasswordHash = Security.Hash.GetString("admin"),
-                        PasswordChanged = DateTime.Now
-                    };
-                    dbContext.Users.Add(user);
-                    user.UserRole.Add(new UserToRole
-                    {
-                        Role = dbContext.Roles.First(r => r.Name == Role.ADMIN_ROLE_NAME),
-                        User = user
+                        Login = "root",
+                        PasswordHash = Security.Hash.GetFromString("root"),
+                        FirstName = "root",
+                        LastName = "root",
+                        Surname = "root",
+                        //Role = Common.Entities.UserRole.Admin,
                     });
                     dbContext.SaveChanges();
                 }
             }
-            Logging.Logger.Instance.Info("База данных инициализирована");
         }
+                                                                           
+        /// <summary>
+        /// Загрузка конфигурации
+        /// </summary>
+        private static void _LoadConfig()
+            => Server.Config.JournalConfiguration.FromFile(Path.Combine(ExecutableDirectory, "Config", "config.json"));
+        
 
-        private static void LoadConfig()
-        {
-            string jsonString;
-            using (StreamReader reader = File.OpenText("Config/config.json"))
-                jsonString = reader.ReadToEnd();
-            Config = JsonConvert.DeserializeObject<JToken>(jsonString);
-        }
-
-        private static void InitializeLogging() => Logging.Logger.SetInstance(new Logging.ConsoleLogger());
+        /// <summary>
+        /// Инициализация логгера.
+        /// </summary>
+        private static void _InitializeLogging() => Logger.SetInstance(new ConsoleLogger());
     }
 }

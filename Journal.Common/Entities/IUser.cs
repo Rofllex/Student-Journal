@@ -1,4 +1,6 @@
 ﻿#nullable enable
+using System;
+
 namespace Journal.Common.Entities
 {
     /// <summary>
@@ -10,6 +12,7 @@ namespace Journal.Common.Entities
         /// Идентификатор пользователя
         /// </summary>
         int Id { get; }
+
         /// <summary>
         /// Имя
         /// </summary>
@@ -26,5 +29,35 @@ namespace Journal.Common.Entities
         /// Номер телефона.
         /// </summary>
         string? PhoneNumber { get; }
+
+        /// <summary>
+        /// Роль пользователя.
+        /// </summary>
+        /// <value>По умолчанию должно быть значение <see cref="UserRole.Guest"/></value>
+        UserRole Role { get; }
+    }
+
+    /// <summary>
+    /// Роль пользователя.
+    /// </summary>
+    [Flags]
+    public enum UserRole
+    {
+        /// <summary>
+        /// Администратор
+        /// </summary>
+        Admin = 1,
+        /// <summary>
+        /// Преподаватель
+        /// </summary>
+        Teacher = 2,
+        /// <summary>
+        /// Студент
+        /// </summary>
+        Student = 4,
+        /// <summary>
+        /// Родитель студента(ов).
+        /// </summary>
+        StudentParent = 8,
     }
 }

@@ -1,25 +1,22 @@
-﻿using MySql.Data.EntityFrameworkCore.DataAnnotations;
-
-using Newtonsoft.Json;
-
-using System.Collections;
+﻿using System.Diagnostics;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics;
+
+using Newtonsoft.Json;
+
+using Journal.Common.Entities;
 
 namespace Journal.Server.Database
 {
     /// <summary>
     /// Специальность
     /// </summary>
-    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")
-        , MySqlCharset("utf8")]
-    public class Specialty : Journal.Common.Entities.ISpecialty
+    [DebuggerDisplay("{" + nameof(_GetDebuggerDisplay) + "(),nq}")]
+    public class Specialty : ISpecialty
     {
         [Key
-            , DatabaseGenerated(DatabaseGeneratedOption.Identity)
-            , JsonIgnore]
+            , DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         /// <summary>
@@ -54,6 +51,6 @@ namespace Journal.Server.Database
 
         }
 
-        private string GetDebuggerDisplay() => $"Specialty: {Id} \"{Name}\"";
+        private string _GetDebuggerDisplay() => $"Specialty: {Id} \"{Name}\"";
     }
 }

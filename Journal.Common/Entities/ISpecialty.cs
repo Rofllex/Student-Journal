@@ -5,6 +5,8 @@
     /// </summary>
     public interface ISpecialty
     {
+        public int Id { get; }
+
         /// <summary>
         /// Название специальности
         /// </summary>

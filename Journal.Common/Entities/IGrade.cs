@@ -9,6 +9,8 @@ namespace Journal.Common.Entities
     /// </summary>
     public interface IGrade
     {
+        public int Id { get; }
+
         /// <summary>
         /// Преподаватель, который выставил оценку.
         /// </summary>

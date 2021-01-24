@@ -30,13 +30,13 @@ namespace Journal.Server.Database
         /// Объект за который была выставлена оценка
         /// </summary>
         [Required]
-        public Subject Subject { get; set; }
+        public Subject SubjectEnt { get; set; }
         
         /// <summary>
         /// Студент которому была выставлена оценка.
         /// </summary>
         [Required]
-        public Student Student { get; set; }
+        public Student StudentEnt { get; set; }
 
         /// <summary>
         /// Причина выставления оценки
@@ -46,13 +46,13 @@ namespace Journal.Server.Database
         /// <summary>
         /// Преподаватель который выставил оценку.
         /// </summary>
-        public Teacher RatedBy { get; set; }
+        public Teacher RatedByEnt { get; set; }
 
-        ITeacher IGrade.RatedBy => RatedBy;
+        ITeacher IGrade.RatedBy => RatedByEnt;
 
-        ISubject IGrade.Subject => Subject;
+        ISubject IGrade.Subject => SubjectEnt;
 
-        IStudent IGrade.Student => Student;
+        IStudent IGrade.Student => StudentEnt;
 
         public Grade()
         {
@@ -60,12 +60,13 @@ namespace Journal.Server.Database
 
         public Grade(Teacher ratedBy, Subject subject, Student student, GradeLevel level, DateTime? timestamp = null, string? reason = null)
         {
-            RatedBy = ratedBy;
-            Subject = subject;
-            Student = student;
+            RatedByEnt = ratedBy;
+            SubjectEnt = subject;
+            StudentEnt = student;
             GradeLevel = level;
             Timestamp = timestamp.HasValue ? timestamp.Value : DateTime.Now;
             Reason = reason;
         }
+
     }
 }
