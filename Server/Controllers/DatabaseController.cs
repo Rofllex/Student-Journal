@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-
-using Journal.Server.Database;
-
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+
+using Journal.Server.Database;
+using Journal.Common.Entities;
+using Journal.Common.Models;
 
 namespace Journal.Server.Controllers
 {
@@ -15,46 +19,58 @@ namespace Journal.Server.Controllers
         , Authorize]
     public class DatabaseController : Controller
     {
-        private readonly JournalDbContext dbContext; 
+        private readonly JournalDbContext _dbContext; 
 
         public DatabaseController()
         {
-            dbContext = JournalDbContext.CreateContext();
+            _dbContext = JournalDbContext.CreateContext();
         }
 
-        public IActionResult GetSpecialties( [FromQuery( Name = "count" )] int count = 10, [FromQuery( Name = "offset" )] int offset = 0)
+        public IActionResult GetSpecialties([FromQuery(Name = "count")] int count = 10, [FromQuery(Name = "offset")] int offset = 0)
         {
             if (count >= 1 && offset >= 0)
             {
-                int specialtiesCount = dbContext.Specialties.Count( );
-                Specialty[] specialties = dbContext.Specialties.Skip( offset ).Take( count ).ToArray( );
-                return Json( new
+                //int specialtiesCount = _dbContext.Specialties.Count();
+                try
                 {
-                    specialties ,
-                    specialtiesCount
-                } );
+                    Specialty[] specialties = _dbContext.Specialties.Skip(offset)
+                                                                    .Take(count)
+                                                                    .Include(s => s.Subjects)
+                                                                    .ToArray();
+                    return Json(new
+                    {
+                        specialties,
+                        count
+                    });
+                }
+                catch 
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest);        
+                }
             }
             else
             {
-                return StatusCode( StatusCodes.Status400BadRequest , new Common.Models.WrongParametersError( new Dictionary<string , string>
+                return StatusCode(StatusCodes.Status400BadRequest, new Common.Models.WrongParametersError(new Dictionary<string, string>
                 {
-                    [nameof( count )] = count.ToString(),
-                    [nameof( offset )] = offset.ToString()
-                } ) );
+                    [nameof(count)] = count.ToString(),
+                    [nameof(offset)] = offset.ToString()
+                }));
             }
         }
 
-        [Authorize(Roles = "Teacher, Admin")]
+       
+        [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Teacher))]
         public async Task<IActionResult> CreateSpecialty(
-            [FromQuery( Name = "name" )] string name
-            , [FromQuery( Name = "code" )] string code
-            , [FromQuery( Name = "maxCourse" )] int maxCourse )
+              [FromQuery(Name = "name")] string name
+            , [FromQuery(Name = "code")] string code
+            , [FromQuery(Name = "maxCourse")] int maxCourse)
         {
-            if (!string.IsNullOrWhiteSpace( name )
-                && !string.IsNullOrWhiteSpace( code )
+            if (!string.IsNullOrWhiteSpace(name)
+                && !string.IsNullOrWhiteSpace(code)
                 && maxCourse > 0 && maxCourse <= 4)
             {
-                Specialty specialty = dbContext.Specialties.FirstOrDefault( s => s.Name == name || s.Code == code );
+                Specialty specialty = _dbContext.Specialties.Where(s => s.Name == name)
+                                                            .FirstOrDefault();
                 if (specialty == default)
                 {
                     specialty = new Specialty
@@ -63,11 +79,11 @@ namespace Journal.Server.Controllers
                         , Code = code
                         , MaxCourse = maxCourse
                     };
-                    dbContext.Specialties.Add( specialty );
+                    _dbContext.Specialties.Add(specialty);
 
                     try
                     {
-                        await dbContext.SaveChangesAsync();
+                        await _dbContext.SaveChangesAsync();
                     }
                     catch (System.Exception e)
                     {
@@ -79,27 +95,46 @@ namespace Journal.Server.Controllers
                     return Json(specialty);
                 }
                 else
-                    return Json( new Common.Models.RequestError("Данная специальность уже присутствует в бд"));
+                    return Json(new Common.Models.RequestError("Данная специальность уже присутствует в бд"));
             }
             else
             {
-                return StatusCode( StatusCodes.Status400BadRequest , new Common.Models.WrongParametersError( new Dictionary<string , string>
+                return StatusCode(StatusCodes.Status400BadRequest, new Common.Models.WrongParametersError(new Dictionary<string, string>
                 {
-                    [nameof( name )] = name,
-                    [nameof( code )] = code,
-                    [nameof( maxCourse )] = maxCourse.ToString( )
-                } ) );
+                    [nameof(name)] = name,
+                    [nameof(code)] = code,
+                    [nameof(maxCourse)] = maxCourse.ToString()
+                }));
             }
+        }
+
+        /// <summary>
+        /// Получение специальности по идентификатору.
+        /// </summary>
+        /// <param name="specialtyId">Идентификатор специальности</param>
+        public async Task<IActionResult> GetSpecialtyById(
+            [FromQuery(Name = "id")] int specialtyId)
+        {
+            return await Task.Run(() =>
+            {
+                Specialty specialty = _dbContext.Specialties.FirstOrDefault(s => s.Id == specialtyId);
+                if (specialty != default)
+                {
+                    return (IActionResult)Json(specialty);
+                }
+                else
+                    return Json(new RequestError("Специальность не найдена."));
+            });
         }
 
         public IActionResult GetSubjects( [FromQuery( Name = "count" )] int count = 10, [FromQuery( Name = "offset" )] int offset = 0 )
         {
             if (count > 0 && offset < 0)
             {
-                int subjectsCount = dbContext.Specialties.Count( );
+                int subjectsCount = _dbContext.Specialties.Count( );
                 return Json( new
                 {
-                    subjects = dbContext.Subjects.Skip( count ).Take( offset ).ToArray( ),
+                    subjects = _dbContext.Subjects.Skip( count ).Take( offset ).ToArray( ),
                     subjectsCount
                 } );
             }

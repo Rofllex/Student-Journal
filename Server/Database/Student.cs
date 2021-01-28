@@ -1,5 +1,6 @@
 ﻿using Journal.Common.Entities;
 
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -41,6 +42,11 @@ namespace Journal.Server.Database
         /// </summary>
         public StudentGroup? GroupEnt { get; set; }
 
+        [ForeignKey(nameof(ParentEnts))]
+        public List<int> ParentEntIds { get; set; }
+
+        
+        public List<Parent> ParentEnts { get; set; }
 
         [NotMapped]
         IStudentGroup? IStudent.Group

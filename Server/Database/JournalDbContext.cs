@@ -1,10 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
 
-using Pomelo.EntityFrameworkCore.MySql;
-
-using System.Linq;
-using System;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace Journal.Server.Database
 {
@@ -29,13 +25,15 @@ namespace Journal.Server.Database
 
         public DbSet<Subject> Subjects { get; set; }
 
+        public DbSet<Parent> Parents { get; set; }
+
+        public DbSet<Grade> Grades { get; set; }
+
 
 
         private readonly string _connectionString;
-        private JournalDbContext(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
+        private JournalDbContext(string connectionString) => _connectionString = connectionString;
+        
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Journal.Server.Database
 {
@@ -11,9 +12,14 @@ namespace Journal.Server.Database
     public class Parent : IParent
     {
         [Key
-            ,Required]
+            , ForeignKey(nameof(UserEnt))]
+        public int UserId { get; set; }
+
         public User UserEnt { get; set; }
 
+        [ForeignKey(nameof(ChildEnts))]
+        public List<int> ChildEntIds { get; set; } = new List<int>();
+        
         public List<Student> ChildEnts { get; set; } = new List<Student>();
 
         IUser IParent.User => UserEnt;

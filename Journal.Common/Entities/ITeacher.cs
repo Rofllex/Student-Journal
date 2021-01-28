@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace Journal.Common.Entities
+﻿namespace Journal.Common.Entities
 {
     /// <summary>
     /// Абстракция преподавателя.

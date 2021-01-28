@@ -22,13 +22,15 @@ namespace Journal.Server.Database
         /// <summary>
         /// Название 
         /// </summary>
-        [Required(AllowEmptyStrings = false)]
+        [Required(AllowEmptyStrings = false)
+            , MinLength(4)]
         public string Name { get; set; }
                     
         /// <summary>
         /// Код специальности
         /// </summary>
-        [Required(AllowEmptyStrings = false)]
+        [Required(AllowEmptyStrings = false)
+            , MinLength(3)]
         public string Code { get; set; }
         
         /// <summary>
@@ -40,10 +42,11 @@ namespace Journal.Server.Database
         [JsonIgnore]
         public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
 
-        public Specialty(string name, string code)
+        public Specialty(string name, string code, int maxCourse)
         {
             Name = name;
             Code = code;
+            MaxCourse = maxCourse;
         }
 
         public Specialty()
@@ -51,6 +54,7 @@ namespace Journal.Server.Database
 
         }
 
-        private string _GetDebuggerDisplay() => $"Specialty: {Id} \"{Name}\"";
+        private string _GetDebuggerDisplay() 
+            => $"Specialty: {Id} \"{Name}\"";
     }
 }

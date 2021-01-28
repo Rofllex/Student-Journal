@@ -74,7 +74,6 @@ namespace Journal.Server.Database
 
         /// <summary>
         /// Роль пользователя.
-        /// По умолчанию <see cref="UserRole.Guest"/>
         /// </summary>
         [Required]
         public UserRole? URole { get; set; }

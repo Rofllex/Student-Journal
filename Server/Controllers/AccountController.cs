@@ -182,8 +182,8 @@ namespace Journal.Server.Controllers
                 audience: AuthOptions.AUDIENCE,
                 claims: claimsIdentity.Claims,
                 notBefore: DateTime.Now,
-                expires: (expireDate = DateTime.Now.Add(Security.AuthOptions.JWT_TOKEN_LIFETIME)),
-                signingCredentials: new SigningCredentials(key: Security.AuthOptions.GetSymmetricSecurityKey(), algorithm: SecurityAlgorithms.HmacSha256));
+                expires: (expireDate = DateTime.Now.Add(AuthOptions.JWT_TOKEN_LIFETIME)),
+                signingCredentials: new SigningCredentials(key: AuthOptions.GetSymmetricSecurityKey(), algorithm: SecurityAlgorithms.HmacSha256));
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
         

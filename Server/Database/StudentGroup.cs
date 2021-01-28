@@ -17,13 +17,13 @@ namespace Journal.Server.Database
         /// <summary>
         /// Куратор группы. Может быть null.
         /// </summary>
-        public User Curator { get; set; }
+        public User CuratorEnt { get; set; }
         
         /// <summary>
         /// Специальность группы.
         /// </summary>
         [Required]
-        public Specialty Specialty { get; set; }
+        public Specialty SpecialtyEnt { get; set; }
 
         /// <summary>
         /// Курс 
@@ -39,9 +39,9 @@ namespace Journal.Server.Database
 
         #region IStudentGroup implementation
 
-        IUser IStudentGroup.Curator => Curator;
+        IUser IStudentGroup.Curator => CuratorEnt;
 
-        ISpecialty IStudentGroup.Specialty => Specialty;
+        ISpecialty IStudentGroup.Specialty => SpecialtyEnt;
 
         int IStudentGroup.CurrentCourse => CurrentCourse;
 

@@ -8,17 +8,17 @@ namespace Journal.Server.Database
     public class Teacher : ITeacher
     {
         [Key
-            , DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+            , ForeignKey(nameof(UserEnt))]
+        public int UserId { get; set; }
 
-
-        [Key,
-            Required]
-        public User User { get; set; }
+        public User UserEnt { get; set; }
 
         [NotMapped]
-        IUser ITeacher.User => User;
+        IUser ITeacher.User => UserEnt;
 
+        /// <summary>
+        /// Конструктор для EntityFramework`а.
+        /// </summary>
         public Teacher()
         {
 
@@ -26,7 +26,7 @@ namespace Journal.Server.Database
 
         public Teacher(User user)
         {
-            User = user;
+            UserEnt = user;
         }
     }
 }

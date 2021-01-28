@@ -1,6 +1,8 @@
 ﻿using System;
-using Journal.Server.Infrastructure;
 using System.Diagnostics;
+
+using Journal.Server.Infrastructure;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace Journal.Server.Controllers
