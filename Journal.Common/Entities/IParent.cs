@@ -7,6 +7,8 @@ namespace Journal.Common.Entities
     /// </summary>
     public interface IParent
     {
+        int UserId { get; }
+
         /// <summary>
         /// Пользователь.
         /// </summary>
@@ -15,6 +17,6 @@ namespace Journal.Common.Entities
         /// <summary>
         /// Дети родителя.
         /// </summary>
-        IReadOnlyList<IStudent> Childs { get; }
+        IReadOnlyList<IStudent> ChildStudents { get; }
     }
 }

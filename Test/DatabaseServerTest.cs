@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using Journal.Server.Database;
 using System.Linq;
+using Journal.Common.Entities;
 
 using Xunit;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +41,7 @@ namespace Journal.Server.Test
         }
         
         [Fact]
-        public void TestGetRoot()
+        public void TestGetLinkedEntities()
         {
             using (JournalDbContext dbContext = JournalDbContext.CreateContext())
             {
@@ -50,6 +51,38 @@ namespace Journal.Server.Test
                                                     .FirstOrDefault();
                 Assert.NotNull(student);
                 Assert.NotNull(student.UserEnt);
+            }
+        }
+
+        [Fact]
+        public void TestGetChildStudents()
+        {
+            using (JournalDbContext dbContext = JournalDbContext.CreateContext())
+            {
+                User parentUser = dbContext.Users.FirstOrDefault(u => u.FirstName == "parent");
+                if (parentUser == default)
+                {
+                    parentUser = new User("parent", "parent", "parent", Security.Hash.GetFromString("hash"), UserRole.StudentParent);
+                    Parent parent = new Parent(parentUser);
+                    dbContext.Users.Add(parentUser);
+                    dbContext.Parents.Add(parent);
+
+
+                    User studentUser = new User("student", "student", "student", Security.Hash.GetFromString("hash"), UserRole.Student);
+                    Student student = new Student(studentUser);
+                    dbContext.Users.Add(studentUser);
+                    dbContext.Students.Add(student);
+                    parent.ChildStudentEnts.Add(student);
+                    dbContext.SaveChanges();
+                }
+                else
+                {
+                    Parent parent = dbContext.Parents.Include(p => p.ChildStudentEnts).FirstOrDefault(p => p.UserId == parentUser.Id);
+                    if (parent != null)
+                    {
+                        Assert.True(parent.ChildStudentEnts.Count == 1);
+                    }
+                }
             }
         }
     }

@@ -17,15 +17,16 @@ namespace Journal.Server.Database
 
         public User UserEnt { get; set; }
 
-        [ForeignKey(nameof(ChildEnts))]
-        public List<int> ChildEntIds { get; set; } = new List<int>();
-        
-        public List<Student> ChildEnts { get; set; } = new List<Student>();
+        public List<Student> ChildStudentEnts { get; set; } = new List<Student>();
+
+        #region IParent impl
 
         IUser IParent.User => UserEnt;
 
-        IReadOnlyList<IStudent> IParent.Childs => ChildEnts;
-    
+        IReadOnlyList<IStudent> IParent.ChildStudents => ChildStudentEnts;
+
+        #endregion
+
         public Parent()
         {
 

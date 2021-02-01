@@ -24,11 +24,11 @@ namespace Journal.Server.Controllers
     //[Route("api/[controller]/[action]")]
     public class AccountController : Controller
     {
-        private readonly JournalDbContext dbContext;
+        private readonly JournalDbContext _dbContext;
 
         public AccountController()
         {
-            dbContext = JournalDbContext.CreateContext();
+            _dbContext = JournalDbContext.CreateContext();
         }
 
         
@@ -77,7 +77,7 @@ namespace Journal.Server.Controllers
                         {
                             user.PasswordHash = Hash.GetFromString(newPassword);
                             user.PasswordChanged = DateTime.Now;
-                            await dbContext.SaveChangesAsync();
+                            await _dbContext.SaveChangesAsync();
                             string token = _GenerateJWT(user, out DateTime tokenExpire),
                                     refreshToken = _GenerateRefreshToken(user, token, out DateTime refreshTokenExpire);
                             return _CreateJWTActionResult(token, tokenExpire, refreshToken, refreshTokenExpire, roles: _GetUserRoleNames(user).ToArray());
@@ -128,11 +128,25 @@ namespace Journal.Server.Controllers
             throw new NotImplementedException();
         }
 
+
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public Task<IActionResult> GetUsers(int offset, int count)
+        {
+            return Task.Run(() =>
+            {
+                User[]? users = _dbContext.Users.Skip(offset).Take(count).ToArray();
+                return (IActionResult)Json(new 
+                {
+                    users,
+                    count = users.Length
+                });
+            });
+        }
+
+
         private bool _IsUserAuthenticated()
             => User.Claims.FirstOrDefault(c => c.Type == JwtTokenOptions.NAME_TYPE) != default;
         
-
-
         /// <summary>
         /// Метод получения пользователя из клаймов
         /// Данный метод следует вызывать только когда у метода есть атрибут <see cref="AuthorizeAttribute"/> иначе ебнет, охуеешь
@@ -141,7 +155,7 @@ namespace Journal.Server.Controllers
         {
             Claim loginClaim = User.Claims.FirstOrDefault(c => c.Type == JwtTokenOptions.NAME_TYPE);
             Debug.Assert(loginClaim != null);
-            return dbContext.Users.FirstOrDefault(u => u.Login == loginClaim.Value);
+            return _dbContext.Users.FirstOrDefault(u => u.Login == loginClaim.Value);
         }
 
         /// <summary>
@@ -155,7 +169,7 @@ namespace Journal.Server.Controllers
         private User? _AuthenticateUser(string login, string password)
         {
             string pwdHash = Hash.GetFromString(password, System.Text.Encoding.UTF8);
-            return dbContext.Users.FirstOrDefault(u => u.Login == login && u.PasswordHash == pwdHash);
+            return _dbContext.Users.FirstOrDefault(u => u.Login == login && u.PasswordHash == pwdHash);
         }
 
         /// <summary>
@@ -190,7 +204,6 @@ namespace Journal.Server.Controllers
         private List<Claim> _GetUserRoleClaims(User user)
             => _GetUserRoleNames(user).ConvertAll(roleName => new Claim("role", roleName));
         
-
         private List<string> _GetUserRoleNames(User user)
         {
             Type userRoleType = typeof(UserRole);

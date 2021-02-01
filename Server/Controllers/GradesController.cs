@@ -78,7 +78,7 @@ namespace Journal.Server.Controllers
         /// <returns></returns>
         public IActionResult PasteMultiple(int[] studentsId, GradeLevel level, string reason)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         [Authorize(Roles = nameof(UserRole.Student))]
@@ -124,12 +124,12 @@ namespace Journal.Server.Controllers
                     }
                     else if (currentUser.IsInRole(UserRole.StudentParent))
                     {
-                        Parent parent = _dbContext.Parents.Include(p => p.ChildEnts).FirstOrDefault(p => p.UserId == currentUser.Id);
+                        Parent parent = _dbContext.Parents.Include(p => p.ChildStudentEnts).FirstOrDefault(p => p.UserId == currentUser.Id);
                         if (parent != null)
                         {
                             // Если выбранный студент не является чадом аккаунта родителя.
-                            if ((student = parent.ChildEnts.FirstOrDefault(c => c.UserId == studentId)) == null)
-                                return (IActionResult)Json(new RequestError($"Студент с идентификатором \"{ student.UserId }\" не является вашим ребенком."));
+                            if ((student = parent.ChildStudentEnts.FirstOrDefault(s => s.UserId == studentId)) == null)
+                                return (IActionResult)Json(new RequestError($"Студент с идентификатором \"{ studentId }\" не является вашим ребенком."));
                         }
                         else
                         {
@@ -149,15 +149,8 @@ namespace Journal.Server.Controllers
             });
         }
 
-        
-
-
-
-
-
         private readonly JournalDbContext _dbContext;
     
-
         private Grade[] _GetGrades(int studentId, int subjectId)
             => _dbContext.Grades.Where(g => g.StudentId == studentId && g.SubjectId == subjectId).ToArray();
 
@@ -166,7 +159,5 @@ namespace Journal.Server.Controllers
                                             && g.SubjectId == subjectId 
                                             && g.Timestamp >= startDate 
                                             && g.Timestamp < endDate).ToArray();
-        
-
     }
 }
