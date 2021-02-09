@@ -14,6 +14,7 @@ using Journal.Common.Models;
 using Journal.Server.Database;
 using Journal.Common.Entities;
 using Journal.Server.Security;
+using Microsoft.AspNetCore.Http;
 
 #nullable enable
 
@@ -42,19 +43,24 @@ namespace Journal.Server.Controllers
         {
             return Task.Run(() =>
             {
-                User? user = _AuthenticateUser(login, password);
-                if (user != null)
+                if (!User.Identity.IsAuthenticated)
                 {
-                    string token = _GenerateJWT(user, out DateTime tokenExpire),
-                            refreshToken = _GenerateRefreshToken(user, token, out DateTime refreshTokenExpire);
-                    return _CreateJWTActionResult(token: token
-                                                , tokenExpire: tokenExpire
-                                                , refreshToken: refreshToken
-                                                , refreshTokenExpire: refreshTokenExpire
-                                                , roles: _GetUserRoleNames(user).ToArray());
+                    User? user = _AuthenticateUser(login, password);
+                    if (user != null)
+                    {
+                        string token = _GenerateJWT(user, out DateTime tokenExpire),
+                                refreshToken = _GenerateRefreshToken(user, token, out DateTime refreshTokenExpire);
+                        return _CreateJWTActionResult(token: token
+                                                    , tokenExpire: tokenExpire
+                                                    , refreshToken: refreshToken
+                                                    , refreshTokenExpire: refreshTokenExpire
+                                                    , roles: _GetUserRoleNames(user).ToArray());
+                    }
+                    else
+                        return Unauthorized(new RequestError("Неверный логин или пароль"));
                 }
                 else
-                    return Unauthorized(new RequestError("Неверный логин или пароль"));
+                    return StatusCode(StatusCodes.Status400BadRequest);
             });
         }
 

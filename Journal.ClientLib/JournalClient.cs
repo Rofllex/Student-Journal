@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Journal.Common.Entities;
+using Journal.ClientLib.Entities;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -115,12 +116,14 @@ namespace Journal.ClientLib
         public IUser CurrentUser { get; set; }
 
         
-        private JournalClient(IUser currentUser, string token, DateTime tokenExpire, string refreshToken, DateTime refreshTokenExpire) 
+        private JournalClient(JournalClientQueryExecuter queryExecuter, IUser currentUser, string token, DateTime tokenExpire, string refreshToken, DateTime refreshTokenExpire)
         {
+            CurrentUser = currentUser;
             _token = token;
             _tokenExpire = tokenExpire;
             _refreshToken = refreshToken;
             _refreshTokenExpire = refreshTokenExpire;
+            _queryExecuter = queryExecuter;
         }
 
         private string _token,
@@ -128,6 +131,7 @@ namespace Journal.ClientLib
         private DateTime _tokenExpire,
                         _refreshTokenExpire;
         private JournalClientQueryExecuter _queryExecuter;
+
 
         public static JournalClient Connect(string url, string login, string password)
         {
@@ -158,12 +162,12 @@ namespace Journal.ClientLib
             User user = await clientQueryExecuter.ExecuteQuery<User>("Users", "GetMe", Array.Empty<string>());
 
             JournalClient journalClient = new JournalClient(
-                currentUser: user
-                ,  token: token
+                queryExecuter: clientQueryExecuter
+                , currentUser: user
+                , token: token
                 , tokenExpire: tokenExpire
                 , refreshToken: refreshToken
                 , refreshTokenExpire: refreshTokenExpire);
-            journalClient.CurrentUser = user;
             return journalClient;
         }
 
@@ -182,22 +186,5 @@ namespace Journal.ClientLib
             else if (!authMethodResponse.ContainsKey("refreshTokenExpire"))
                 throw new ExecuteQueryException("Неверный ответ от метода авторизации. Время истечения токена обновления было null.");
         }
-
-        
-    }
-
-    public class User : IUser
-    {
-        public int Id { get; set; }
-
-        public string FirstName { get; set; }
-
-        public string Surname { get; set; }
-
-        public string LastName { get; set; }
-
-        public string PhoneNumber { get; set; }
-
-        public UserRole Role { get; set; }
     }
 }

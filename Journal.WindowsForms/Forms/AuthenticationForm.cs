@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace StudentJournal.WinClient.Forms
+namespace Journal.WindowsForms.Forms
 {
-    public partial class MainForm : Form
+    public partial class AuthenticationForm : Form
     {
-        public MainForm()
+        public AuthenticationForm()
         {
             InitializeComponent();
         }

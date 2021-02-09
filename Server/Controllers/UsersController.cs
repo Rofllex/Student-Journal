@@ -31,7 +31,7 @@ namespace Journal.Server.Controllers
 
         public Task<IActionResult> GetUser([FromQuery(Name = "id")] int userId) 
         {
-            
+            throw new System.NotImplementedException();
         }
 
         [Authorize(Roles = nameof(UserRole.Admin))]
