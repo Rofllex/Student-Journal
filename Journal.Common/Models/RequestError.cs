@@ -11,7 +11,7 @@ namespace Journal.Common.Models
         /// Сообщение об ошибке.
         /// </summary>
         public string Message { get; set; }
-    
+        
         public RequestError(string message)
         {
             Message = message;
@@ -25,19 +25,19 @@ namespace Journal.Common.Models
         /// Выбросить исключение <see cref="RequestErrorException"/>
         /// </summary>
         public void Throw()
-            => throw GetException(null);
+            => Throw(null);
 
         /// <summary>
         /// Выбросить исключение RequestErrorException с сообщением.
         /// </summary>
         public void Throw(string message) 
-            => throw GetException(message);
+            => throw CreateException(message);
 
         /// <summary>
         /// Метод позволяющий получить исключение для методов <see cref="Throw"/> и <see cref="Throw(string)"/>
         /// </summary>
         /// <param name="message">Может быть null.</param>
-        protected virtual RequestErrorException GetException(string message)
+        protected virtual RequestErrorException CreateException(string message)
             => new RequestErrorException(this, message);
     }
 
@@ -48,10 +48,7 @@ namespace Journal.Common.Models
     {
         public RequestError Error { get; private set; }
 
-        public RequestErrorException(RequestError error) : this (error, default)
-        {
-
-        }
+        public RequestErrorException(RequestError error) : this (error, default) { }
 
         public RequestErrorException(RequestError error, string message) : base (message)
         {

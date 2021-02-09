@@ -13,7 +13,9 @@ namespace Journal.Server.Database
     /// <summary>
     /// Модель пользователя в БД.
     /// </summary>
-    [DebuggerDisplay("User - {Id} {Login} {Role} {FirstName} {Surname} {LastName}")]
+    //[DebuggerDisplay($"User - {nameof(Id)} {nameof(Login)} {nameof(URole)} {nameof(FirstName)} {nameof(Surname)} {nameof(LastName)}")]
+
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public class User : IUser
     {
         [Key
@@ -75,7 +77,8 @@ namespace Journal.Server.Database
         /// <summary>
         /// Роль пользователя.
         /// </summary>
-        [Required]
+        [Required,
+            JsonProperty("Role")]
         public UserRole? URole { get; set; }
 
         [NotMapped]
@@ -98,5 +101,8 @@ namespace Journal.Server.Database
 
         public bool IsInRole(UserRole role) 
             => URole.HasValue ? URole.Value.HasFlag(role) : false;
+
+        private string GetDebuggerDisplay()
+            => $"User - {Id} {Login} {URole} {FirstName} {Surname} {LastName}";
     }
 }
