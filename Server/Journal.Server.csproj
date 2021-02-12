@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Journal.Common\Journal.Common.csproj" />
+    <ProjectReference Include="..\StudentJournal.Logger\Journal.Logger.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

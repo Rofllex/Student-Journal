@@ -1,23 +1,100 @@
 ﻿using System;
+using System.IO;
 
-namespace StudentJournal.Logger
+namespace Journal.Logging
 {
+    /// <summary>
+    ///     Базовый класс логгера.
+    /// </summary>
     public abstract class Logger
     {
+        /// <summary>
+        ///     Отладочный лог.
+        /// </summary>
+        /// <param name="message">
+        ///     Сообщение.
+        /// </param>
         public abstract void Debug( string message );
+
+        /// <summary>
+        ///     Информационный лог.
+        /// </summary>
+        /// <param name="message">
+        ///     Сообщение
+        /// </param>
         public abstract void Info( string message );
+        
+        /// <summary>
+        ///     Лог предупреждения.
+        /// </summary>
+        /// <param name="message">
+        ///     Сообщение
+        /// </param>
         public abstract void Warning( string message );
+
+        /// <summary>
+        ///     Лог предупреждения при исключении.
+        /// </summary>
+        /// <param name="ex">
+        ///     Исключение.
+        /// </param>
         public abstract void Warning( Exception ex );
+
+        /// <summary>
+        ///     Лог ошибки.
+        /// </summary>
+        /// <param name="message">
+        ///     Сообщение.
+        /// </param>
         public abstract void Error( string message );
+
+        /// <summary>
+        ///     Лог ошибки.
+        /// </summary>
+        /// <param name="ex">
+        ///     Исключение.
+        /// </param>
         public abstract void Error( Exception ex );
+
+        /// <summary>
+        ///     Лог фатальной ошибки.
+        /// </summary>
+        /// <param name="message">
+        ///     Сообщение.
+        /// </param>
         public abstract void Fatal( string message );
+        
+        /// <summary>
+        ///     Лог фатальной ошибки
+        /// </summary>
+        /// <param name="ex">
+        ///     Исключение.
+        /// </param>
         public abstract void Fatal( Exception ex );
+
+        /// <summary>
+        ///     Лог причины.
+        /// </summary>
+        /// <param name="message">
+        ///     Сообщение.
+        /// </param>
         public abstract void Cause( string message );
+        
+        /// <summary>
+        ///     Лог причины.
+        /// </summary>
+        /// <param name="ex">
+        ///     Исключение.
+        /// </param>
         public abstract void Cause( Exception ex );
 
         public static Logger Instance { get; set; }
     }
 
+    /// <summary>
+    ///     Комбинированный логгер.
+    ///     Позволяет использовать несколько логгеров одновременно.
+    /// </summary>
     public sealed class CombinedLogger : Logger
     {
         public CombinedLogger(params Logger[] loggers)
@@ -65,59 +142,120 @@ namespace StudentJournal.Logger
         }
     }
 
+    /// <summary>
+    ///     Логгер в консоли <see cref="System.Console"/>
+    /// </summary>
     public class ConsoleLogger : Logger
     {
         public override void Cause( string message )
-            => _WriteLineColorized( message, ConsoleColor.Blue );
+            => WriteLine( nameof(Cause), message, ConsoleColor.Blue );
 
         public override void Cause( Exception ex )
             => Cause( ex.ToString() );
 
         public override void Debug( string message )
-            => _WriteLineColorized( message, ConsoleColor.Cyan );
+            => WriteLine( nameof(Debug), message, ConsoleColor.Cyan );
 
         public override void Error( string message )
-            => _WriteLineColorized( message, ConsoleColor.Red );
+            => WriteLine( nameof(Error), message, ConsoleColor.Red );
 
         public override void Error( Exception ex )
             => Error( ex.ToString() );
 
         public override void Fatal( string message )
-            => _WriteLineColorized( message, ConsoleColor.DarkRed );
+            => WriteLine( nameof(Fatal), message, ConsoleColor.DarkRed );
 
         public override void Fatal( Exception ex )
             => Fatal( ex.ToString() );
 
         public override void Info( string message ) 
-            => _WriteLineColorized( message, ConsoleColor.Green );
+            => WriteLine( nameof(Info), message, ConsoleColor.Green );
 
         public override void Warning( string message ) 
-            => _WriteLineColorized( message, ConsoleColor.Yellow );
+            => WriteLine( nameof(Warning), message, ConsoleColor.Yellow );
 
         public override void Warning( Exception ex )
             => Warning( ex.ToString() );
 
 
-        private void _WriteLineColorized( string text, ConsoleColor foregroundColor )
+        protected virtual void WriteLine( string prefix, string text, ConsoleColor foregroundColor )
         {
             _LockInvoke( () =>
             {
                 ConsoleColor backForegroundColor = Console.ForegroundColor;
                 Console.ForegroundColor = foregroundColor;
-                Console.WriteLine( text );
+                Console.WriteLine( $"{DateTime.Now} [{prefix}] {text}" );
                 Console.ForegroundColor = backForegroundColor;
             } );
         }
         
-        private void _LockInvoke(Action act )
+        private void _LockInvoke( Action act )
         {
-            lock ( _mutex )
+            lock ( _consoleMutex )
             {
                 act();
             }
         }
 
 
-        private static object _mutex = new object();
+        private static object _consoleMutex = new object();
+    }
+
+    /// <summary>
+    ///     Логгер записей в <see cref="StreamWriter"/>
+    ///     <para>Наследуется от <see cref="ConsoleLogger"/></para>
+    /// </summary>
+    /// <remarks>
+    ///     Данный класс не наследуется.
+    /// </remarks>
+    public sealed class StreamWriterLogger : ConsoleLogger
+    {
+        public StreamWriterLogger(StreamWriter sw) 
+        {
+            _sw = sw ?? throw new ArgumentNullException();
+        }
+
+        protected override void WriteLine( string prefix, string text, ConsoleColor _ )
+        {
+            lock ( _mutex )
+            {
+                _sw.WriteLine( $"{DateTime.Now} [{prefix}] {text}" );
+                _sw.Flush();
+            }
+        }
+
+        
+        private object _mutex = new object();
+        private StreamWriter _sw;
+
+        #region public static
+
+        /// <summary>
+        /// Создать логгер из файла.
+        /// </summary>
+        /// <param name="filePath">
+        ///     Полный путь до файла.
+        /// </param>
+        /// <param name="deleteExisted">
+        ///     Если файл существует и его необходимо перезаписать.
+        /// </param>
+        /// <returns>
+        ///     Возвращает <c>default</c> если файл присутствует и <paramref name="deleteExisted"/> <c>== false</c>
+        /// </returns>
+        public static StreamWriterLogger CreateTextFile( string filePath, bool deleteExisted = true )
+        {
+            if ( File.Exists( filePath ) )
+            {
+                if ( deleteExisted )
+                    File.Delete( filePath );
+                else
+                    return default;
+            }
+
+            StreamWriter sw = File.CreateText( filePath );
+            return new StreamWriterLogger( sw );
+        }
+
+        #endregion
     }
 }

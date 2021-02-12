@@ -21,8 +21,6 @@ namespace Journal.WindowsForms
             {
                 Application.Run( new Forms.MainForm() );
             }
-            
-
         }
     }
 }

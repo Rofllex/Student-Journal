@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,18 +6,18 @@ using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Journal.Server.Database;
-using Journal.Server.Logging;
+using Journal.Logging;
 
 namespace Journal.Server
 {
     public class Program
     {
-        public static JToken Config { get; private set; }
-
+        /// <summary>
+        ///     Директория запуска.
+        /// </summary>
         public static readonly string ExecutableDirectory = ExecutableDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         static Program() 
@@ -29,14 +28,14 @@ namespace Journal.Server
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             _InitializeLogging();
-            ILogger logger = Logger.Instance;
+            Logger logger = Logger.Instance;
             try
             {
                 _LoadConfig();
-                logger.Info("Конфигурация загружена");
+                logger.Info($"{nameof(Main)} Конфигурация загружена");
 
                 _InitializeDatabase();
-                logger.Info("База данных инициализирована");
+                logger.Info($"{ nameof(Main) } База данных инициализирована");
 
             }
             catch (Exception e)
@@ -62,14 +61,14 @@ namespace Journal.Server
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            if (Logging.Logger.Instance != null)
+            if (Logger.Instance != null)
             {
-                Logging.Logger.Instance.Fatal("Необработанное исключение");
-                Logging.Logger.Instance.Fatal((Exception)e.ExceptionObject);
+                Logger.Instance.Fatal($"{nameof(CurrentDomain_UnhandledException)} Необработанное исключение");
+                Logger.Instance.Fatal((Exception)e.ExceptionObject);
             }
             else
             {
-                Console.WriteLine($"{DateTime.Now} [FATAL NO LOGGER] Необработанное исключение!\n{e.ExceptionObject.ToString()}");
+                Console.WriteLine($"{DateTime.Now} [FATAL NO LOGGER] Необработанное исключение!\n{e.ExceptionObject}");
                 Console.WriteLine(e.ExceptionObject.ToString());
             }
         }
@@ -83,8 +82,8 @@ namespace Journal.Server
 
 
         /// <summary>
-        /// Метод инициализации базы данных.
-        /// Если база данных была только что создана, то создается учетная записо root по умолчанию.
+        ///     Метод инициализации базы данных.
+        ///     Если база данных была только что создана, то создается учетная записо root по умолчанию.
         /// </summary>
         private static void _InitializeDatabase()
         {
@@ -104,20 +103,21 @@ namespace Journal.Server
                         //Role = Common.Entities.UserRole.Admin,
                     });
                     dbContext.SaveChanges();
+                    Logger.Instance.Info($"{nameof(_InitializeDatabase)} Создана база данных с пользователем по умолчанию.");
                 }
             }
         }
                                                                            
         /// <summary>
-        /// Загрузка конфигурации
+        ///     Загрузка конфигурации
         /// </summary>
         private static void _LoadConfig()
             => Server.Config.JournalConfiguration.FromFile(Path.Combine(ExecutableDirectory, "Config", "config.json"));
         
 
         /// <summary>
-        /// Инициализация логгера.
+        ///     Инициализация логгера.
         /// </summary>
-        private static void _InitializeLogging() => Logger.SetInstance(new ConsoleLogger());
+        private static void _InitializeLogging() => Logger.Instance = new ConsoleLogger();
     }
 }
