@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="JournalLogick\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

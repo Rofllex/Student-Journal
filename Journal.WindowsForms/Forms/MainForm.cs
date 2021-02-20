@@ -12,10 +12,25 @@ namespace Journal.WindowsForms.Forms
 {
     public partial class MainForm : Form
     {
-        public MainForm()
+        public MainForm(  )
         {
             InitializeComponent();
         }
 
+    }
+
+    public class MainFormViewModel : ViewModel
+    {
+        public string UserName 
+        {
+            get => _userName;
+            set
+            {
+                _userName = value;
+                InvokePropertyChanged();
+            }
+        }
+
+        private string _userName = string.Empty;
     }
 }

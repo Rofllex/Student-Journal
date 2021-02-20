@@ -15,12 +15,12 @@ namespace Journal.WindowsForms
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
 
-            Forms.AuthenticationForm authenticationForm = new Forms.AuthenticationForm();
+            /*Forms.AuthenticationForm authenticationForm = new Forms.AuthenticationForm();
             DialogResult dialogResult = authenticationForm.ShowDialog();
             if (dialogResult == DialogResult.OK )
-            {
+            {*/
                 Application.Run( new Forms.MainForm() );
-            }
+            //}
         }
     }
 }

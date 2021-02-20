@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Journal.Common.Models
 {
     /// <summary>
     /// Ошибка запроса.
     /// </summary>
+    [DebuggerDisplay( "{" + nameof( GetDebuggerDisplay ) + "(),nq}" )]
     public class RequestError
     {
         /// <summary>
@@ -12,7 +14,7 @@ namespace Journal.Common.Models
         /// </summary>
         public string Message { get; set; }
         
-        public RequestError(string message)
+        public RequestError( string message)
         {
             Message = message;
         }
@@ -33,12 +35,18 @@ namespace Journal.Common.Models
         public void Throw(string message) 
             => throw CreateException(message);
 
+        public override string ToString()
+            => Message;
+
         /// <summary>
         /// Метод позволяющий получить исключение для методов <see cref="Throw"/> и <see cref="Throw(string)"/>
         /// </summary>
         /// <param name="message">Может быть null.</param>
         protected virtual RequestErrorException CreateException(string message)
             => new RequestErrorException(this, message);
+
+        private string GetDebuggerDisplay()
+            => Message;
     }
 
     /// <summary>
@@ -48,9 +56,9 @@ namespace Journal.Common.Models
     {
         public RequestError Error { get; private set; }
 
-        public RequestErrorException(RequestError error) : this (error, default) { }
+        public RequestErrorException( RequestError error ) : this (error, default) { }
 
-        public RequestErrorException(RequestError error, string message) : base (message)
+        public RequestErrorException( RequestError error, string message) : base (message)
         {
             Error = error;
         }

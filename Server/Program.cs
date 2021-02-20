@@ -18,11 +18,7 @@ namespace Journal.Server
         /// <summary>
         ///     Директория запуска.
         /// </summary>
-        public static readonly string ExecutableDirectory = ExecutableDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-        static Program() 
-        {
-        }
+        public static readonly string ExecutableDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         static void Main(string[] args)
         {

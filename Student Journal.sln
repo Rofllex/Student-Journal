@@ -18,9 +18,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.ClientLib", "Journa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.ClientLib.Test", "Journal.ClientLib.Test\Journal.ClientLib.Test.csproj", "{AB6E0EBB-DDBE-4A64-BFFE-9B21D61EC2C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Journal.WindowsForms", "Journal.WindowsForms\Journal.WindowsForms.csproj", "{3E704F1F-5ACE-455F-8F41-1370CD45B081}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.WindowsForms", "Journal.WindowsForms\Journal.WindowsForms.csproj", "{3E704F1F-5ACE-455F-8F41-1370CD45B081}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentJournal.Logger", "StudentJournal.Logger\StudentJournal.Logger.csproj", "{3E196267-9433-4E60-8AEE-A8768871E100}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.Logger", "StudentJournal.Logger\Journal.Logger.csproj", "{3E196267-9433-4E60-8AEE-A8768871E100}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

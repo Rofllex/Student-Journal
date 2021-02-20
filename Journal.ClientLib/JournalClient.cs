@@ -16,99 +16,213 @@ namespace Journal.ClientLib
 {
     internal interface IJournalClientQueryExecuter
     {
-        Task<T> ExecuteQuery<T>(string controller, string method, ICollection<string> args);
-        Task<object> ExecuteQuery(string controller, string method, ICollection<string> args);
+        /// <summary>
+        ///     Выполнить запрос с передачей агрументов в теле.
+        /// </summary>
+        /// <typeparam name="T">
+        ///     Тип к которому необходимо привести ответ от сервера.
+        /// </typeparam>
+        /// <param name="controller">
+        ///     Контроллер к которому следует обратиться.
+        /// </param>
+        /// <param name="method">
+        ///     Метод к которому следует обратиться
+        /// </param>
+        /// <param name="args">
+        ///     Аргументы запроса.
+        /// </param>
+        /// <param name="useToken">
+        ///     Если необходимо использовать токен авторизации.
+        /// </param>
+        /// <returns>
+        ///     Может вернуть null, если ответ от сервера был пуст.
+        /// </returns>
+        /// <exception cref="WrongStatusCodeException">
+        ///     Если статус код ответа отличается от 200(OK).
+        /// </exception>
+        Task<T?> ExecutePostQuery<T>( string controller, string method, IDictionary<string, object>? args = null, bool useToken = true ) where T : class;
+
+        /// <summary>
+        ///     Выполнить запрос с передачей агрументов в теле.
+        /// </summary>
+        /// <param name="controller">
+        ///     Контроллер к которому следует обратиться.
+        /// </param>
+        /// <param name="method">
+        ///     Метод к которому следует обратиться
+        /// </param>
+        /// <param name="args">
+        ///     Аргументы запроса.
+        /// </param>
+        /// <param name="useToken">
+        ///     Если необходимо использовать токен авторизации.
+        /// </param>
+        /// <returns>
+        ///     Может вернуть null, если ответ от сервера был пуст.
+        /// </returns>
+        /// <exception cref="WrongStatusCodeException">
+        ///     Если статус код ответа отличается от 200(OK).
+        /// </exception>
+        Task<object?> ExecutePostQuery( string controller, string method, IDictionary<string, object>? args = null, bool useToken = true );
+
+        /// <summary>
+        ///     Метод выполнения GET запроса на сервер.
+        /// </summary>
+        /// <typeparam name="T">Объект к которому необходимо привести ответ.</typeparam>
+        /// <param name="controller">
+        ///     Контроллер к которому обращаются.
+        /// </param>
+        /// <param name="method">
+        ///     Метод контроллера к которому следует обратиться.
+        /// </param>
+        /// <param name="args">
+        ///     GET аргументы запроса.
+        /// </param>
+        /// <param name="useToken">
+        ///     Если необходимо использовать токен авторизации.
+        /// </param>
+        /// <returns>
+        ///     Может вернуть null, если ответ был пуст.
+        /// </returns>
+        /// <exception cref="WrongStatusCodeException">Если статус код отличается от 200(OK)</exception>
+        Task<T?> ExecuteQuery<T>( string controller, string method, ICollection<string>? args = null, bool useToken = true ) where T : class;
+
+        /// <summary>
+        ///     Метод выполнения GET запроса на сервер.
+        /// </summary>
+        /// <param name="controller">
+        ///     Контроллер к которому обращаются.
+        /// </param>
+        /// <param name="method">
+        ///     Метод контроллера к которому следует обратиться.
+        /// </param>
+        /// <param name="args">
+        ///     GET аргументы запроса.
+        /// </param>
+        /// <param name="useToken">
+        ///     Если необходимо использовать токен авторизации.
+        /// </param>
+        /// <returns>
+        ///     Может вернуть null, если ответ был пуст.
+        /// </returns>
+        /// <exception cref="WrongStatusCodeException">Если статус код отличается от 200(OK)</exception>
+        Task<object?> ExecuteQuery( string controller, string method, ICollection<string>? args = null, bool useToken = true );
     }
 
-    internal class JournalClientQueryExecuter : IJournalClientQueryExecuter
+    internal abstract class JournalClientQueryExecuterBase : IJournalClientQueryExecuter
     {
-        public string JwtToken
+        public Task<T?> ExecuteQuery<T>( string controller, string method, ICollection<string>? args = null, bool useToken = true ) where T : class
         {
-            get 
+            return Task.Run( () =>
             {
-                if (!string.IsNullOrWhiteSpace(_request.Authorization))
+                using ( HttpRequest request = CreateRequest( UriBase, useToken ) )
                 {
-                    string[] splittedJwt = _request.Authorization.Split(" ");
-                    if (splittedJwt.Length == 2)
-                        return splittedJwt[1];
+                    string getArgumentsLine = CreateGetArgumentsLine( args );
+                    if ( getArgumentsLine.Length > 0 )
+                        getArgumentsLine = getArgumentsLine.Insert( 0, "?" );
+                    HttpResponse response = request.Get( $"/api/{controller}/{method}{getArgumentsLine}" );
+                    if ( response.IsOK )
+                    {
+                        string responseString = response.ToString();
+                        if ( !string.IsNullOrWhiteSpace( responseString ) )
+                            return JsonConvert.DeserializeObject<T>( responseString );
+                        else
+                            return null;
+                    }
                     else
-                        return null;
+                        throw new WrongStatusCodeException( response.StatusCode );
                 }
-                else
-                    return null;
-            }
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    _request.Authorization = string.Empty;
-                }
-                else
-                {
-                    _request.Authorization = "Bearer " + value;
-                }
-            }
+            } );
         }
 
-        public JournalClientQueryExecuter(Uri uriBase)
+        public Task<object?> ExecuteQuery( string controller, string method, ICollection<string>? args = null, bool useToken = true )
+            => ExecuteQuery<object>( controller, method, args, useToken );
+
+        public Task<T?> ExecutePostQuery<T>( string controller, string method, IDictionary<string, object>? args = null, bool useToken = true ) where T : class
+        {
+            return Task.Run<T?>( () =>
+            {
+                using ( HttpRequest request = CreateRequest( UriBase, useToken ) )
+                {
+                    HttpResponse response;
+                    string url = $"/{controller}/{method}";
+                    if ( args == null || args.Count == 0 )
+                    {
+                        response = request.Post( url );
+                    }
+                    else
+                    {
+                        StringContent postBody = new StringContent( JsonConvert.SerializeObject( args ) );
+                        response = request.Post( url, postBody );
+                    }
+
+                    string responseString = response.ToString();
+                    if ( response.IsOK )
+                    {
+                        return JsonConvert.DeserializeObject<T>( responseString );
+                    }
+                    else
+                        throw new WrongStatusCodeException( response.StatusCode, response: responseString );
+                }
+            } );
+        }
+
+        public Task<object?> ExecutePostQuery( string controller, string method, IDictionary<string, object>? args = null, bool useToken = true )
+            => ExecutePostQuery<object>( controller, method, args, useToken );
+
+
+        protected abstract Uri UriBase { get; }
+
+        protected abstract HttpRequest CreateRequest( Uri uriBase, bool useToken = true );
+        
+        protected virtual string CreateGetArgumentsLine( ICollection<string>? getArguments )
+        {
+            string argumentsLine = string.Empty;
+            if ( getArguments != null )
+            {
+                using ( IEnumerator<string> enumerator = getArguments.GetEnumerator() )
+                {
+                    if ( enumerator.MoveNext() )
+                    {
+                        argumentsLine = enumerator.Current;
+                        while ( enumerator.MoveNext() )
+                            argumentsLine += "&" + enumerator.Current;
+                        return argumentsLine;
+                    }
+                    else
+                        return argumentsLine;
+                }
+            }
+            else
+                return argumentsLine;
+        }
+    }
+
+    /// <summary>
+    ///     Клиент с передачей токена аутентификации JWT.
+    /// </summary>
+    internal class JWTJournalClientQueryExecuter : JournalClientQueryExecuterBase
+    {
+        public string JwtToken { get; set; } = string.Empty;
+
+
+        public JWTJournalClientQueryExecuter(Uri uriBase)
         {
             _uriBase = uriBase ?? throw new ArgumentNullException(nameof(uriBase));
         }
 
-        public Task<T> ExecuteQuery<T>(string controller, string method, ICollection<string>? args = null)
+        protected override Uri UriBase => _uriBase;
+
+        protected override HttpRequest CreateRequest( Uri uriBase, bool useToken )
         {
-            return Task.Run(() =>
-            {
-                // TODO: может выбросить исключение если нет подключения к серверу.
-                HttpResponse response = _request.Get(_CreateUri(_uriBase, controller, method, args));
-                if (response.IsOK)
-                {
-                    string responseString = response.ToString();
-                    if (!string.IsNullOrWhiteSpace(responseString))
-                        return JsonConvert.DeserializeObject<T>(responseString);
-                    else
-                        throw new EmptyResponseException();
-                }
-                else
-                    throw new WrongStatusCodeException(response.StatusCode);
-
-            });
+            HttpRequest request = new HttpRequest( uriBase );
+            request.UserAgent = Http.ChromeUserAgent();
+            if ( useToken )
+                request.AddHeader( "Authorization", "Bearer " + JwtToken );
+            return request;
         }
-
-        public Task<object> ExecuteQuery(string controller, string method, ICollection<string> args) 
-            => ExecuteQuery<object>(controller, method, args);
-
 
         private Uri _uriBase;
-        private HttpRequest _request = new HttpRequest();
-
-        private Uri _CreateUri(Uri uriBase, string controller, string method, ICollection<string>? args)
-        {
-            string argumentsLine = _CreateArgumentsLine(args);
-            if (argumentsLine.Length > 0)
-                argumentsLine = $"?{argumentsLine}";
-            Uri uri = new Uri(uriBase, $"api/{controller}/{method}{argumentsLine}");
-            return uri;
-        }
-
-        private string _CreateArgumentsLine(ICollection<string>? args)
-        {
-            if (args != null)
-            {
-                IEnumerator<string> enumerator = args.GetEnumerator();
-                if (enumerator.MoveNext())
-                {
-                    string argsLine = (string)enumerator.Current;
-                    while (enumerator.MoveNext())
-                        argsLine += "&" + (string)enumerator.Current;
-                    return argsLine;
-                }
-                else
-                    return string.Empty;
-            }
-            else
-                return string.Empty;
-        }
     }
 
     public class JournalClient
@@ -116,7 +230,7 @@ namespace Journal.ClientLib
         public IUser CurrentUser { get; set; }
 
         
-        private JournalClient(JournalClientQueryExecuter queryExecuter, IUser currentUser, string token, DateTime tokenExpire, string refreshToken, DateTime refreshTokenExpire)
+        private JournalClient(IJournalClientQueryExecuter queryExecuter, IUser currentUser, string token, DateTime tokenExpire, string refreshToken, DateTime refreshTokenExpire)
         {
             CurrentUser = currentUser;
             _token = token;
@@ -130,13 +244,35 @@ namespace Journal.ClientLib
                         _refreshToken;
         private DateTime _tokenExpire,
                         _refreshTokenExpire;
-        private JournalClientQueryExecuter _queryExecuter;
+        private IJournalClientQueryExecuter _queryExecuter;
 
-
-        public static JournalClient Connect(string url, string login, string password)
+        /// <summary>
+        ///     Not Implemented
+        ///     Метод обновления токена.
+        /// </summary>
+        /// <returns></returns>
+        public bool UpdateToken()
         {
-            throw new NotImplementedException();    
+            throw new NotImplementedException();
+
+            if ( _refreshTokenExpire <= DateTime.Now )
+                return false;
+            //_queryExecuter.ExecuteQuery<>
         }
+
+
+
+
+        /// <summary>
+        /// Not Implemented
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="login"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public static JournalClient Connect(string url, string login, string password)
+            => throw new NotImplementedException();    
+        
 
         /// <summary>
         /// 
@@ -148,8 +284,13 @@ namespace Journal.ClientLib
         /// <exception cref="ExecuteQueryException" />
         public static async Task<JournalClient> ConnectAsync(string url, string login, string password)
         {
-            JournalClientQueryExecuter clientQueryExecuter = new JournalClientQueryExecuter(new Uri("http://localhost:5000/"));
-            JObject response = await clientQueryExecuter.ExecuteQuery<JObject>("Account", "Auth", new string[] { $"login={login}", $"password={password}" });
+            JWTJournalClientQueryExecuter clientQueryExecuter = new JWTJournalClientQueryExecuter(new Uri(url));
+            JObject? response = await clientQueryExecuter.ExecuteQuery<JObject>("Account", "Auth", new string[] { $"login={login}", $"password={password}" });
+            if (response != null )
+            {
+
+            }
+
 
             // Метод проверки и выброса исключения.
             _CheckAuthMethodResponse(response);

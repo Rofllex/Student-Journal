@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Journal.ClientLib\Journal.ClientLib.csproj" />
+    <ProjectReference Include="..\StudentJournal.Logger\Journal.Logger.csproj" />
   </ItemGroup>
 
 </Project>

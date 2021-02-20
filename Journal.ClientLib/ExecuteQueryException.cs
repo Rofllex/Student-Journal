@@ -9,7 +9,13 @@ namespace Journal.ClientLib
         DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public class ExecuteQueryException : Exception
     {
-        public ExecuteQueryException(string message) : base(message) { }
+        /// <summary>
+        ///     Ответ от сервера.
+        ///     Может быть null.
+        /// </summary>
+        public string? ResponseString { get; protected set; }
+
+        public ExecuteQueryException( string message, string? responseString = null ) : base( message ) => ( ResponseString ) = responseString;
 
         private string GetDebuggerDisplay()
             => "Исключение при вызове метода";

@@ -41,7 +41,7 @@ namespace Journal.WindowsForms.Forms
             // 
             this.loginTextBox.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.loginTextBox.Location = new System.Drawing.Point(120, 31);
-            this.loginTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.loginTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.loginTextBox.Name = "loginTextBox";
             this.loginTextBox.Size = new System.Drawing.Size(170, 26);
             this.loginTextBox.TabIndex = 0;
@@ -50,7 +50,7 @@ namespace Journal.WindowsForms.Forms
             // 
             this.passwordTextBox.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.passwordTextBox.Location = new System.Drawing.Point(120, 78);
-            this.passwordTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.passwordTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.passwordTextBox.Name = "passwordTextBox";
             this.passwordTextBox.PasswordChar = '*';
             this.passwordTextBox.Size = new System.Drawing.Size(170, 26);
@@ -82,7 +82,7 @@ namespace Journal.WindowsForms.Forms
             // 
             this.authorizeButton.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.authorizeButton.Location = new System.Drawing.Point(167, 112);
-            this.authorizeButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.authorizeButton.Margin = new System.Windows.Forms.Padding(4);
             this.authorizeButton.Name = "authorizeButton";
             this.authorizeButton.Size = new System.Drawing.Size(109, 32);
             this.authorizeButton.TabIndex = 3;
@@ -95,7 +95,7 @@ namespace Journal.WindowsForms.Forms
             this.rememberPasswordCheckbox.AutoSize = true;
             this.rememberPasswordCheckbox.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.rememberPasswordCheckbox.Location = new System.Drawing.Point(48, 118);
-            this.rememberPasswordCheckbox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.rememberPasswordCheckbox.Margin = new System.Windows.Forms.Padding(4);
             this.rememberPasswordCheckbox.Name = "rememberPasswordCheckbox";
             this.rememberPasswordCheckbox.Size = new System.Drawing.Size(106, 22);
             this.rememberPasswordCheckbox.TabIndex = 4;
@@ -114,7 +114,12 @@ namespace Journal.WindowsForms.Forms
             this.Controls.Add(this.passwordTextBox);
             this.Controls.Add(this.loginTextBox);
             this.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "AuthenticationForm";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Авторизация";
             this.ResumeLayout(false);
             this.PerformLayout();

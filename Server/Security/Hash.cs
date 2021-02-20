@@ -5,8 +5,6 @@ namespace Journal.Server.Security
 {
     public static class Hash
     {
-        private static readonly HashAlgorithm _hashAlgorithm = SHA256.Create();
-
         /// <summary>
         /// Получить хэш из входного набора байт.
         /// </summary>
@@ -24,5 +22,7 @@ namespace Journal.Server.Security
                 sb.Append(bytes[i].ToString("x2"));
             return sb.ToString();
         }
+
+        private static readonly HashAlgorithm _hashAlgorithm = SHA256.Create();
     }
 }

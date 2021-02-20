@@ -12,16 +12,15 @@ namespace Journal.ClientLib
     public class WrongStatusCodeException : ExecuteQueryException
     {
         public HttpStatusCode StatusCode { get; set; }
-        
-        public WrongStatusCodeException(HttpStatusCode statusCode, string message) : base (message) 
-        {
-            StatusCode = statusCode;
-        }
 
-        public WrongStatusCodeException(HttpStatusCode statusCode) : this(statusCode, $"Неверный код ответа({(int)statusCode}).") { }
+        public int StatusCodeInt => ( int )StatusCode;
+
+        internal WrongStatusCodeException( HttpStatusCode statusCode, string? message = null, string? response = null ) : base( message, response ) => StatusCode = statusCode;
+
+        internal WrongStatusCodeException(HttpStatusCode statusCode) : this(statusCode, $"Неверный код ответа({(int)statusCode}).") { }
 
         private string GetDebuggerDisplay()
-            => $"Неверный код ответа от сервера {StatusCode}";
+            => $"Неверный код ответа от сервера {StatusCode}({StatusCodeInt})";
         
     }
 }

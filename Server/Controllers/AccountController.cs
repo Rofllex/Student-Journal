@@ -108,11 +108,9 @@ namespace Journal.Server.Controllers
         /// <param name="refToken"></param>
         /// <returns></returns>
         [Authorize]
-        public Task<IActionResult> RefreshToken([FromQuery(Name = "refreshToken")] string refToken)
+        public async Task<IActionResult> RefreshToken([FromQuery(Name = "refreshToken")] string refToken)
         {
-            throw new NotImplementedException();
-
-            return Task.Run(() =>
+            return await Task.Run(() =>
             {
                 User user = _GetUserFromClaims();
                 
@@ -135,21 +133,7 @@ namespace Journal.Server.Controllers
         }
 
 
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        public Task<IActionResult> GetUsers(int offset, int count)
-        {
-            return Task.Run(() =>
-            {
-                User[]? users = _dbContext.Users.Skip(offset).Take(count).ToArray();
-                return (IActionResult)Json(new 
-                {
-                    users,
-                    count = users.Length
-                });
-            });
-        }
-
-
+        
         private bool _IsUserAuthenticated()
             => User.Claims.FirstOrDefault(c => c.Type == JwtTokenOptions.NAME_TYPE) != default;
         

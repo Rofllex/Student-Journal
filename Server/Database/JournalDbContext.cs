@@ -43,10 +43,17 @@ namespace Journal.Server.Database
         
         #region public static
         
-        public static void SetConnectionString(string connectionString) => _createJournalDbContext = () => new JournalDbContext(connectionString); 
+        public static void SetConnectionString(string connectionString) 
+            => _createJournalDbContext = () => new JournalDbContext(connectionString); 
         
 
-        private static Func<JournalDbContext> _createJournalDbContext = () => { throw new InvalidOperationException("Подключение к базе данных не настроено"); };
+        private static Func<JournalDbContext> _createJournalDbContext 
+            = () =>  throw new InvalidOperationException("Подключение к базе данных не настроено");
+        
+        /// <summary>
+        ///     Создание контекста бд.
+        ///     Если до вызова этого метода не был вызван метод <see cref="SetConnectionString(string)"/>, то выбросит исключение <see cref="InvalidOperationException"/>
+        /// </summary>
         public static JournalDbContext CreateContext() => _createJournalDbContext();
         
         #endregion
