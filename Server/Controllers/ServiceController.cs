@@ -11,6 +11,10 @@ namespace Journal.Server.Controllers
         , Route(ApiControllersRouting.API_CONTROLLER_DEFAULT_ROUTE)]
     public class ServiceController : Controller
     {
+        /// <summary>
+        ///     Метод получения статистики сервера.
+        /// </summary>
+        /// <returns></returns>
         public IActionResult GetStats()
         {
             DateTime startTime = _currentProcess.StartTime;

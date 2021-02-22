@@ -40,37 +40,43 @@ namespace Journal.Server.Controllers
         /// <param name="level">Уровень оценки</param>
         /// <returns></returns>
         [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Teacher))]
-        public async Task<IActionResult> Paste(int studentId, int subjectId, GradeLevel level, string reason)
+        public async Task<IActionResult> Paste([FromQuery(Name = "studentId")] int studentId
+                                            , [FromQuery(Name = "subjectId")] int subjectId
+                                            , [FromQuery(Name = "level")] GradeLevel level 
+                                            , [FromQuery(Name = "reason")] string reason = null)
         {
             return await Task.Run(() =>
             {
+                Response.StatusCode = StatusCodes.Status400BadRequest;
                 Student student = _dbContext.Students.Where(s => s.UserId == studentId)
                                                      .Include(s => s.UserEnt)
                                                      .FirstOrDefault();
                 if (student != null && student.UserEnt.IsInRole(UserRole.Student))
                 {
                     Subject subject = _dbContext.Subjects.FirstOrDefault(s => s.Id == subjectId);
-                    if (subject != null)
+                    if ( subject != null )
                     {
-                        User user = this.GetUserFromClaims(_dbContext);
-                        Grade grade = new Grade(user, subject, student, level, reason: reason);
-                        _dbContext.Grades.Add(grade);
+                        User user = this.GetUserFromClaims( _dbContext );
+                        Grade grade = new Grade( user, subject, student, level, reason: reason );
+                        _dbContext.Grades.Add( grade );
                         _dbContext.SaveChanges();
-                        return Json(grade);
+                        Response.StatusCode = StatusCodes.Status200OK;
+                        return Json( grade );
                     }
                     else
-                        return Json(new RequestError($"Предмет с идентификатором {subjectId} не найден!"));
+                        return Json( new InvalidArgumentRequestError( nameof(subjectId) ) );
                 }
                 else
-                    return Json(new RequestError("Пользователь не найден или не является студентом."));
+                    return Json(new RequestError($"Пользователь с идентификатором {studentId} не найден или не является студентом."));
             });
         }
         
         // not implemented
-        [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Teacher))]
+        [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Teacher))
+            , HttpPost]
         /// <summary>
-        /// Множественное выставление оценок.
-        /// Главное, чтобы студенты были из одной группы.
+        ///     Множественное выставление оценок.
+        ///     Главное, чтобы студенты были из одной группы.
         /// </summary>
         /// <param name="studentsId"></param>
         /// <param name="level"></param>
@@ -78,6 +84,8 @@ namespace Journal.Server.Controllers
         /// <returns></returns>
         public IActionResult PasteMultiple(int[] studentsId, GradeLevel level, string reason)
         {
+            var students = _dbContext.Students.Where( s => studentsId.Contains( s.UserId ) ).Include( s => s.GroupEnt );
+
             throw new NotImplementedException();
         }
 
@@ -152,12 +160,15 @@ namespace Journal.Server.Controllers
         private readonly JournalDbContext _dbContext;
     
         private Grade[] _GetGrades(int studentId, int subjectId)
-            => _dbContext.Grades.Where(g => g.StudentId == studentId && g.SubjectId == subjectId).ToArray();
+            => _dbContext.Grades.Where(g => g.StudentId == studentId 
+                                            && g.SubjectId == subjectId)
+                                .ToArray();
 
         private Grade[] _GetGrades(int studentId, int subjectId, DateTime startDate, DateTime endDate)
             => _dbContext.Grades.Where(g => g.StudentId == studentId 
                                             && g.SubjectId == subjectId 
                                             && g.Timestamp >= startDate 
-                                            && g.Timestamp < endDate).ToArray();
+                                            && g.Timestamp < endDate)
+                                .ToArray();
     }
 }

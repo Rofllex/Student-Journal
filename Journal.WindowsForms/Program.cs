@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace Journal.WindowsForms
@@ -15,12 +16,12 @@ namespace Journal.WindowsForms
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
 
-            /*Forms.AuthenticationForm authenticationForm = new Forms.AuthenticationForm();
-            DialogResult dialogResult = authenticationForm.ShowDialog();
-            if (dialogResult == DialogResult.OK )
-            {*/
+            Forms.AuthenticationForm authenticationForm = new Forms.AuthenticationForm();
+            if (authenticationForm.ShowDialog() == DialogResult.OK )
+            {
+                Debug.Assert( authenticationForm.JournalClient != null );
                 Application.Run( new Forms.MainForm() );
-            //}
+            }
         }
     }
 }
