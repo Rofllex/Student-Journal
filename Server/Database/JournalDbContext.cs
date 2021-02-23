@@ -29,6 +29,8 @@ namespace Journal.Server.Database
 
         public DbSet<Grade> Grades { get; set; }
 
+        
+
 
 
         private readonly string _connectionString;

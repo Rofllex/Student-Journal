@@ -30,7 +30,7 @@ namespace Journal.Server.Controllers
             });
         }
 
-        public async Task<IActionResult> GetUser( [FromQuery( Name = "id" )] int userId )
+        public async Task<IActionResult> Get( [FromQuery( Name = "id" )] int userId )
         {
             return await Task.Run( () =>
             {
@@ -45,7 +45,7 @@ namespace Journal.Server.Controllers
         }
 
         [Authorize( Roles = nameof( UserRole.Admin ) )]
-        public Task<IActionResult> GetUsers( int offset, int count )
+        public Task<IActionResult> Get( int offset, int count )
         {
             return Task.Run( () =>
             {
@@ -60,6 +60,17 @@ namespace Journal.Server.Controllers
             } );
         }
 
+        /// <summary>
+        ///     Метод создания студента.
+        /// </summary>
+        /// <param name="login"></param>
+        /// <param name="password"></param>
+        /// <param name="firstName"></param>
+        /// <param name="surname"></param>
+        /// <param name="lastName"></param>
+        /// <param name="phoneNumber"></param>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
         [Authorize( Roles = nameof( UserRole.Admin ) )]
         public async Task<IActionResult> CreateStudent(
             [FromQuery( Name = "login" )] string login
@@ -67,7 +78,8 @@ namespace Journal.Server.Controllers
             , [FromQuery( Name = "firstName" )] string firstName
             , [FromQuery( Name = "surname" )] string surname
             , [FromQuery( Name = "lastName" )] string lastName
-            , [FromQuery( Name = "phoneNumber" )] string phoneNumber )
+            , [FromQuery( Name = "phoneNumber" )] string phoneNumber
+            , [FromQuery(Name = "groupId")] int groupId = -1)
         {
             // Значение по умолчанию.
             Response.StatusCode = StatusCodes.Status400BadRequest;
@@ -82,9 +94,20 @@ namespace Journal.Server.Controllers
                         {
                             if ( _dbContext.Users.FirstOrDefault( u => u.Login == login ) == default )
                             {
-                                User user = new User( firstName, surname, login, Security.Hash.GetFromString( password ), UserRole.Student );
-                                user.LastName = lastName;
-                                user.PhoneNumber = phoneNumber;
+                                StudentGroup group;
+                                if ( groupId >= 0 )
+                                {
+                                    // Присвоить group значение из бд и если оно null, то вернуть ошибку запроса.
+                                    if ((group = _dbContext.Groups.Where( g => g.Id == groupId ).FirstOrDefault()) == default)
+                                        return Json( new RequestError($"Группа с идентификатором {groupId} не найдена.") );
+                                }
+                                else
+                                    group = null;
+                                User user = new User( firstName, surname, login, Security.Hash.GetFromString( password ), UserRole.Student )
+                                {
+                                    LastName = lastName,
+                                    PhoneNumber = phoneNumber
+                                };
 
                                 _dbContext.Users.Add( user );
 
@@ -98,17 +121,19 @@ namespace Journal.Server.Controllers
                                 return Json( new RequestError( "Аккаунт с таким логином уже занят" ) );
                         }
                         else
-                            return Json( new RequestError( nameof( surname ) ) );
+                            return Json( new InvalidArgumentRequestError( nameof( surname ) ) );
                     }
                     else
-                        return Json( new RequestError( nameof( firstName ) ) );
+                        return Json( new InvalidArgumentRequestError( nameof( firstName ) ) );
                 }
                 else
-                    return Json( new RequestError( nameof( password ) ) );
+                    return Json( new InvalidArgumentRequestError( nameof( password ) ) );
             }
             else
-                return Json( new RequestError( nameof( login ) ) );
+                return Json( new InvalidArgumentRequestError( nameof( login ) ) );
         }
+
+        
 
         private readonly JournalDbContext _dbContext;
     }

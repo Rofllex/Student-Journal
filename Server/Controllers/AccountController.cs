@@ -108,32 +108,28 @@ namespace Journal.Server.Controllers
         /// <param name="refToken"></param>
         /// <returns></returns>
         [Authorize]
-        public async Task<IActionResult> RefreshToken([FromQuery(Name = "refreshToken")] string refToken)
+        public async Task<IActionResult> RefreshToken( [FromQuery( Name = "refreshToken" )] string refToken )
         {
-            return await Task.Run(() =>
-            {
-                User user = _GetUserFromClaims();
-                
-                if (true /* user.RefreshToken == refToken*/)
-                {
-                    string token = _GenerateJWT(user, out DateTime tokenExpire),
-                            refreshToken = _GenerateRefreshToken(user, token, out DateTime refreshTokenExpire);
-                    return _CreateJWTActionResult(token, tokenExpire, refreshToken, refreshTokenExpire, _GetUserRoleNames(user).ToArray());
-                }
-                else
-                    return Unauthorized(new Common.Models.RequestError("Неверный refreshToken."));
-            });
+            return await Task.Run( () =>
+             {
+                 User user = _GetUserFromClaims();
+                 JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+                 
+                 if ( true /* user.RefreshToken == refToken*/)
+                 {
+                     string token = _GenerateJWT( user, out DateTime tokenExpire ),
+                             refreshToken = _GenerateRefreshToken( user, token, out DateTime refreshTokenExpire );
+                     return _CreateJWTActionResult( token, tokenExpire, refreshToken, refreshTokenExpire, _GetUserRoleNames( user ).ToArray() );
+                 }
+                 else
+                 {
+                     Response.StatusCode = StatusCodes.Status400BadRequest;
+                     return Unauthorized( new RequestError( "Неверный refreshToken." ) );
+                 }
+             } );
         }
 
 
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        public Task<IActionResult> CreateUser(string login, string password)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        
         private bool _IsUserAuthenticated()
             => User.Claims.FirstOrDefault(c => c.Type == JwtTokenOptions.NAME_TYPE) != default;
         
@@ -169,10 +165,7 @@ namespace Journal.Server.Controllers
         /// <param name="expireDate">Дата истечения токена</param>
         private string _GenerateJWT(User user, out DateTime expireDate)
         {
-            List<Claim> claims = new List<Claim>() 
-            { 
-                new Claim(JwtTokenOptions.NAME_TYPE, user.Login) 
-            };
+            List<Claim> claims = new List<Claim>() { new Claim(JwtTokenOptions.NAME_TYPE, user.Login) };
             claims.AddRange(_GetUserRoleClaims(user));
 
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(
@@ -188,6 +181,7 @@ namespace Journal.Server.Controllers
                 notBefore: DateTime.Now,
                 expires: (expireDate = DateTime.Now.Add(AuthOptions.JWT_TOKEN_LIFETIME)),
                 signingCredentials: new SigningCredentials(key: AuthOptions.GetSymmetricSecurityKey(), algorithm: SecurityAlgorithms.HmacSha256));
+            
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
         

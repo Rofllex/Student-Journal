@@ -35,10 +35,12 @@ namespace Journal.Server.Database
         /// </summary>
         public User UserEnt { get; set; }
 
-        
+        [ForeignKey(nameof(GroupEnt))]
+        public int? GroupId { get; set; }
+
         /// <summary>
-        /// Группа в которой учится студент.
-        /// Может быть null...
+        ///     Группа в которой учится студент.
+        ///     Может быть null.
         /// </summary>
         public StudentGroup? GroupEnt { get; set; }
 

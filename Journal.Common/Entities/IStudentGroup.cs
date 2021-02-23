@@ -8,6 +8,8 @@ namespace Journal.Common.Entities
     /// </summary>
     public interface IStudentGroup
     {
+        public int Id { get; }
+
         /// <summary>
         /// Куратор группы. Может быть <c>null</c> если куратор отсутствует
         /// </summary>

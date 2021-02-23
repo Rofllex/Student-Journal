@@ -1,38 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Journal.WindowsForms.Forms
+using Journal.ClientLib;
+using Journal.WindowsForms.Forms;
+
+namespace Journal.WindowsForms.ViewModels
 {
-    public partial class MainForm : Form
-    {
-        public MainForm(  )
-        {
-            InitializeComponent();
-
-            _viewModel = new MainFormViewModel( this );
-            menuStrip.ForeColor = Color.White;
-            userNameLabel.DataBindings.Add( nameof( Label.Text ), _viewModel, nameof( MainFormViewModel.UserName ) );
-#if DEBUG
-            menuStrip.Items.Add( "Сервис", null, _viewModel.OpenServiceMenuClicked );
-#endif
-
-        }
-
-
-        private MainFormViewModel _viewModel;
-    }
-
     public class MainFormViewModel : ViewModel
     {
-        public MainFormViewModel( Form mainForm )
+        public MainFormViewModel( Form mainForm, JournalClient journalClient )
         {
+            _journalClient = journalClient ?? throw new ArgumentNullException( nameof( journalClient ) );
+            _userName = $"{journalClient.CurrentUser.FirstName} {journalClient.CurrentUser.LastName}";
             _form = mainForm ?? throw new ArgumentNullException( nameof( mainForm ) );
         }
 
@@ -62,7 +41,7 @@ namespace Journal.WindowsForms.Forms
             }
         }
 
-        public void OpenServiceMenuClicked(object _, EventArgs __ )
+        public void OpenServiceMenu(object _, EventArgs __ )
         {
             IsVisible = false;
             using ( ServiceForm serviceForm = new ServiceForm() )
@@ -73,9 +52,15 @@ namespace Journal.WindowsForms.Forms
             IsVisible = true;
         }
 
+        public void OpenAdminPanel(object _, EventArgs __ )
+        {
+
+        }
+
         public void LogoutButtonClicked( object _, EventArgs __ )
             => _form.Close();
 
+        private JournalClient _journalClient;
         private bool _isVisible = true;
         private Form _form;
         private string _userName = string.Empty;

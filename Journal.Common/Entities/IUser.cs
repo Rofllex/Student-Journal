@@ -1,6 +1,8 @@
 ﻿#nullable enable
 using System;
 
+using Newtonsoft.Json;
+
 namespace Journal.Common.Entities
 {
     /// <summary>
@@ -11,36 +13,44 @@ namespace Journal.Common.Entities
         /// <summary>
         /// Идентификатор пользователя
         /// </summary>
+        [JsonProperty("id")]
         int Id { get; }
 
         /// <summary>
         /// Имя
         /// </summary>
+        [JsonProperty("firstName")]
         string FirstName { get; }
+
         /// <summary>
         /// Фамилия
         /// </summary>
+        [JsonProperty("surname")]
         string Surname { get; }
+
         /// <summary>
         /// Отчество
         /// </summary>
+        [JsonProperty("lastName")]
         string? LastName { get; }
+
         /// <summary>
         /// Номер телефона.
         /// </summary>
+        [JsonProperty("phoneNumber")]
         string? PhoneNumber { get; }
 
         /// <summary>
         /// Роль пользователя.
         /// </summary>
         /// <value>По умолчанию должно быть значение <see cref="UserRole.Guest"/></value>
+        [JsonProperty("role")]
         UserRole Role { get; }
     }
 
     /// <summary>
     /// Роль пользователя.
     /// </summary>
-    [Flags]
     public enum UserRole
     {
         /// <summary>
