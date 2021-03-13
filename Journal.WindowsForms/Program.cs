@@ -8,17 +8,28 @@ using Newtonsoft.Json;
 
 using Journal.Common;
 using Journal.Common.Entities;
+
+using Journal.ClientLib;
+
 #nullable enable
 
 namespace Journal.WindowsForms
 {
     static class Program
     {
+        static Program()
+        {
+            ExecutableDirectoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location!)!;
+            AuthenticationConfigPath = Path.Combine(ExecutableDirectoryPath!, AUTHENTICATION_FILE_PATH);
+        }
+
         private const string AUTHENTICATION_FILE_PATH = "auth.json";
         
-        private static readonly string AuthenticationConfigPath = Path.Combine( ExecutableDirectoryPath!, AUTHENTICATION_FILE_PATH );
-        
-        public static readonly string ExecutableDirectoryPath = Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location! )!;
+        private static readonly string AuthenticationConfigPath;
+
+        public static readonly string ExecutableDirectoryPath;
+
+
 
         /// <summary>
         ///  The main entry point for the application.
@@ -41,7 +52,7 @@ namespace Journal.WindowsForms
                     authenticationModel.Password = string.Empty;
                 _SaveAuthenticationModel( AuthenticationConfigPath, authenticationModel );
 
-                var journalClient = authenticationForm.JournalClient;
+                JournalClient? journalClient = authenticationForm.JournalClient;
                 Debug.Assert( journalClient != null );
 
                 Form currentForm;

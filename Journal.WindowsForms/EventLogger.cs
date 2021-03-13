@@ -1,33 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+
 using Journal.Logging;
 
 #nullable enable
 
 namespace Journal.WindowsForms
 {
+    public delegate void LogEventHandler(EventLogType logType, string? message, Exception? ex);
+    
+    /// <summary>
+    ///     Тип лога.
+    /// </summary>
+    public enum EventLogType
+    {
+        /// <summary>
+        ///     Отладочный лог
+        /// </summary>
+        Debug,
+        /// <summary>
+        ///     Информационный лог
+        /// </summary>
+        Info,
+        /// <summary>
+        ///     Лог предупреждения
+        /// </summary>
+        Warning,
+        /// <summary>
+        ///     Лог ошибки
+        /// </summary>
+        Error,
+        /// <summary>
+        ///     Лог фатальной ошибки
+        /// </summary>
+        Fatal,
+        /// <summary>
+        ///     Лог причины.
+        /// </summary>
+        Cause
+    }
+
     public class EventLogger : Logger
     {
-        public enum EventLogType
-        {
-            Debug,
-            Info,
-            Warning,
-            Error,
-            Fatal,
-            Cause
-        }
-
-        public EventLogger()
-        {
-
-        }
-
+        /// <summary>
+        ///     Пустое событие по умолчанию. NullReferenceException pattern.
+        /// </summary>
         public event LogEventHandler Log = (_,__,___) => { };
-        public delegate void LogEventHandler( EventLogType logType, string? message, Exception? ex );
-
-
 
         public override void Cause( string message )
             => OnLog( EventLogType.Cause, message, null );

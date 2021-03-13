@@ -36,7 +36,7 @@ namespace Journal.WindowsForms.Forms
             this.usersGridViewLastNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.usersGridViewPhoneColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.usersGridViewRoleColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.button1 = new System.Windows.Forms.Button();
+            this.loadUsersButton = new System.Windows.Forms.Button();
             this.offsetTextBox = new System.Windows.Forms.TextBox();
             this.countTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -104,14 +104,14 @@ namespace Journal.WindowsForms.Forms
             this.usersGridViewRoleColumn.Name = "usersGridViewRoleColumn";
             this.usersGridViewRoleColumn.ReadOnly = true;
             // 
-            // button1
+            // loadUsersButton
             // 
-            this.button1.Location = new System.Drawing.Point(20, 318);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(124, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Загрузить";
-            this.button1.UseVisualStyleBackColor = true;
+            this.loadUsersButton.Location = new System.Drawing.Point(20, 318);
+            this.loadUsersButton.Name = "loadUsersButton";
+            this.loadUsersButton.Size = new System.Drawing.Size(124, 23);
+            this.loadUsersButton.TabIndex = 1;
+            this.loadUsersButton.Text = "Загрузить";
+            this.loadUsersButton.UseVisualStyleBackColor = true;
             // 
             // offsetTextBox
             // 
@@ -158,9 +158,10 @@ namespace Journal.WindowsForms.Forms
             // 
             // usersTabPage
             // 
+            this.usersTabPage.BackColor = System.Drawing.Color.White;
             this.usersTabPage.Controls.Add(this.usersGridView);
             this.usersTabPage.Controls.Add(this.label2);
-            this.usersTabPage.Controls.Add(this.button1);
+            this.usersTabPage.Controls.Add(this.loadUsersButton);
             this.usersTabPage.Controls.Add(this.label1);
             this.usersTabPage.Controls.Add(this.offsetTextBox);
             this.usersTabPage.Controls.Add(this.countTextBox);
@@ -170,7 +171,6 @@ namespace Journal.WindowsForms.Forms
             this.usersTabPage.Size = new System.Drawing.Size(986, 593);
             this.usersTabPage.TabIndex = 0;
             this.usersTabPage.Text = "Пользователи";
-            this.usersTabPage.UseVisualStyleBackColor = true;
             // 
             // AdminPanelForm
             // 
@@ -191,7 +191,7 @@ namespace Journal.WindowsForms.Forms
         #endregion
 
         private System.Windows.Forms.DataGridView usersGridView;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button loadUsersButton;
         private System.Windows.Forms.TextBox offsetTextBox;
         private System.Windows.Forms.TextBox countTextBox;
         private System.Windows.Forms.Label label1;

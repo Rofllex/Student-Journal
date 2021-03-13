@@ -64,8 +64,11 @@ namespace Journal.WindowsForms.ViewModels
             get => Model.Password;
             set
             {
-                Model.Password = value;
-                InvokePropertyChanged();
+                if (value != Model.Password)
+                {
+                    Model.Password = value;
+                    InvokePropertyChanged();
+                }
             }
         }
 
@@ -115,16 +118,18 @@ namespace Journal.WindowsForms.ViewModels
                 }
                 catch ( ConnectFaillureException )
                 {
-                    MessageBox.Show( _form
-                                    , "Не удалось подключиться к серверу"
-                                    , "Ошибка подключения"
-                                    , MessageBoxButtons.OK
-                                    , MessageBoxIcon.Error );
+                    //MessageBox.Show( owner: _form
+                    //                , text: "Не удалось подключиться к серверу"
+                    //                , caption: "Ошибка подключения"
+                    //                , buttons: MessageBoxButtons.OK
+                    //                , icon: MessageBoxIcon.Error );
+                    _showError("Не удалось подключиться к серверу");
                 }
             }
             else
             {
-                MessageBox.Show( _form, "Неверный логин или пароль", "Ошибка" );
+                //MessageBox.Show( _form, "Неверный логин или пароль", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error );
+                _showError("Неверный логин или пароль");
             }
 
             CanAuthorize = true;
@@ -134,6 +139,14 @@ namespace Journal.WindowsForms.ViewModels
         private EventWaitHandle _authorizeWaitHandle = new EventWaitHandle( true, EventResetMode.ManualReset );
 
         private Form _form;
+    
+        private void _showError(string text)
+            => MessageBox.Show(owner: _form
+                                , text: text
+                                , caption: "Ошибка"
+                                , buttons: MessageBoxButtons.OK
+                                , icon: MessageBoxIcon.Error);
+        
     }
 
     public class AuthenticationModel : ICloneable
