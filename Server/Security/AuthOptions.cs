@@ -30,8 +30,8 @@ namespace Journal.Server.Security
         ///     Получить симметричный ключ безопасности.
         /// </summary>
         /// <returns></returns>
-        public static SymmetricSecurityKey GetSymmetricSecurityKey() => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(KEY));
+        public static SymmetricSecurityKey GetSymmetricSecurityKey() => new SymmetricSecurityKey(Encoding.ASCII.GetBytes(KEY));
 
-        private const string KEY = "8ih0w03dk0s5in697mpw5ombjt92z9ho";
+        private const string KEY = "!H4)j%]X=N6%TPJGV+A4!B%qp8";
     }
 }

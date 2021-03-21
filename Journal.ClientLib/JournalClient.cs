@@ -1,59 +1,26 @@
 ﻿using System;
 using System.Threading.Tasks;
-
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using Journal.Common.Entities;
 using Journal.ClientLib.Entities;
-using Newtonsoft.Json.Linq;
+using Journal.ClientLib.Infrastructure;
 
 #nullable enable
 
 namespace Journal.ClientLib
 {
-    public class JournalClient
+    public interface IJournalClient
     {
-        public IUser CurrentUser { get; private set; }
+        IClientQueryExecuter QueryExecuter { get; }
+        IUser User { get; }
+        bool CheckToken();
+        void RefreshToken();
+    }
 
-        /// <summary>
-        ///     Панель администратора.
-        ///     Может быть null, если пользователь не является администратором.
-        /// </summary>
-        public AdminPanelClient? AdminPanel { get; private set; }
-
-        
-        private JournalClient(JWTJournalClientQueryExecuter queryExecuter, IUser currentUser, string token, DateTime tokenExpire, string refreshToken, DateTime refreshTokenExpire)
-        {
-            CurrentUser = currentUser;
-            _token = token;
-            _tokenExpire = tokenExpire;
-            _refreshToken = refreshToken;
-            _refreshTokenExpire = refreshTokenExpire;
-            QueryExecuter = queryExecuter;
-        }
-
-        private string _token,
-                        _refreshToken;
-        private DateTime _tokenExpire,
-                        _refreshTokenExpire;
-        internal JWTJournalClientQueryExecuter QueryExecuter { get; private set; }
-
-        /// <summary>
-        ///     Метод проверки ответа от сервера при вызове метода Account/Auth
-        /// </summary>
-        /// <exception cref="ExecuteQueryException"/>
-        private static void _CheckAuthMethodResponse( JObject authMethodResponse )
-        {
-            if ( !authMethodResponse.ContainsKey( "token" ) )
-                throw new ExecuteQueryException( "Неверный ответ от метода авторизации. Токен был null." );
-            else if ( !authMethodResponse.ContainsKey( "refreshToken" ) )
-                throw new ExecuteQueryException( "Неверный ответ от метода авторизации. Токен обновления был null." );
-            else if ( !authMethodResponse.ContainsKey( "tokenExpire" ) )
-                throw new ExecuteQueryException( "Неверный ответ от метода авторизации. Время истечения токена было null." );
-            else if ( !authMethodResponse.ContainsKey( "refreshTokenExpire" ) )
-                throw new ExecuteQueryException( "Неверный ответ от метода авторизации. Время истечения токена обновления было null." );
-        }
-
-
-#region public static
+    public class JournalClient : IJournalClient
+    {
+        #region public static
 
         /// <summary>
         /// Not Implemented
@@ -63,8 +30,8 @@ namespace Journal.ClientLib
         /// <param name="password"></param>
         /// <returns></returns>
         public static JournalClient Connect(string url, string login, string password)
-            => throw new NotImplementedException();    
-        
+            => throw new NotImplementedException();
+
 
         /// <summary>
         ///     Метод подключения к серверу.
@@ -82,20 +49,27 @@ namespace Journal.ClientLib
         /// <exception cref="ConnectFaillureException" />
         public static async Task<JournalClient> ConnectAsync(string url, string login, string password)
         {
-            JWTJournalClientQueryExecuter clientQueryExecuter = new JWTJournalClientQueryExecuter(new Uri(url));
-            JObject? response = await clientQueryExecuter.ExecuteQuery<JObject>("Account", "Auth", new string[] { $"login={login}", $"password={password}" }, useToken: false);
-            if ( response != null )
+            JWTQueryExecuter clientQueryExecuter = new JWTQueryExecuter(new Uri(url), null);
+            //JObject? response = await clientQueryExecuter.ExecuteGetQuery<JObject>("Account", "Auth", new string[] { $"login={login}", $"password={password}" }, useToken: false);
+            JObject response = await clientQueryExecuter.ExecuteGetQuery<JObject>("Account", "Auth", new Dictionary<string, string>()
+            {
+                ["login"] = login,
+                ["password"] = password
+            }, useToken: false);
+
+            if (response != null)
             {
                 // Метод проверки и выброса исключения.
-                _CheckAuthMethodResponse( response );
+                _CheckAuthMethodResponse(response);
 
                 string token = response["token"]?.ToObject<string>() ?? string.Empty,
                         refreshToken = response["refreshToken"]?.ToObject<string>() ?? string.Empty;
                 DateTime tokenExpire = response["tokenExpire"]?.ToObject<DateTime>() ?? DateTime.MinValue
                     , refreshTokenExpire = response["refreshTokenExpire"]?.ToObject<DateTime>() ?? DateTime.MinValue;
-                clientQueryExecuter.JwtToken = token;
-                User? user = await clientQueryExecuter.ExecuteQuery<User>( "Users", "GetMe", Array.Empty<string>() );
-                if ( user != null )
+                clientQueryExecuter.JWTToken = token;
+
+                User user = await clientQueryExecuter.ExecuteGetQuery<User>("Users", "GetMe", getArgs: null, useToken: true);
+                if (user != null)
                 {
                     JournalClient journalClient = new JournalClient(
                         queryExecuter: clientQueryExecuter
@@ -103,7 +77,7 @@ namespace Journal.ClientLib
                         , token: token
                         , tokenExpire: tokenExpire
                         , refreshToken: refreshToken
-                        , refreshTokenExpire: refreshTokenExpire );
+                        , refreshTokenExpire: refreshTokenExpire);
                     return journalClient;
                 }
                 else
@@ -113,7 +87,45 @@ namespace Journal.ClientLib
                 throw new EmptyResponseException();
         }
 
-#endregion
+        #endregion
 
+        private JournalClient(IClientQueryExecuter queryExecuter, IUser currentUser, string token, DateTime tokenExpire, string refreshToken, DateTime refreshTokenExpire)
+            => (QueryExecuter, User, _token, _tokenExpire, _refreshToken, _refreshTokenExpire) = (queryExecuter, currentUser, token, tokenExpire, refreshToken, refreshTokenExpire);
+        
+        public IClientQueryExecuter QueryExecuter { get; private set; }
+
+        public IUser User { get; private set; }
+
+        public bool CheckToken()
+            => throw new NotImplementedException();
+        
+        public void RefreshToken()
+            => throw new NotImplementedException();
+        
+        private string _token,
+                        _refreshToken;
+        private DateTime _tokenExpire,
+                        _refreshTokenExpire;
+        
+        /// <summary>
+        ///     Метод проверки ответа от сервера при вызове метода Account/Auth
+        /// </summary>
+        /// <exception cref="ExecuteQueryException"/>
+        private static void _CheckAuthMethodResponse(JObject authMethodResponse)
+        {
+            string? message = null;
+
+            if (!authMethodResponse.ContainsKey("token"))
+                message = "Неверный ответ от метода авторизации. Токен был null.";
+            else if (!authMethodResponse.ContainsKey("refreshToken"))
+                message = "Неверный ответ от метода авторизации. Токен обновления был null.";
+            else if (!authMethodResponse.ContainsKey("tokenExpire"))
+                message = "Неверный ответ от метода авторизации. Время истечения токена было null.";
+            else if (!authMethodResponse.ContainsKey("refreshTokenExpire"))
+                message = "Неверный ответ от метода авторизации. Время истечения токена обновления было null.";
+            
+            if (message != null)
+                throw new ExecuteQueryException(message, authMethodResponse.ToString());
+        }
     }
 }

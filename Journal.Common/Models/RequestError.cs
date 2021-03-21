@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using System;
 using System.Diagnostics;
+
+#nullable enable
 
 namespace Journal.Common.Models
 {
@@ -12,6 +16,7 @@ namespace Journal.Common.Models
         /// <summary>
         /// Сообщение об ошибке.
         /// </summary>
+        [JsonRequired]
         public string Message { get; set; }
         
         public RequestError( string message)
@@ -54,13 +59,20 @@ namespace Journal.Common.Models
     /// </summary>
     public class RequestErrorException : Exception
     {
-        public RequestError Error { get; private set; }
+        public RequestErrorException( RequestError error ) : this (error, message: default) { }
 
-        public RequestErrorException( RequestError error ) : this (error, default) { }
-
-        public RequestErrorException( RequestError error, string message) : base (message)
+        public RequestErrorException( RequestError error, string? message) : base (message)
         {
             Error = error;
         }
+
+        public RequestErrorException(RequestError error, int statusCode, string? message = null) : this (error, message)
+        {
+            StatusCode = statusCode;
+        }
+
+        public RequestError Error { get; private set; }
+        public int? StatusCode { get; private set; }
     }
+
 }

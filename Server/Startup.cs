@@ -13,7 +13,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-using Journal.Server.Database;
 using Journal.Server.Security;
 
 namespace Journal.Server
@@ -67,10 +66,9 @@ namespace Journal.Server
                 app.UseHsts();
             }
 
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting().UseMvc(r => 
@@ -79,12 +77,6 @@ namespace Journal.Server
                     name: "default", 
                     template: "/{controller=View}/{action=Index}/");
             });
-
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    //endpoints.MapRazorPages();
-            //});
         }
     }
 }

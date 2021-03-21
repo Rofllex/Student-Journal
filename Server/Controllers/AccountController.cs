@@ -22,7 +22,6 @@ namespace Journal.Server.Controllers
 {
     [ApiController
         , Route(Infrastructure.ApiControllersRouting.API_CONTROLLER_DEFAULT_ROUTE)]
-    //[Route("api/[controller]/[action]")]
     public class AccountController : Controller
     {
         private readonly JournalDbContext _dbContext;
@@ -173,20 +172,22 @@ namespace Journal.Server.Controllers
                 authenticationType: "Token",
                 nameType: JwtTokenOptions.NAME_TYPE,
                 roleType: JwtTokenOptions.ROLE_TYPE);
-            
+
+            DateTime now = DateTime.Now;
+            expireDate = now.Add(AuthOptions.JWT_TOKEN_LIFETIME);
             JwtSecurityToken token = new JwtSecurityToken(
                 issuer: AuthOptions.ISSUER,
                 audience: AuthOptions.AUDIENCE,
                 claims: claimsIdentity.Claims,
-                notBefore: DateTime.Now,
-                expires: (expireDate = DateTime.Now.Add(AuthOptions.JWT_TOKEN_LIFETIME)),
+                notBefore: now,
+                expires: expireDate,
                 signingCredentials: new SigningCredentials(key: AuthOptions.GetSymmetricSecurityKey(), algorithm: SecurityAlgorithms.HmacSha256));
             
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
         
         private List<Claim> _GetUserRoleClaims(User user)
-            => _GetUserRoleNames(user).ConvertAll(roleName => new Claim("role", roleName));
+            => _GetUserRoleNames(user).ConvertAll(roleName => new Claim(JwtTokenOptions.ROLE_TYPE, roleName));
         
         private List<string> _GetUserRoleNames(User user)
         {
