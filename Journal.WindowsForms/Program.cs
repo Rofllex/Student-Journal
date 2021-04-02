@@ -56,7 +56,7 @@ namespace Journal.WindowsForms
                 Debug.Assert( journalClient != null );
 
                 Form currentForm;
-                switch (journalClient.CurrentUser.Role)
+                switch (journalClient.User.Role)
                 {
                     case UserRole.Admin:
                         currentForm = new Forms.AdminPanelForm( authenticationForm.JournalClient );

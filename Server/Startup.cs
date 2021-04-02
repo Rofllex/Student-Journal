@@ -41,7 +41,9 @@ namespace Journal.Server
                             ValidAudience = AuthOptions.AUDIENCE,
                             ValidateLifetime = true,
                             IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
-                            ValidateIssuerSigningKey = true
+                            ValidateIssuerSigningKey = true,
+                            RoleClaimType = JwtTokenOptions.ROLE_TYPE,
+                            NameClaimType = JwtTokenOptions.NAME_TYPE
                         };
                     });
             //services.AddRazorPages();

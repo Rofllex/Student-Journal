@@ -18,6 +18,20 @@ namespace Journal.Server.Database
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public class User : IUser
     {
+        public User()
+        {
+        }
+
+        public User(string firstName, string surname, string login, string passwordHash, UserRole role)
+        {
+            FirstName = firstName;
+            Surname = surname;
+            Login = login;
+            PasswordHash = passwordHash;
+            PasswordChanged = DateTime.Now;
+            URole = role;
+        }
+
         [Key
             , DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -84,25 +98,10 @@ namespace Journal.Server.Database
         [NotMapped]
         UserRole IUser.Role { get => URole.Value; }
 
-        
-        public User()
-        {
-        }
-
-        public User(string firstName, string surname, string login, string passwordHash, UserRole role)
-        {
-            FirstName = firstName;
-            Surname = surname;
-            Login = login;
-            PasswordHash = passwordHash;
-            PasswordChanged = DateTime.Now;
-            URole = role;
-        }
-
         public bool IsInRole(UserRole role) 
             => URole.HasValue ? URole.Value.HasFlag(role) : false;
 
         private string GetDebuggerDisplay()
-            => $"User - {Id} {Login} {URole} {FirstName} {Surname} {LastName}";
+            => $"ID({ Id })  LOGIN: \"{Login}\" ROLE: \"{URole}\"";
     }
 }

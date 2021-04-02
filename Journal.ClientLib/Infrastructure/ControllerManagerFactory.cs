@@ -21,6 +21,9 @@ namespace Journal.ClientLib.Infrastructure
 
         public TManager Create<TManager>(IJournalClient client, Func<TManager> instanceFactory) where TManager : IControllerManager
         {
+            if (!CanCreate<TManager>(client))
+                throw new Exception($"Не удалось создать экземпляр класса \"{ typeof(TManager).FullName }\" т.к. экземпляр клиента не соответствует наложенным ограничениям.");
+
             TManager instance = instanceFactory.Invoke();
             ControllerManagerBase? managerBase = instance as ControllerManagerBase;
             if (managerBase != null)
@@ -45,6 +48,15 @@ namespace Journal.ClientLib.Infrastructure
         }
 
         public bool CanCreate<TManager>(IJournalClient client) where TManager : IControllerManager
-            => true;
+        {
+            Type type = typeof(TManager);
+            foreach (Attribute attribute in type.GetCustomAttributes())
+            {
+                IControllerManagerRestriction? restriction = attribute as IControllerManagerRestriction;
+                if (restriction != null && !restriction.Check(client))
+                    return false;
+            }
+            return true;
+        }
     }
 }

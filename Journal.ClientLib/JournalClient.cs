@@ -10,14 +10,7 @@ using Journal.ClientLib.Infrastructure;
 
 namespace Journal.ClientLib
 {
-    public interface IJournalClient
-    {
-        IClientQueryExecuter QueryExecuter { get; }
-        IUser User { get; }
-        bool CheckToken();
-        void RefreshToken();
-    }
-
+    /// <inheritdoc cref="IJournalClient"/>
     public class JournalClient : IJournalClient
     {
         #region public static
@@ -67,8 +60,8 @@ namespace Journal.ClientLib
                 DateTime tokenExpire = response["tokenExpire"]?.ToObject<DateTime>() ?? DateTime.MinValue
                     , refreshTokenExpire = response["refreshTokenExpire"]?.ToObject<DateTime>() ?? DateTime.MinValue;
                 clientQueryExecuter.JWTToken = token;
-
-                User user = await clientQueryExecuter.ExecuteGetQuery<User>("Users", "GetMe", getArgs: null, useToken: true);
+                System.Diagnostics.Debug.Assert(response.ContainsKey("user"));
+                User user = response["user"].ToObject<User>();
                 if (user != null)
                 {
                     JournalClient journalClient = new JournalClient(

@@ -9,7 +9,7 @@ namespace Journal.ClientLib
         DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public class EmptyResponseException : ExecuteQueryException
     {
-        public EmptyResponseException() : base ("Пустой ответ от сервера", null) { }
+        public EmptyResponseException() : this ("Пустой ответ от сервера") { }
         public EmptyResponseException(string message) : base(message, null) { }
 
         private string GetDebuggerDisplay()

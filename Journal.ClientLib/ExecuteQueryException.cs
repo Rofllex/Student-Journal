@@ -5,18 +5,21 @@ using System.Diagnostics;
 
 namespace Journal.ClientLib
 {
+    /// <summary>
+    ///     Базовый класс исключения при выполнении запроса.
+    /// </summary>
     [Serializable,
         DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public class ExecuteQueryException : Exception
     {
-        public ExecuteQueryException( string message, string? responseString = null ) : base( message ) => ( ResponseString ) = responseString;
+        public ExecuteQueryException(string message, string? responseString = null) : base(message) => (ResponseString) = responseString;
 
-        public ExecuteQueryException(string message, string? responseString = null, Exception? innerException = null) : base (message, innerException)
+        public ExecuteQueryException(string message, string? responseString = null, Exception? innerException = null) : base(message, innerException)
         {
             ResponseString = responseString;
         }
 
-        public ExecuteQueryException(string message, int statusCode, string? responseString, Exception? innerException) : this (message, responseString, innerException)
+        public ExecuteQueryException(string message, int statusCode, string? responseString, Exception? innerException) : this(message, responseString, innerException)
         {
             StatusCode = statusCode;
         }
@@ -34,6 +37,9 @@ namespace Journal.ClientLib
         public int? StatusCode { get; protected set; }
 
         private string GetDebuggerDisplay()
-            => "Исключение при вызове метода";
+        {
+            string statusCodeString = StatusCode.HasValue ? StatusCode.Value.ToString() : "null";
+            return $"Исключение при выполнении запроса StatusCode: { statusCodeString }. Message: \"{ Message }\"";
+        }
     }
 }

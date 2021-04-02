@@ -30,7 +30,7 @@ namespace Journal.Server.Controllers
             });
         }
 
-        public async Task<IActionResult> Get( [FromQuery( Name = "id" )] int userId )
+        public async Task<IActionResult> GetUser( [FromQuery( Name = "id" )] int userId )
         {
             return await Task.Run( () =>
             {
@@ -45,7 +45,7 @@ namespace Journal.Server.Controllers
         }
 
         [Authorize( Roles = nameof( UserRole.Admin ) )]
-        public Task<IActionResult> Get( int offset, int count )
+        public Task<IActionResult> GetUsers([FromQuery(Name = "offset")] int offset, [FromQuery(Name = "count")] int count )
         {
             return Task.Run( () =>
             {

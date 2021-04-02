@@ -16,7 +16,7 @@ namespace Journal.WindowsForms.Forms
         {
             InitializeComponent();
 
-            AdminPanelViewModel viewModel = new AdminPanelViewModel(journalClient);
+            AdminPanelViewModel viewModel = new AdminPanelViewModel(journalClient, usersGridView);
             
             // offsetTextBox
             offsetTextBox.DataBindings.Add(nameof(offsetTextBox.Text), viewModel, nameof(viewModel.UsersOffsetTextBox));
@@ -29,11 +29,6 @@ namespace Journal.WindowsForms.Forms
             // loadUsersButton
             loadUsersButton.DataBindings.Add(nameof(loadUsersButton.Enabled), viewModel, nameof(viewModel.CanLoadUsers));
             loadUsersButton.Click += viewModel.LoadUsers;
-        }
-
-        private void tabControl1_SelectedIndexChanged( object sender, EventArgs e )
-        {
-
         }
     }
 }

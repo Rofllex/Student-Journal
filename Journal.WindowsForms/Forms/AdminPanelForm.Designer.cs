@@ -30,12 +30,6 @@ namespace Journal.WindowsForms.Forms
         private void InitializeComponent()
         {
             this.usersGridView = new System.Windows.Forms.DataGridView();
-            this.usersGridViewIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.usersGridViewFirstNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.usersGridViewSurnameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.usersGridViewLastNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.usersGridViewPhoneColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.usersGridViewRoleColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.loadUsersButton = new System.Windows.Forms.Button();
             this.offsetTextBox = new System.Windows.Forms.TextBox();
             this.countTextBox = new System.Windows.Forms.TextBox();
@@ -43,6 +37,13 @@ namespace Journal.WindowsForms.Forms
             this.label2 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.usersTabPage = new System.Windows.Forms.TabPage();
+            this.usersGridViewIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.usersGridViewFirstNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.usersGridViewSurnameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.usersGridViewLastNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.usersGridViewPhoneColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.usersGridViewRoleColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.user = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.usersGridView)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.usersTabPage.SuspendLayout();
@@ -60,49 +61,14 @@ namespace Journal.WindowsForms.Forms
             this.usersGridViewSurnameColumn,
             this.usersGridViewLastNameColumn,
             this.usersGridViewPhoneColumn,
-            this.usersGridViewRoleColumn});
+            this.usersGridViewRoleColumn,
+            this.user});
             this.usersGridView.Location = new System.Drawing.Point(8, 3);
             this.usersGridView.Name = "usersGridView";
             this.usersGridView.ReadOnly = true;
             this.usersGridView.RowTemplate.Height = 25;
             this.usersGridView.Size = new System.Drawing.Size(970, 244);
             this.usersGridView.TabIndex = 0;
-            // 
-            // usersGridViewIdColumn
-            // 
-            this.usersGridViewIdColumn.HeaderText = "Id";
-            this.usersGridViewIdColumn.Name = "usersGridViewIdColumn";
-            this.usersGridViewIdColumn.ReadOnly = true;
-            // 
-            // usersGridViewFirstNameColumn
-            // 
-            this.usersGridViewFirstNameColumn.HeaderText = "Имя";
-            this.usersGridViewFirstNameColumn.Name = "usersGridViewFirstNameColumn";
-            this.usersGridViewFirstNameColumn.ReadOnly = true;
-            // 
-            // usersGridViewSurnameColumn
-            // 
-            this.usersGridViewSurnameColumn.HeaderText = "Фамилия";
-            this.usersGridViewSurnameColumn.Name = "usersGridViewSurnameColumn";
-            this.usersGridViewSurnameColumn.ReadOnly = true;
-            // 
-            // usersGridViewLastNameColumn
-            // 
-            this.usersGridViewLastNameColumn.HeaderText = "Отчество";
-            this.usersGridViewLastNameColumn.Name = "usersGridViewLastNameColumn";
-            this.usersGridViewLastNameColumn.ReadOnly = true;
-            // 
-            // usersGridViewPhoneColumn
-            // 
-            this.usersGridViewPhoneColumn.HeaderText = "Телефон";
-            this.usersGridViewPhoneColumn.Name = "usersGridViewPhoneColumn";
-            this.usersGridViewPhoneColumn.ReadOnly = true;
-            // 
-            // usersGridViewRoleColumn
-            // 
-            this.usersGridViewRoleColumn.HeaderText = "Роли";
-            this.usersGridViewRoleColumn.Name = "usersGridViewRoleColumn";
-            this.usersGridViewRoleColumn.ReadOnly = true;
             // 
             // loadUsersButton
             // 
@@ -154,7 +120,6 @@ namespace Journal.WindowsForms.Forms
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(994, 621);
             this.tabControl1.TabIndex = 5;
-            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // usersTabPage
             // 
@@ -171,6 +136,49 @@ namespace Journal.WindowsForms.Forms
             this.usersTabPage.Size = new System.Drawing.Size(986, 593);
             this.usersTabPage.TabIndex = 0;
             this.usersTabPage.Text = "Пользователи";
+            // 
+            // usersGridViewIdColumn
+            // 
+            this.usersGridViewIdColumn.HeaderText = "Id";
+            this.usersGridViewIdColumn.Name = "usersGridViewIdColumn";
+            this.usersGridViewIdColumn.ReadOnly = true;
+            // 
+            // usersGridViewFirstNameColumn
+            // 
+            this.usersGridViewFirstNameColumn.HeaderText = "Имя";
+            this.usersGridViewFirstNameColumn.Name = "usersGridViewFirstNameColumn";
+            this.usersGridViewFirstNameColumn.ReadOnly = true;
+            // 
+            // usersGridViewSurnameColumn
+            // 
+            this.usersGridViewSurnameColumn.HeaderText = "Фамилия";
+            this.usersGridViewSurnameColumn.Name = "usersGridViewSurnameColumn";
+            this.usersGridViewSurnameColumn.ReadOnly = true;
+            // 
+            // usersGridViewLastNameColumn
+            // 
+            this.usersGridViewLastNameColumn.HeaderText = "Отчество";
+            this.usersGridViewLastNameColumn.Name = "usersGridViewLastNameColumn";
+            this.usersGridViewLastNameColumn.ReadOnly = true;
+            // 
+            // usersGridViewPhoneColumn
+            // 
+            this.usersGridViewPhoneColumn.HeaderText = "Телефон";
+            this.usersGridViewPhoneColumn.Name = "usersGridViewPhoneColumn";
+            this.usersGridViewPhoneColumn.ReadOnly = true;
+            // 
+            // usersGridViewRoleColumn
+            // 
+            this.usersGridViewRoleColumn.HeaderText = "Роли";
+            this.usersGridViewRoleColumn.Name = "usersGridViewRoleColumn";
+            this.usersGridViewRoleColumn.ReadOnly = true;
+            // 
+            // user
+            // 
+            this.user.HeaderText = "user";
+            this.user.Name = "user";
+            this.user.ReadOnly = true;
+            this.user.Visible = false;
             // 
             // AdminPanelForm
             // 
@@ -204,5 +212,6 @@ namespace Journal.WindowsForms.Forms
         private System.Windows.Forms.DataGridViewTextBoxColumn usersGridViewLastNameColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn usersGridViewPhoneColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn usersGridViewRoleColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn user;
     }
 }

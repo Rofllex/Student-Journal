@@ -6,6 +6,7 @@ using System.Net.Http;
 using System;
 using Journal.Common.Models;
 using System.Diagnostics;
+using Newtonsoft.Json.Linq;
 
 #nullable enable
 
@@ -34,13 +35,13 @@ namespace Journal.ClientLib.Infrastructure
         public async Task<T> ExecuteGetQuery<T>(string controller, string method, IEnumerable<KeyValuePair<string, string>>? getArgs = null, bool useToken = true)
         {
             Uri uri = _CreateUri(_uriBase, controller, method, getArgs);
-            HttpResponseMessage response = await _CatchSocketErrors(uri, _CreateClient(useToken), hc => hc.GetAsync(uri));
-            if (response.IsSuccessStatusCode)
+            HttpResponseMessage responseMessage = await _CatchSocketErrors(uri, _CreateClient(useToken), hc => hc.GetAsync(uri));
+            if (responseMessage.IsSuccessStatusCode)
             {
-                string? contentType = response.Content.Headers.ContentType?.MediaType ?? null;
+                string? contentType = responseMessage.Content.Headers.ContentType?.MediaType ?? null;
                 if (contentType == "application/json")
                 {
-                    string responseString = await response.Content.ReadAsStringAsync();
+                    string responseString = await responseMessage.Content.ReadAsStringAsync();
                     return JsonConvert.DeserializeObject<T>(responseString);
                 }
                 else
@@ -50,7 +51,7 @@ namespace Journal.ClientLib.Infrastructure
             }
             else
             {
-                await _HandleErrorRequest(response);
+                await _HandleErrorRequest(responseMessage);
                 //  Остановка в этом месте не произойдет т.к. строка выше выбросит исключение
                 throw new InvalidOperationException();
             }

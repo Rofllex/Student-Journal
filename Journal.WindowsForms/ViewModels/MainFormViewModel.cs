@@ -11,7 +11,7 @@ namespace Journal.WindowsForms.ViewModels
         public MainFormViewModel( Form mainForm, JournalClient journalClient )
         {
             _journalClient = journalClient ?? throw new ArgumentNullException( nameof( journalClient ) );
-            _userName = $"{journalClient.CurrentUser.FirstName} {journalClient.CurrentUser.LastName}";
+            _userName = $"{journalClient.User.FirstName} {journalClient.User.LastName}";
             _form = mainForm ?? throw new ArgumentNullException( nameof( mainForm ) );
         }
 
