@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 using Newtonsoft.Json;
@@ -10,6 +11,7 @@ using Journal.Common;
 using Journal.Common.Entities;
 
 using Journal.ClientLib;
+using System.Collections.Generic;
 
 #nullable enable
 
@@ -42,36 +44,40 @@ namespace Journal.WindowsForms
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
 
-            ViewModels.AuthenticationModel? authenticationModel = _LoadAuthenticationModel( AuthenticationConfigPath );
+            ViewModels.AuthenticationModel? authenticationModel = _LoadAuthenticationModel(AuthenticationConfigPath);
 
-            Forms.AuthenticationForm authenticationForm = new Forms.AuthenticationForm( authenticationModel );
-            if ( authenticationForm.ShowDialog() == DialogResult.OK )
+            Forms.AuthenticationForm authenticationForm = new Forms.AuthenticationForm(authenticationModel);
+            if (authenticationForm.ShowDialog() == DialogResult.OK)
             {
                 authenticationModel = authenticationForm.ViewModel.Model;
-                if ( !authenticationModel.RememberPassword )
+                if (!authenticationModel.RememberPassword)
                     authenticationModel.Password = string.Empty;
-                _SaveAuthenticationModel( AuthenticationConfigPath, authenticationModel );
+                _SaveAuthenticationModel(AuthenticationConfigPath, authenticationModel);
 
                 JournalClient? journalClient = authenticationForm.JournalClient;
-                Debug.Assert( journalClient != null );
+                Debug.Assert(journalClient != null);
 
-                Form currentForm;
-                switch (journalClient.User.Role)
+                Form? currentForm = _ChoiseFormByRole(journalClient, journalClient.User.Role);
+                if (currentForm == null)
                 {
-                    case UserRole.Admin:
-                        currentForm = new Forms.AdminPanelForm( authenticationForm.JournalClient );
-                        break;
-                    case UserRole.Student:
-                        currentForm = new Forms.StudentForm( journalClient );
-                        break;
-                    case UserRole.Teacher:
-                        currentForm = new Forms.TeacherForm( journalClient );
-                        break;
-                    default:
-                        throw new InvalidProgramException("Ни одна из форм не найдена.");
+                    List<UserRole> roles = new List<UserRole>();
+                    foreach (UserRole role in (UserRole[])Enum.GetValues(typeof(UserRole)))
+                    {
+                        if (journalClient.User.Role.HasFlag(role))
+                            roles.Add(role);
+                    }
+
+                    Forms.SelectRoleForm selectRoleForm = new Forms.SelectRoleForm(roles);
+                    if (selectRoleForm.ShowDialog() != DialogResult.OK)
+                        return;
+                    else
+                    {
+                        Debug.Assert(selectRoleForm.SelectedRole.HasValue);
+                        currentForm = _ChoiseFormByRole(journalClient, selectRoleForm.SelectedRole.Value);
+                        Debug.Assert(currentForm != null);
+                    }
                 }
-                                
-                Application.Run( currentForm );
+                Application.Run(currentForm);
             }
         }
 
@@ -156,5 +162,14 @@ namespace Journal.WindowsForms
                 sw.Dispose(); 
             }
         }
+
+        private static Form? _ChoiseFormByRole(JournalClient client, UserRole role)
+            => role switch
+            {
+                UserRole.Admin => new Forms.AdminPanelForm(client),
+                UserRole.Student => new Forms.StudentForm(client),
+                UserRole.Teacher => new Forms.TeacherForm(client),
+                _ => null
+            };
     }
 }

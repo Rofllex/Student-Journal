@@ -10,17 +10,28 @@ namespace Journal.ClientLib.Entities
     {
         public int Id { get; set; }
 
-        public IUser? Curator { get; set; }
+        public IUser? Curator { get; }
 
-        public ISpecialty Specialty { get; set; }
+        public ISpecialty Specialty { get; }
 
-        public int CurrentCourse { get; set; }
+        public int CurrentCourse { get;  }
 
-        public int Subgroup { get; set; }
+        public int Subgroup { get; }
 
-        public List<Student> StudentsList { get; set; }
+        public List<Student> StudentsList { get; }
 
         public IReadOnlyList<IStudent> GetStudentsList()
             => StudentsList;
+    }
+
+    public class Specialty : ISpecialty
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string Code { get; set; }
+
+        public int MaxCourse { get; set; }
     }
 }

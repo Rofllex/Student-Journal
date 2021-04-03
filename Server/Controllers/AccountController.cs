@@ -58,13 +58,6 @@ namespace Journal.Server.Controllers
                             refreshTokenExpire,
                             user
                         });
-
-                        
-                        //return _CreateJWTActionResult(token: token
-                        //                            , tokenExpire: tokenExpire
-                        //                            , refreshToken: refreshToken
-                        //                            , refreshTokenExpire: refreshTokenExpire
-                        //                            , role: user!.URole!.Value.ToString());
                     }
                     else
                         return Unauthorized(new RequestError("Неверный логин или пароль"));

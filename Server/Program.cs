@@ -89,15 +89,13 @@ namespace Journal.Server
             {
                 if (dbContext.Database.EnsureCreated())
                 {
-                    dbContext.Users.Add(new User()
-                    {
-                        Login = "root",
-                        PasswordHash = Security.Hash.GetFromString("root"),
-                        FirstName = "root",
-                        LastName = "root",
-                        Surname = "root",
-                        //Role = Common.Entities.UserRole.Admin,
-                    });
+                    User user = new User(firstName: "root"
+                        , surname: "root"
+                        , login: "root"
+                        , passwordHash: Security.Hash.GetFromString("root")
+                        , role: Common.Entities.UserRole.Admin);
+
+                    dbContext.Users.Add(user);
                     dbContext.SaveChanges();
                     Logger.Instance.Info($"{nameof(_InitializeDatabase)} —оздана база данных с пользователем по умолчанию.");
                 }

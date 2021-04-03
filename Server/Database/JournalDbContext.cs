@@ -29,7 +29,7 @@ namespace Journal.Server.Database
 
         public DbSet<Grade> Grades { get; set; }
 
-        
+        public DbSet<Teacher> Teachers { get; set; }
 
 
 

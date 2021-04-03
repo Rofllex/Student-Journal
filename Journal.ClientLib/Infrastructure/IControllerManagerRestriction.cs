@@ -20,7 +20,7 @@ namespace Journal.ClientLib.Infrastructure
         }
 
         public bool Check(IJournalClient client)
-            => client.User.Role == _requiredRole;
+            => client.User.Role.HasFlag(_requiredRole);
 
         private UserRole _requiredRole;
     }

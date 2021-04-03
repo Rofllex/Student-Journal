@@ -5,6 +5,7 @@
     /// </summary>
     public interface ITeacher
     {
+        int UserId { get; }
         IUser User { get; }
     }
 }

@@ -61,20 +61,15 @@ namespace Journal.ClientLib
                     , refreshTokenExpire = response["refreshTokenExpire"]?.ToObject<DateTime>() ?? DateTime.MinValue;
                 clientQueryExecuter.JWTToken = token;
                 System.Diagnostics.Debug.Assert(response.ContainsKey("user"));
-                User user = response["user"].ToObject<User>();
-                if (user != null)
-                {
-                    JournalClient journalClient = new JournalClient(
-                        queryExecuter: clientQueryExecuter
-                        , currentUser: user
-                        , token: token
-                        , tokenExpire: tokenExpire
-                        , refreshToken: refreshToken
-                        , refreshTokenExpire: refreshTokenExpire);
-                    return journalClient;
-                }
-                else
-                    throw new EmptyResponseException();
+                User user = response["user"]!.ToObject<User>()!;
+                JournalClient journalClient = new JournalClient(
+                    queryExecuter: clientQueryExecuter
+                    , currentUser: user
+                    , token: token
+                    , tokenExpire: tokenExpire
+                    , refreshToken: refreshToken
+                    , refreshTokenExpire: refreshTokenExpire);
+                return journalClient;
             }
             else
                 throw new EmptyResponseException();

@@ -21,9 +21,9 @@ namespace Journal.WindowsForms.ViewModels
         }
 
         public AuthenticationViewModel( Form form
-                                        , string ip = null
-                                        , string login = null
-                                        , string password = null
+                                        , string? ip = null
+                                        , string? login = null
+                                        , string? password = null
                                         , bool rememberPassword = false ) : this( form )
         {
             Ip = ip ?? string.Empty;
@@ -118,11 +118,6 @@ namespace Journal.WindowsForms.ViewModels
                 }
                 catch ( ConnectFaillureException )
                 {
-                    //MessageBox.Show( owner: _form
-                    //                , text: "Не удалось подключиться к серверу"
-                    //                , caption: "Ошибка подключения"
-                    //                , buttons: MessageBoxButtons.OK
-                    //                , icon: MessageBoxIcon.Error );
                     _showError("Не удалось подключиться к серверу");
                 }
             }

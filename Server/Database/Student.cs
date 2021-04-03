@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using Newtonsoft.Json;
+
 #nullable enable
 
 namespace Journal.Server.Database
 {
     /* 
-     * Проблема использования одинаковых названий и явная реализация членков интерфейса.
+     * Проблема использования одинаковых названий и явная реализация членов интерфейса.
      * Название UserEnt выбрано из-за того, что если публичный член и явная реализация имеют одинаковые названия членов
      * То EntityFramework будет пытаться загрузить сущность в член который явно реализован IStudent.User.
      * Но у него это не получится и будет выброшено исключение.
@@ -21,6 +23,26 @@ namespace Journal.Server.Database
     /// Наследуется от <see cref="Student"/>
     public class Student : IStudent
     {
+
+        /// <summary>
+        /// Конструктор для Ef.
+        /// </summary>
+#pragma warning disable CS8618
+        private Student()
+#pragma warning restore CS8618 
+        {
+
+        }
+
+        public Student(User user, StudentGroup? group = null)
+        {
+            UserEnt = user ?? throw new System.ArgumentNullException(nameof(user));
+            GroupEnt = group;
+            if (group != null)
+                GroupId = group.Id;
+            ParentEnts = new List<Parent>();
+        }
+
         /// <summary>
         /// Идентификатор пользователя.
         /// </summary>
@@ -43,32 +65,17 @@ namespace Journal.Server.Database
         ///     Может быть null.
         /// </summary>
         public StudentGroup? GroupEnt { get; set; }
-
+                
         public List<Parent> ParentEnts { get; set; }
 
-        [NotMapped]
+        [NotMapped
+            , JsonIgnore]
         IStudentGroup? IStudent.Group
             => GroupEnt;
         
-        [NotMapped]
+        [NotMapped
+            , JsonIgnore]
         IUser IStudent.User
             => UserEnt;
-        
-
-        /// <summary>
-        /// Конструктор для Ef.
-        /// </summary>
-#pragma warning disable CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
-        public Student()
-#pragma warning restore CS8618 // Поле, не допускающее значения NULL, должно содержать значение, отличное от NULL, при выходе из конструктора. Возможно, стоит объявить поле как допускающее значения NULL.
-        {
-
-        }
-
-        public Student(User user, StudentGroup? group = null)
-        {
-            UserEnt = user;
-            GroupEnt = group;
-        }
     }
 }

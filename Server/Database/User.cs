@@ -18,7 +18,7 @@ namespace Journal.Server.Database
     [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public class User : IUser
     {
-        public User()
+        private User()
         {
         }
 

@@ -22,18 +22,14 @@ namespace Journal.Server.Test
             {
                 if (dbContext.Database.EnsureCreated() || dbContext.Users.FirstOrDefault(u => u.Login == "root") == default)
                 {
-                    User rootUser = new User()
-                    {
-                        FirstName = "test",
-                        LastName = "test",
-                        Login = "root",
-                        URole = Common.Entities.UserRole.Admin,
-                        PasswordHash = Security.Hash.GetFromString("root"),
-                        Surname = "root",
-                    };
+                    User rootUser = new User(firstName: "test"
+                                            , surname: "test"
+                                            , login: "root"
+                                            , passwordHash: Security.Hash.GetFromString("root")
+                                            , role: UserRole.Admin | UserRole.Student);
                     dbContext.Users.Add(rootUser);
 
-                    Student rootStudent = new Student { UserEnt = rootUser };
+                    Student rootStudent = new Student(rootUser);
                     dbContext.Students.Add(rootStudent);
                     dbContext.SaveChanges();
                 }
