@@ -123,6 +123,7 @@ namespace Journal.WindowsForms.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(351, 196);
             this.Controls.Add(this.ipLabel);
             this.Controls.Add(this.ipTextBox);

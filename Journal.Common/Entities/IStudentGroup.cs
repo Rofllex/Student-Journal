@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 #nullable enable
+
 namespace Journal.Common.Entities
 {
     /// <summary>
@@ -8,12 +10,25 @@ namespace Journal.Common.Entities
     /// </summary>
     public interface IStudentGroup
     {
-        public int Id { get; }
+        /// <summary>
+        ///     Идентификатор группы
+        /// </summary>
+        int Id { get; }
+
+        /// <summary>
+        ///     Идентификатор куратора.
+        /// </summary>
+        int CuratorId { get; }
 
         /// <summary>
         /// Куратор группы. Может быть <c>null</c> если куратор отсутствует
         /// </summary>
         IUser? Curator { get; }
+
+        /// <summary>
+        ///     Идентификатор специальности
+        /// </summary>
+        int SpecialtyId { get; }
 
         /// <summary>
         /// Специальность группы. Не может быть null.
@@ -34,5 +49,11 @@ namespace Journal.Common.Entities
         /// Получить список студентов.
         /// </summary>
         IReadOnlyList<IStudent> GetStudentsList();
+
+        /// <summary>
+        ///     Дата выпуска группы.
+        ///     null, если на данный момент группа считается активной
+        /// </summary>
+        DateTime? GraduatedDate { get; }
     }
 }

@@ -1,45 +1,68 @@
 ﻿using Journal.Common.Entities;
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
+#nullable enable
 
 namespace Journal.Server.Database
 {
     /// <summary>
     /// Группа студентов.
     /// </summary>
+    /// <inheritdoc cref="IStudentGroup"/>
     public class StudentGroup : IStudentGroup
     {
+        public StudentGroup(Specialty specialty, int currentCourse, int subgroup, IEnumerable<Student> students, User? curator = null) 
+        {
+            SpecialtyEnt = specialty ?? throw new ArgumentNullException(nameof(specialty));
+            CurrentCourse = currentCourse;
+            Subgroup = subgroup;
+
+            if (curator != null)
+                CuratorEnt = curator;
+            Students = (students != null) ? new List<Student>(students) : new List<Student>();
+        }
+
+        // Предупреждение отключено т.к все данные будет записывать entity framework.
+#pragma warning disable CS8618
+        /// <summary>
+        ///     Конструктор для Entity framework`а.
+        /// </summary>
+        private StudentGroup() { }
+#pragma warning restore CS8618
+
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [ForeignKey(nameof(CuratorEnt))]
+        public int CuratorId { get; set; }
+
+        public User? CuratorEnt { get; set; }
+
+        [ForeignKey(nameof(SpecialtyEnt))]
+        public int SpecialtyId { get; set; }
+
         /// <summary>
-        /// Куратор группы. Может быть null.
-        /// </summary>
-        public User CuratorEnt { get; set; }
-        
-        /// <summary>
-        /// Специальность группы.
+        ///     Специальность.
         /// </summary>
         [Required]
         public Specialty SpecialtyEnt { get; set; }
-
-        /// <summary>
-        /// Курс 
-        /// </summary>
+        
+       
         public int CurrentCourse { get; set; }
 
-        /// <summary>
-        /// Подгруппа.
-        /// </summary>
         public int Subgroup { get; set; }
 
-        public IReadOnlyList<Student> Students { get; set; } = new List<Student>();
+        public List<Student> Students { get; set; }
+
+        public DateTime? GraduatedDate { get; set; }
 
         #region IStudentGroup implementation
 
-        IUser IStudentGroup.Curator => CuratorEnt;
+        IUser? IStudentGroup.Curator => CuratorEnt;
 
         ISpecialty IStudentGroup.Specialty => SpecialtyEnt;
 

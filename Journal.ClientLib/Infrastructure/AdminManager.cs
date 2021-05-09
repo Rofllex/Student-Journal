@@ -13,21 +13,19 @@ using Newtonsoft.Json.Linq;
 namespace Journal.ClientLib
 {
     [RoleManagerRestriction(Common.Entities.UserRole.Admin)]
-    public class AdminPanelManager : ControllerManagerBase
+    public class AdminManager : ControllerManagerBase
     {
-        public AdminPanelManager( IClientQueryExecuter queryExecuter ) : base (queryExecuter) 
+        public AdminManager( IClientQueryExecuter queryExecuter ) : base (queryExecuter) 
         {
         }
 
-        private AdminPanelManager() { }
+        private AdminManager() { }
 
         /// <summary>
-        /// 
+        ///     Получить список пользователей.
         /// </summary>
-        /// <param name="offset"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        /// <exception cref="WrongStatusCodeException"></exception>
+        /// <param name="offset">Смещение</param>
+        /// <param name="count">Кол-во</param>
         /// <exception cref="WrongStatusCodeException"></exception>
         public async Task<User[]?> GetUsersAsync(int offset, int count )
         {
@@ -46,6 +44,13 @@ namespace Journal.ClientLib
             Debug.Assert(response["users"] != null);
             return response["users"]!.ToObject<User[]>();
         }
+
+        /// <summary>
+        ///     Получить кол-во студентов.
+        /// </summary>
+        public Task<int> GetUsersCountAsync()
+            => QueryExecuter.ExecuteGetQuery<int>("Users", "GetUsersCount");
+        
 
         /// <summary>
         ///     Создать студента.
@@ -76,8 +81,8 @@ namespace Journal.ClientLib
             , string password
             , string firstName
             , string surname
-            , string lastName
-            , string phoneNumber
+            , string? lastName = null
+            , string? phoneNumber = null
             , StudentGroup? group = null)
         {
             if (string.IsNullOrWhiteSpace(login))
@@ -113,5 +118,6 @@ namespace Journal.ClientLib
                 return false;
             }
         }
+    
     }
 }

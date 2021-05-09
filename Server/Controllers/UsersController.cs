@@ -1,15 +1,17 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
+using System.Diagnostics;
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 
 using Journal.Server.Database;
 using Journal.Common.Models;
 using Journal.Server.Infrastructure;
 using Journal.Common.Entities;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 
 namespace Journal.Server.Controllers
 {
@@ -29,8 +31,11 @@ namespace Journal.Server.Controllers
         {
             return Task.Run(() => 
             {
-                User claimsUser = this.GetUserFromClaims(_dbContext);
-                return (IActionResult)Json(claimsUser);
+                Claim nameClaim = User.Claims.FirstOrDefault(c => c.Type == Security.JwtTokenOptions.NAME_TYPE);
+                Debug.Assert(nameClaim != null);
+
+                User user = _dbContext.Users.FirstOrDefault(u => u.Login == nameClaim.Value);
+                return (IActionResult)Json(this.GetUserFromClaims(_dbContext.Users));
             });
         }
 
@@ -46,6 +51,20 @@ namespace Journal.Server.Controllers
                 else
                     return Json( new RequestError( $"Пользователь с идентификатором { userId } не найден." ) );
             } );
+        }
+
+        public async Task<IActionResult> GetTeacher([FromQuery(Name = "teacherId")] int teacherId)
+        {
+            return await Task.Run(() =>
+            {
+                if (teacherId < 0)
+                    return Json(new RequestError($"Параметр { nameof(teacherId) } не может быть меньше 0"));
+
+                Teacher teacher = _dbContext.Teachers.FirstOrDefault(t => t.UserId == teacherId);
+                if (teacher == null)
+                    return Json(new RequestError($"Преподаватель с идентификатором { teacherId } не найден"));
+                return Json(teacher);
+            });
         }
 
         [Authorize( Roles = nameof( UserRole.Admin ) )]
@@ -64,13 +83,25 @@ namespace Journal.Server.Controllers
             } );
         }
 
+        public Task<IActionResult> GetUsersCount()
+        {
+            return Task.Run(() => 
+            {
+                return (IActionResult)Json(_dbContext.Users.Count());
+            });
+        }
         
 
 
-        [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Teacher))]
+        //[Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Teacher))]
         public IActionResult GetStudent([FromQuery(Name = "id")] int userId)
         {
-            Student student = _dbContext.Students.Include(s=>s.UserEnt).FirstOrDefault(s => s.UserId == userId);
+            Student student = _dbContext.Students.Include(s => s.UserEnt)
+                                                    .Include(s => s.GroupEnt)
+                                                    .FirstOrDefault(s => s.UserId == userId);
+            
+
+
             if (student != null)
             {
                 return Json(student);

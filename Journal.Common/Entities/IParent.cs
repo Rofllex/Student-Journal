@@ -7,6 +7,9 @@ namespace Journal.Common.Entities
     /// </summary>
     public interface IParent
     {
+        /// <summary>
+        ///     Идентификатор пользователя.
+        /// </summary>
         int UserId { get; }
 
         /// <summary>

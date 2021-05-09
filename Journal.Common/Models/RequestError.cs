@@ -3,8 +3,6 @@
 using System;
 using System.Diagnostics;
 
-#nullable enable
-
 namespace Journal.Common.Models
 {
     /// <summary>
@@ -23,10 +21,9 @@ namespace Journal.Common.Models
         {
             Message = message;
         }
-
-        public RequestError() 
-        {
-        }
+        
+        [JsonConstructor]
+        private RequestError() { }
 
         /// <summary>
         /// Выбросить исключение <see cref="RequestErrorException"/>

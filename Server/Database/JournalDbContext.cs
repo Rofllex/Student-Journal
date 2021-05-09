@@ -18,9 +18,7 @@ namespace Journal.Server.Database
         public DbSet<Specialty> Specialties { get; set; }
 
         public DbSet<StudentGroup> Groups { get; set; }
-
-        public DbSet<Grade> Ratings { get; set; }
-
+                
         public DbSet<TimetableDay> TimetableDays { get; set; }
 
         public DbSet<Subject> Subjects { get; set; }

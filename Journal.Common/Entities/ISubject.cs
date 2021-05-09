@@ -8,13 +8,13 @@ namespace Journal.Common.Entities
     public interface ISubject
     {
         /// <summary>
+        ///     Идентификатор предмета.
+        /// </summary>
+        int Id { get; }
+
+        /// <summary>
         /// Название предмета
         /// </summary>
         string Name { get; }
-
-        /// <summary>
-        /// Специальность.
-        /// </summary>
-        ISpecialty Specialty { get; }
     }
 }

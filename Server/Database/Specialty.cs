@@ -39,20 +39,24 @@ namespace Journal.Server.Database
         [Required]
         public int MaxCourse { get; set; }
 
-        [JsonIgnore]
-        public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
+        public List<Subject> Subjects { get; set; } = new List<Subject>();
 
-        public Specialty(string name, string code, int maxCourse)
+        IReadOnlyList<ISubject> ISpecialty.Subjects => GetSubjectsList();
+
+        public Specialty(string name, string code, int maxCourse, IEnumerable<Subject> subjects)
         {
             Name = name;
             Code = code;
             MaxCourse = maxCourse;
+            Subjects.AddRange(subjects);
         }
 
         public Specialty()
         {
 
         }
+
+        public IReadOnlyList<ISubject> GetSubjectsList() => Subjects;
 
         private string _GetDebuggerDisplay() 
             => $"Specialty: {Id} \"{Name}\"";

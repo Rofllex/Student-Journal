@@ -219,7 +219,5 @@ namespace Journal.Server.Controllers
             refreshTokenExpire = DateTime.Now.Add(AuthOptions.JWT_REFRESH_TOKEN_LIFETIME);
             return Hash.GetFromString(string.Concat(token.Substring(token.Length - 16, 16), ".", user.Login));
         }
-
-        
     }
 }

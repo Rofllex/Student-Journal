@@ -26,7 +26,6 @@ namespace Journal.Server.Controllers
         , Authorize]
     public class GradesController : Controller
     {
-        
         public GradesController()
         {
             _dbContext = JournalDbContext.CreateContext();
@@ -56,7 +55,7 @@ namespace Journal.Server.Controllers
                     Subject subject = _dbContext.Subjects.FirstOrDefault(s => s.Id == subjectId);
                     if ( subject != null )
                     {
-                        User user = this.GetUserFromClaims( _dbContext );
+                        User user = this.GetUserFromClaims( _dbContext.Users );
                         Grade grade = new Grade( user, subject, student, level, reason: reason );
                         _dbContext.Grades.Add( grade );
                         _dbContext.SaveChanges();
@@ -89,12 +88,17 @@ namespace Journal.Server.Controllers
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        ///     Получить оценки для текущего пользователя.
+        /// </summary>
+        /// <param name="subjId">Идентификатор предмета</param>
+        /// <returns></returns>
         [Authorize(Roles = nameof(UserRole.Student))]
         public async Task<IActionResult> GetGradesForMe([FromQuery(Name = "subjectId")] int subjId)
         {
             return await Task.Run(() =>
             {
-                User user = this.GetUserFromClaims(_dbContext);
+                User user = this.GetUserFromClaims(_dbContext.Users);
                 if (user.IsInRole(UserRole.Student))
                 {
                     Subject subject = _dbContext.Subjects.FirstOrDefault(s => s.Id == subjId);
@@ -116,12 +120,17 @@ namespace Journal.Server.Controllers
             });
         }
 
+        /// <summary>
+        ///     Получить оценки для студента.
+        /// </summary>
+        /// <param name="studentId">Идентификатор студента</param>
+        /// <param name="subjectId">Идентификатор предмета</param>
         [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Teacher) + "," + nameof(UserRole.StudentParent))]
         public Task<IActionResult> GetGrades([FromQuery(Name = "studentId")] int studentId, [FromQuery(Name = "subjectId")]int subjectId)
         {
             return Task.Run(() =>
             {
-                User currentUser = this.GetUserFromClaims(_dbContext);
+                User currentUser = this.GetUserFromClaims(_dbContext.Users);
                 Subject subject = _dbContext.Subjects.FirstOrDefault(s => s.Id == subjectId);
                 if (subject != default)
                 {

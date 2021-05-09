@@ -40,44 +40,52 @@ namespace Journal.WindowsForms
         static void Main()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            Application.SetHighDpiMode( HighDpiMode.SystemAware );
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault( false );
+            Application.SetCompatibleTextRenderingDefault(false);
 
-            ViewModels.AuthenticationModel? authenticationModel = _LoadAuthenticationModel(AuthenticationConfigPath);
-
-            Forms.AuthenticationForm authenticationForm = new Forms.AuthenticationForm(authenticationModel);
-            if (authenticationForm.ShowDialog() == DialogResult.OK)
+            while (true)
             {
-                authenticationModel = authenticationForm.ViewModel.Model;
-                if (!authenticationModel.RememberPassword)
-                    authenticationModel.Password = string.Empty;
-                _SaveAuthenticationModel(AuthenticationConfigPath, authenticationModel);
+                ViewModels.AuthenticationModel? authenticationModel = _LoadAuthenticationModel(AuthenticationConfigPath);
 
-                JournalClient? journalClient = authenticationForm.JournalClient;
-                Debug.Assert(journalClient != null);
-
-                Form? currentForm = _ChoiseFormByRole(journalClient, journalClient.User.Role);
-                if (currentForm == null)
+                Forms.AuthenticationForm authenticationForm = new Forms.AuthenticationForm(authenticationModel);
+                if (authenticationForm.ShowDialog() == DialogResult.OK)
                 {
-                    List<UserRole> roles = new List<UserRole>();
-                    foreach (UserRole role in (UserRole[])Enum.GetValues(typeof(UserRole)))
+                    authenticationModel = authenticationForm.ViewModel.Model;
+                    if (!authenticationModel.RememberPassword)
+                        authenticationModel.Password = string.Empty;
+                    _SaveAuthenticationModel(AuthenticationConfigPath, authenticationModel);
+
+                    JournalClient? journalClient = authenticationForm.JournalClient;
+                    Debug.Assert(journalClient != null);
+
+                    Form? currentForm = _ChoiseFormByRole(journalClient, journalClient.User.Role);
+                    if (currentForm == null)
                     {
-                        if (journalClient.User.Role.HasFlag(role))
-                            roles.Add(role);
+                        List<UserRole> roles = new List<UserRole>();
+                        foreach (UserRole role in (UserRole[])Enum.GetValues(typeof(UserRole)))
+                        {
+                            if (journalClient.User.Role.HasFlag(role))
+                                roles.Add(role);
+                        }
+
+                        Forms.SelectRoleForm selectRoleForm = new Forms.SelectRoleForm(roles);
+                        if (selectRoleForm.ShowDialog() != DialogResult.OK)
+                            return;
+                        else
+                        {
+                            Debug.Assert(selectRoleForm.SelectedRole.HasValue);
+                            currentForm = _ChoiseFormByRole(journalClient, selectRoleForm.SelectedRole.Value);
+                            Debug.Assert(currentForm != null);
+                        }
                     }
 
-                    Forms.SelectRoleForm selectRoleForm = new Forms.SelectRoleForm(roles);
-                    if (selectRoleForm.ShowDialog() != DialogResult.OK)
-                        return;
-                    else
-                    {
-                        Debug.Assert(selectRoleForm.SelectedRole.HasValue);
-                        currentForm = _ChoiseFormByRole(journalClient, selectRoleForm.SelectedRole.Value);
-                        Debug.Assert(currentForm != null);
-                    }
+                    DialogResult result = currentForm.ShowDialog();
+                    if (result != DialogResult.Retry)
+                        break;
                 }
-                Application.Run(currentForm);
+                else
+                    return;
             }
         }
 

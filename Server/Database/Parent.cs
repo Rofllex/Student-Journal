@@ -11,6 +11,14 @@ namespace Journal.Server.Database
     /// </summary>
     public class Parent : IParent
     {
+        public Parent(User user)
+        {
+            UserEnt = user ?? throw new System.ArgumentNullException(nameof(user));
+        }
+
+        private Parent() { }
+
+
         [Key
             , ForeignKey(nameof(UserEnt))]
         public int UserId { get; set; }
@@ -26,15 +34,5 @@ namespace Journal.Server.Database
         IReadOnlyList<IStudent> IParent.ChildStudents => ChildStudentEnts;
 
         #endregion
-
-        public Parent()
-        {
-
-        }
-
-        public Parent(User user)
-        {
-            UserEnt = user;
-        }
     }
 }

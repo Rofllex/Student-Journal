@@ -1,4 +1,6 @@
-﻿namespace Journal.Common.Entities
+﻿using System.Collections.Generic;
+
+namespace Journal.Common.Entities
 {
     /// <summary>
     /// Абстракция представляющая специальность
@@ -24,5 +26,7 @@
         /// Максимальный курс специальности.
         /// </summary>
         int MaxCourse { get; }
+
+        IReadOnlyList<ISubject> Subjects { get; }
     }
 }

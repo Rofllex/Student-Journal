@@ -33,6 +33,9 @@ namespace Journal.WindowsForms.Forms
             this.label2 = new System.Windows.Forms.Label();
             this.studentNameLabel = new System.Windows.Forms.Label();
             this.groupNameLabel = new System.Windows.Forms.Label();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.subjectsComboBox = new System.Windows.Forms.ComboBox();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -53,23 +56,40 @@ namespace Journal.WindowsForms.Forms
             this.label2.TabIndex = 0;
             this.label2.Text = "Группа: ";
             // 
-            // studentName
+            // studentNameLabel
             // 
             this.studentNameLabel.AutoSize = true;
             this.studentNameLabel.Location = new System.Drawing.Point(66, 9);
-            this.studentNameLabel.Name = "studentName";
+            this.studentNameLabel.Name = "studentNameLabel";
             this.studentNameLabel.Size = new System.Drawing.Size(79, 15);
             this.studentNameLabel.TabIndex = 0;
             this.studentNameLabel.Text = "studentName";
             // 
-            // groupName
+            // groupNameLabel
             // 
             this.groupNameLabel.AutoSize = true;
             this.groupNameLabel.Location = new System.Drawing.Point(81, 34);
-            this.groupNameLabel.Name = "groupName";
+            this.groupNameLabel.Name = "groupNameLabel";
             this.groupNameLabel.Size = new System.Drawing.Size(71, 15);
             this.groupNameLabel.TabIndex = 0;
             this.groupNameLabel.Text = "groupName";
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(23, 75);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowTemplate.Height = 25;
+            this.dataGridView1.Size = new System.Drawing.Size(765, 363);
+            this.dataGridView1.TabIndex = 1;
+            // 
+            // subjectsComboBox
+            // 
+            this.subjectsComboBox.FormattingEnabled = true;
+            this.subjectsComboBox.Location = new System.Drawing.Point(667, 26);
+            this.subjectsComboBox.Name = "subjectsComboBox";
+            this.subjectsComboBox.Size = new System.Drawing.Size(121, 23);
+            this.subjectsComboBox.TabIndex = 2;
             // 
             // StudentForm
             // 
@@ -77,12 +97,15 @@ namespace Journal.WindowsForms.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.subjectsComboBox);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.groupNameLabel);
             this.Controls.Add(this.studentNameLabel);
             this.Controls.Add(this.label1);
             this.Name = "StudentForm";
             this.Text = "StudentForm";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -94,5 +117,7 @@ namespace Journal.WindowsForms.Forms
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label studentNameLabel;
         private System.Windows.Forms.Label groupNameLabel;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.ComboBox subjectsComboBox;
     }
 }

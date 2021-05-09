@@ -16,6 +16,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.Common", "Journal.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.Logger", "StudentJournal.Logger\Journal.Logger.csproj", "{3E196267-9433-4E60-8AEE-A8768871E100}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Journal.ServerConsoleDebug", "Journal.ServerConsoleDebug\Journal.ServerConsoleDebug.csproj", "{475D828C-DB46-4B77-80B8-C447B35F96D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{3E196267-9433-4E60-8AEE-A8768871E100}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E196267-9433-4E60-8AEE-A8768871E100}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E196267-9433-4E60-8AEE-A8768871E100}.Release|Any CPU.Build.0 = Release|Any CPU
+		{475D828C-DB46-4B77-80B8-C447B35F96D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{475D828C-DB46-4B77-80B8-C447B35F96D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{475D828C-DB46-4B77-80B8-C447B35F96D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{475D828C-DB46-4B77-80B8-C447B35F96D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 using Journal.WindowsForms.ViewModels;
-using Journal.ClientLib;
-
 using Journal.WindowsForms.FormUtils;
+using Journal.ClientLib;
+using Journal.Common.Entities;
+using Journal.Common.Extensions;
+using Journal.ClientLib.Infrastructure;
 
 #nullable enable
 
@@ -16,19 +19,133 @@ namespace Journal.WindowsForms.Forms
         {
             InitializeComponent();
 
-            AdminPanelViewModel viewModel = new AdminPanelViewModel(journalClient, usersGridView);
-            
-            // offsetTextBox
-            offsetTextBox.DataBindings.Add(nameof(offsetTextBox.Text), viewModel, nameof(viewModel.UsersOffsetTextBox));
-            offsetTextBox.TextChanged += WinFomsHelper.OnlyNumbers;
+            _journalClient = journalClient;
 
-            // countTextBox
-            countTextBox.DataBindings.Add(nameof(countTextBox.Text), viewModel, nameof(viewModel.UsersCountTextBox));
-            countTextBox.TextChanged += WinFomsHelper.OnlyNumbers;
+            CheckForIllegalCrossThreadCalls = false;
+            _adminPanelViewModel = new AdminPanelViewModel(journalClient, this);
+            _InitAdminPanelFormBinding(_adminPanelViewModel);
 
-            // loadUsersButton
-            loadUsersButton.DataBindings.Add(nameof(loadUsersButton.Enabled), viewModel, nameof(viewModel.CanLoadUsers));
-            loadUsersButton.Click += viewModel.LoadUsers;
+            IControllerManagerFactory factory = new ControllerManagerFactory();
+            _databasePageViewModel = new DatabasePageViewModel(factory.Create<DatabaseManager>(journalClient));
+            _InitDatabasePageBinding(_databasePageViewModel);
+        }
+
+        private AdminPanelViewModel _adminPanelViewModel;
+        private DatabasePageViewModel _databasePageViewModel;
+        private IJournalClient _journalClient;
+
+        private void _InitAdminPanelFormBinding(AdminPanelViewModel viewModel)
+        {
+            #region AdminPanelFormViewModel
+
+            //usersGridView.CellFormatting += UsersGridView_CellFormatting;
+            usersGridView.Bind( viewModel, c => c.DataSource, vm => vm.Users );
+
+            currentPageTextBox.TextChanged += CurrentPageTextBox_TextChanged;
+            currentPageTextBox.Bind( viewModel, c => c.Text, vm => vm.CurrentPage );
+            //currentPageTextBox.DataBindings.Add(nameof(TextBox.Text), viewModel, nameof(viewModel.CurrentPage));
+
+            predPageButton.Click += viewModel.ScrollLeft;
+            predPageButton.Bind( viewModel, c => Enabled, vm => vm.CanScrollLeft );
+            //predPageButton.DataBindings.Add(nameof(predPageButton.Enabled), viewModel, nameof(viewModel.CanScrollLeft));
+
+            nextPageButton.Click += viewModel.ScrollRight;
+            nextPageButton.Bind( viewModel, c => c.Enabled, vm => vm.CanScrollRight );
+            //nextPageButton.DataBindings.Add(nameof(nextPageButton.Enabled), viewModel, nameof(viewModel.CanScrollRight));
+
+            usersCountLabel.Bind( viewModel, c => c.Text, vm => vm.UsersCount );
+            //usersCountLabel.DataBindings.Add(nameof(usersCountLabel.Text), viewModel, nameof(viewModel.UsersCount));
+
+            #endregion
+
+            logoutMenuItem.Click += viewModel.LogoutClicked;
+        }
+
+        private void _InitDatabasePageBinding(DatabasePageViewModel viewModel)
+        {
+            //specialtyNameTextBox.Bind(viewModel, c => c.Text, vm => vm.SpecialtyName);
+
+            //specialtyCodeTextBox.Bind(viewModel, c => c.Text, vm => vm.SpecialtyCode);
+
+            //courseCountTextBox.Bind(viewModel, c => c.Text, vm => vm.MaxCourse);
+
+            //createSpecialtyButton.Click += viewModel.CreateSpecialtyButtonClicked;
+        }
+
+
+
+        private void CurrentPageTextBox_TextChanged(object? sender, EventArgs e)
+        {
+            TextBox? textBox = sender as TextBox;
+            if (textBox != null)
+            {
+                string text = textBox.Text;
+                if (!string.IsNullOrWhiteSpace( text ))
+                {
+                    int selectionIndex = textBox.SelectionStart;
+                    for (int charIndex = 0 ; charIndex < text.Length ; charIndex++)
+                    {
+                        if (!char.IsDigit( text[charIndex] ))
+                        {
+                            text = text.Remove( charIndex, 1 );
+                            if (charIndex < selectionIndex)
+                                selectionIndex--;
+                            charIndex--;
+                        }
+                    }
+
+                    text = int.Parse( text ).ToString( );
+
+                    if (text != textBox.Text)
+                    {
+                        textBox.Text = text;
+                        textBox.SelectionStart = selectionIndex;
+                    }
+                }
+                else
+                {
+                    textBox.Text = "0";
+                    textBox.SelectionStart = textBox.Text.Length;
+                    textBox.SelectionLength = 0;
+                    currentPageTextBox_KeyPress( sender, new KeyPressEventArgs( '0' ) );
+                }
+            }
+        }
+
+        private void UsersGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            Type? valueType = e.Value?.GetType();
+            if (valueType == typeof(UserRole))
+            {
+                UserRole originalValue = (UserRole)e.Value!;
+
+                string formattedValue;
+                using (IEnumerator<UserRole> enumerator = originalValue.GetFlags().GetEnumerator())
+                {
+                    if (enumerator.MoveNext())
+                    {
+                        formattedValue = enumerator.Current.ToString();
+                        while (enumerator.MoveNext())
+                        {
+                            formattedValue += ", " + enumerator.Current.ToString();
+                        }
+                    }
+                    else
+                        formattedValue = "{\"empty role\"}";
+                }
+                e.Value = formattedValue;
+            }
+        }
+                
+        private void currentPageTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            _adminPanelViewModel.CurrentPage = int.Parse(((TextBox)sender).Text);
+        }
+
+        private void specialtiesButton_Click(object sender, EventArgs e)
+        {
+            using SpecialtiesForm specForm = new SpecialtiesForm(this._journalClient);
+            specForm.ShowDialog();
         }
     }
 }

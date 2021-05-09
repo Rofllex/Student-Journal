@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 
-using Leaf.xNet;
 
 #nullable enable
 
@@ -14,13 +13,13 @@ namespace Journal.ClientLib
         DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     public class WrongStatusCodeException : ExecuteQueryException
     {
-        public HttpStatusCode HttpStatusCode { get; set; }
+        public int HttpStatusCode { get; set; }
 
-        public int StatusCodeInt => ( int )HttpStatusCode;
+        public int StatusCodeInt => HttpStatusCode;
 
-        internal WrongStatusCodeException( HttpStatusCode statusCode, string? message = null, string? response = null ) : base( message, response ) => HttpStatusCode = statusCode;
+        internal WrongStatusCodeException( int statusCode, string? message = null, string? response = null ) : base( message, response ) => HttpStatusCode = statusCode;
 
-        internal WrongStatusCodeException(HttpStatusCode statusCode) : this(statusCode, $"Неверный код ответа({(int)statusCode}).") { }
+        internal WrongStatusCodeException(int statusCode) : this(statusCode, $"Неверный код ответа({(int)statusCode}).") { }
 
         private string GetDebuggerDisplay()
             => $"Неверный код ответа от сервера {HttpStatusCode}({StatusCodeInt})";
