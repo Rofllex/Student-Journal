@@ -141,7 +141,6 @@ namespace Journal.Server.Controllers
             }
         }
 
-
         /// <summary>
         /// Получение специальности по идентификатору.
         /// </summary>
@@ -150,7 +149,7 @@ namespace Journal.Server.Controllers
         {
             return await Task.Run(() =>
             {
-                Specialty specialty = _dbContext.Specialties.FirstOrDefault(s => s.Id == specialtyId);
+                Specialty specialty = _dbContext.Specialties.Include(s => s.Subjects).FirstOrDefault(s => s.Id == specialtyId);
                 if (specialty != default)
                 {
                     return (IActionResult)Json(specialty);
@@ -398,6 +397,67 @@ namespace Journal.Server.Controllers
             }
 
             return Json(group);
+        }
+
+        /// <summary>
+        ///     Получение групп студентов
+        /// </summary>
+        public IActionResult GetGroups([FromQuery(Name = "offset")] int offset, [FromQuery(Name = "count")] int count)
+        {
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            if (count < 0)
+                return Json(new RequestError("Параметр count не может быть меньше 0"));
+            if (offset < 0)
+                return Json(new RequestError("Параметр offset не может быть меньше 0"));
+
+            StudentGroup[] groups = _dbContext.Groups.Include(g => g.SpecialtyEnt)
+                                                     .Include(g => g.CuratorEnt)
+                                                     .Skip(offset)
+                                                     .Take(count)
+                                                     .ToArray();
+            Response.StatusCode = StatusCodes.Status200OK;
+            return Json(new
+            {
+                count = groups.Length,
+                groups
+            });
+        }
+
+        /// <summary>
+        ///     Получить список групп по специальности.
+        /// </summary>
+        /// <param name="specialtyId">Идентификатор специальности</param>
+        public IActionResult GetGroupsBySpecialty([FromQuery(Name = "specialtyId")] int specialtyId)
+        {
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            if (specialtyId < 1)
+                return Json(new RequestError("Параметр specialtyId не может быть меньше 1"));
+            StudentGroup[] groups = _dbContext.Groups.Include(g => g.SpecialtyEnt).Where(g => g.SpecialtyId == specialtyId).ToArray();
+            Response.StatusCode = StatusCodes.Status200OK;
+            return Json(new
+            {
+                count = groups.Length,
+                groups
+            });
+        }
+        
+        /// <summary>
+        ///     Получить список студентов в группе.
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public IActionResult GetStudentsInGroup([FromQuery(Name = "groupId")] int groupId)
+        {
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            if (groupId < 1)
+                return Json(new RequestError("Параметр groupId не может быть меньше 1"));
+            Student[] students = _dbContext.Students.Where(s => s.GroupId == groupId).Include(s => s.UserEnt).ToArray();
+            Response.StatusCode = StatusCodes.Status200OK;
+            return Json(new
+            {
+                count = students.Length,
+                students
+            });
         }
 
         private readonly JournalDbContext _dbContext;

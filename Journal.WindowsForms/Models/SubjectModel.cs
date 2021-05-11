@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Journal.WindowsForms.Models
 {
-    public class SubjectModel 
+    public class SubjectModel : GenericModuleBase<Subject>
     {
         public static SubjectModel[] FromOriginal(IEnumerable<Subject> subjects)
             => subjects.ToList().ConvertAll(s => new SubjectModel(s)).ToArray();
@@ -14,13 +14,7 @@ namespace Journal.WindowsForms.Models
         public static implicit operator Subject(SubjectModel subj)
                 => subj.Original;
 
-        public SubjectModel(Subject original)
-        {
-            Original = original;
-        }
-
-        [Browsable(false)]
-        public Subject Original { get; private set; }
+        public SubjectModel(Subject original) : base(original) { }
 
         [DisplayName("Название")]
         public string Name => Original.Name;
@@ -28,5 +22,4 @@ namespace Journal.WindowsForms.Models
         public override string ToString()
             => Name;
     }
-
 }

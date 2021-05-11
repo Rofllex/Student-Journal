@@ -19,6 +19,12 @@ namespace Journal.WindowsForms
 {
     static class Program
     {
+        public static void LogoutForm(Form form)
+        {
+            form.DialogResult = DialogResult.Retry;
+            form.Close();
+        }
+
         static Program()
         {
             ExecutableDirectoryPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location!)!;

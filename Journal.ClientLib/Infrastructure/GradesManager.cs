@@ -1,0 +1,75 @@
+﻿using Journal.ClientLib.Entities;
+using Journal.Common.Entities;
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+
+namespace Journal.ClientLib.Infrastructure
+{
+    public class GradesManager : ControllerManagerBase
+    {
+        public Task<Grade> Paste(int studentId, int subjectId, GradeLevel gradeLevel, string reason = null)
+        {
+            Dictionary<string, string> args = new Dictionary<string, string>
+            {
+                ["studentId"] = studentId.ToString(),
+                ["subjectId"] = subjectId.ToString(),
+                ["level"] = ((int)gradeLevel).ToString()
+            };
+            if (!string.IsNullOrWhiteSpace(reason))
+                args["reason"] = reason;
+
+            return QueryExecuter.ExecuteGetQuery<Grade>(CONTROLLER_NAME, "Paste", args);
+        }
+
+        public Task<Grade> Paste(Student student, Subject subject, GradeLevel gradeLevel, string reason = null)
+            => Paste(student.UserId, subject.Id, gradeLevel, reason);
+
+        /// <summary>
+        ///     Множественное выставление оценок
+        /// </summary>
+        /// <param name="studentIds">Идентификаторы студентов</param>
+        /// <param name="subjectId">Идентификаторы предметов</param>
+        /// <param name="grade">Уровень оценки</param>
+        /// <param name="reason">Причина выставления</param>
+        /// <exception cref="ArgumentException" />
+        /// <exception cref="ArgumentNullException" />
+        public Task<Grade[]> PasteMultiple(IEnumerable<int> studentIds, int subjectId, GradeLevel grade, string reason = null)
+        {
+            if (studentIds == null)
+                throw new ArgumentNullException(nameof(studentIds));
+            JArray idsArray = JArray.FromObject(studentIds);
+            if (idsArray.Count == 0)
+                throw new ArgumentException("Необходимо указать идентификаторы студентов", nameof(studentIds));
+            if (!((GradeLevel[])Enum.GetValues(typeof(GradeLevel))).Contains(grade))
+                throw new ArgumentException("Неверное значение", nameof(grade));
+
+            Dictionary<string, string> getArgs = new Dictionary<string, string>()
+            {
+                ["subjectId"] = subjectId.ToString(),
+                ["gradeLevel"] = ((int)grade).ToString(),
+            };
+            if (!string.IsNullOrWhiteSpace(reason))
+                getArgs["reason"] = reason;
+            return QueryExecuter.ExecutePostQuery<Grade[]>(CONTROLLER_NAME, "PasteMultiple", idsArray, getArgs);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="students"></param>
+        /// <param name="subject"></param>
+        /// <param name="grade"></param>
+        /// <param name="reason"></param>
+        /// <returns></returns>
+        public Task<Grade[]> PasteMultiple(IEnumerable<Student> students, Subject subject, GradeLevel grade, string reason = null)
+            => PasteMultiple(students.Select(s => s.UserId), subject.Id, grade, reason);
+
+
+        private const string CONTROLLER_NAME = "Grades";
+    }
+}

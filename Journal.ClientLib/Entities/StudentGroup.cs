@@ -1,9 +1,9 @@
 ﻿using Journal.Common.Entities;
 
+using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
-
-#nullable enable
 
 namespace Journal.ClientLib.Entities
 {
@@ -13,26 +13,47 @@ namespace Journal.ClientLib.Entities
     /// <inheritdoc cref="IStudentGroup"/>
     public class StudentGroup : IStudentGroup
     {
-        public int Id { get; set; }
+        [JsonConstructor]
+        private StudentGroup() { }
 
-        public int CuratorId { get; }
-        public IUser? Curator { get; }
+        [JsonProperty("id")
+            , JsonRequired]
+        public int Id { get; private set; }
 
+        [JsonProperty("curatorId")
+            , JsonRequired]
+        public int CuratorId { get; private set; }
 
-        public int SpecialtyId { get; }
-        public Specialty SpecialtyEnt { get; }
+        [JsonProperty("curatorEnt")]
+        public User CuratorEnt { get; private set; }
 
-        public int CurrentCourse { get;  }
+        [JsonProperty("specialtyId")
+            , JsonRequired]
+        public int SpecialtyId  { get; private set; }
 
-        public int Subgroup { get; }
+        [JsonProperty("specialtyEnt")]
+        public Specialty SpecialtyEnt  { get; private set; }
 
-        public List<Student> StudentsList { get; }
+        [JsonProperty("currentCourse")
+            , JsonRequired]
+        public int CurrentCourse  { get; private set; }
 
-        public DateTime? GraduatedDate { get; }
+        [JsonProperty("subgroup")]
+        public int Subgroup  { get; private set; }
+
+        [JsonProperty("students")]
+        public List<Student> Students  { get; private set; }
+
+        [JsonProperty("graduatedDate")]
+        public DateTime? GraduatedDate  { get; private set; }
 
         public IReadOnlyList<IStudent> GetStudentsList()
-            => StudentsList;
+            => Students;
 
-        ISpecialty IStudentGroup.Specialty { get => SpecialtyEnt; }
+        [JsonIgnore]
+        ISpecialty IStudentGroup.Specialty => SpecialtyEnt; 
+
+        [JsonIgnore]
+        IUser? IStudentGroup.Curator => CuratorEnt;
     }
 }

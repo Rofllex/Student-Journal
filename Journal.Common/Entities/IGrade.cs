@@ -14,6 +14,8 @@ namespace Journal.Common.Entities
         /// </summary>
         public int Id { get; }
 
+        int RatedById { get; }
+
         /// <summary>
         /// Преподаватель, который выставил оценку.
         /// </summary>

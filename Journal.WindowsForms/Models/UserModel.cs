@@ -8,7 +8,7 @@ using Journal.ClientLib.Entities;
 
 namespace Journal.WindowsForms.Models
 {
-    public class UserModel
+    public class UserModel : GenericModuleBase<User>
     {
         public static UserModel[] FromUsers(IEnumerable<User> users)
         {
@@ -27,14 +27,8 @@ namespace Journal.WindowsForms.Models
         }
 
         public static explicit operator User(UserModel model) => model.Original;
-        
-        public UserModel(User user)
-        {
-            Original = user ?? throw new ArgumentNullException(nameof(user));
-        }
 
-        [Browsable(false)]
-        public User Original { get; private set; }
+        public UserModel(User user) : base (user) { }
 
         public int Id => Original.Id;
 

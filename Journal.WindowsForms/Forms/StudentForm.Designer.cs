@@ -41,68 +41,79 @@ namespace Journal.WindowsForms.Forms
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(23, 9);
+            this.label1.Location = new System.Drawing.Point(30, 11);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(37, 15);
+            this.label1.Size = new System.Drawing.Size(44, 18);
             this.label1.TabIndex = 0;
             this.label1.Text = "ФИО:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(23, 34);
+            this.label2.Location = new System.Drawing.Point(30, 41);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(52, 15);
+            this.label2.Size = new System.Drawing.Size(80, 18);
             this.label2.TabIndex = 0;
             this.label2.Text = "Группа: ";
             // 
             // studentNameLabel
             // 
             this.studentNameLabel.AutoSize = true;
-            this.studentNameLabel.Location = new System.Drawing.Point(66, 9);
+            this.studentNameLabel.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.studentNameLabel.Location = new System.Drawing.Point(85, 11);
+            this.studentNameLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.studentNameLabel.Name = "studentNameLabel";
-            this.studentNameLabel.Size = new System.Drawing.Size(79, 15);
+            this.studentNameLabel.Size = new System.Drawing.Size(107, 18);
             this.studentNameLabel.TabIndex = 0;
             this.studentNameLabel.Text = "studentName";
             // 
             // groupNameLabel
             // 
             this.groupNameLabel.AutoSize = true;
-            this.groupNameLabel.Location = new System.Drawing.Point(81, 34);
+            this.groupNameLabel.Location = new System.Drawing.Point(104, 41);
+            this.groupNameLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.groupNameLabel.Name = "groupNameLabel";
-            this.groupNameLabel.Size = new System.Drawing.Size(71, 15);
+            this.groupNameLabel.Size = new System.Drawing.Size(89, 18);
             this.groupNameLabel.TabIndex = 0;
             this.groupNameLabel.Text = "groupName";
             // 
             // dataGridView1
             // 
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(23, 75);
+            this.dataGridView1.Location = new System.Drawing.Point(30, 90);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 25;
-            this.dataGridView1.Size = new System.Drawing.Size(765, 363);
+            this.dataGridView1.Size = new System.Drawing.Size(984, 436);
             this.dataGridView1.TabIndex = 1;
             // 
             // subjectsComboBox
             // 
+            this.subjectsComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.subjectsComboBox.FormattingEnabled = true;
-            this.subjectsComboBox.Location = new System.Drawing.Point(667, 26);
+            this.subjectsComboBox.Location = new System.Drawing.Point(858, 31);
+            this.subjectsComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.subjectsComboBox.Name = "subjectsComboBox";
-            this.subjectsComboBox.Size = new System.Drawing.Size(121, 23);
+            this.subjectsComboBox.Size = new System.Drawing.Size(154, 26);
             this.subjectsComboBox.TabIndex = 2;
             // 
             // StudentForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1035, 536);
             this.Controls.Add(this.subjectsComboBox);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.groupNameLabel);
             this.Controls.Add(this.studentNameLabel);
             this.Controls.Add(this.label1);
+            this.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Name = "StudentForm";
             this.Text = "StudentForm";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

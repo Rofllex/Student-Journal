@@ -13,11 +13,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using System;
 
+using Journal.Server.Utils;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 /*
- * Студент не должен видеть оценки других студентов.
- * Родители могут видеть оценки лишь своих детей.
- * Администратор может просматривать все оценки.
- */
+* Студент не должен видеть оценки других студентов.
+* Родители могут видеть оценки лишь своих детей.
+* Администратор может просматривать все оценки.
+*/
 
 namespace Journal.Server.Controllers
 {
@@ -69,7 +72,7 @@ namespace Journal.Server.Controllers
                     return Json(new RequestError($"Пользователь с идентификатором {studentId} не найден или не является студентом."));
             });
         }
-        
+
         // not implemented
         [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Teacher))
             , HttpPost]
@@ -81,11 +84,42 @@ namespace Journal.Server.Controllers
         /// <param name="level"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        public IActionResult PasteMultiple(int[] studentsId, GradeLevel level, string reason)
+        public async Task<IActionResult> PasteMultiple([FromQuery(Name = "subjectId")] int subjectId, [FromQuery(Name = "gradeLevel")] GradeLevel level, [FromQuery(Name = "reason")] string reason = null)
         {
-            var students = _dbContext.Students.Where( s => studentsId.Contains( s.UserId ) ).Include( s => s.GroupEnt );
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            if (!Request.ContentType.Contains("application/json"))
+                return Json(new RequestError("Неверный тип контента. Не содержит \"application/json\""));
 
-            throw new NotImplementedException();
+            Subject subject = _dbContext.Subjects.FirstOrDefault(s => s.Id == subjectId);
+            if (subject == null)
+                return Json(new RequestError($"Предмет с идентификатором \"{ subjectId }\" не найдена"));
+            
+            if (!((GradeLevel[])Enum.GetValues(typeof(GradeLevel))).Contains(level))
+                return Json(new RequestError("Неверный тип оценки"));
+            int[] studentIds;
+            try
+            {
+                JToken jsonBody = await this.ReadJsonBody();
+                if (jsonBody.Type != JTokenType.Array)
+                    throw new JsonSerializationException();
+                studentIds = jsonBody.ToObject<int[]>();
+            }
+            catch (JsonSerializationException) 
+            {
+                return Json(new RequestError("Ошибка при десериализации тела запроса"));
+            }
+
+            IQueryable<Student> query = _dbContext.Students.Where(s => studentIds.Contains(s.UserId));
+            if (query.Count() != studentIds.Length)
+                return Json(new RequestError("Некоторые студенты не были найдены."));
+
+            var currentUser = this.GetUserFromClaims(_dbContext.Users);
+
+            Grade[] grades = query.ToArray().Select(student => new Grade(currentUser, subject, student, level, DateTime.Now, reason)).ToArray();
+            await _dbContext.Grades.AddRangeAsync(grades);
+            await _dbContext.SaveChangesAsync();
+
+            return Json(grades);
         }
 
         /// <summary>

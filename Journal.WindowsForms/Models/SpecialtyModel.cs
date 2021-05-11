@@ -4,28 +4,22 @@ using Journal.ClientLib.Entities;
 
 namespace Journal.WindowsForms.Models
 {
-    public class SpecialtyModel
+    public class SpecialtyModel : GenericModuleBase<Specialty>
     {
-        public SpecialtyModel(Specialty specialty)
+        public SpecialtyModel(Specialty specialty) : base(specialty)
         {
-            _specialty = specialty;
         }
 
-        [Browsable(false)]
-        public Specialty Original => _specialty;
-
         [DisplayName("Id")]
-        public int Id => _specialty.Id;
+        public int Id => Original.Id;
 
         [DisplayName("Название")]
-        public string Name => _specialty.Name;
+        public string Name => Original.Name;
 
         [DisplayName("Код")]
-        public string Code => _specialty.Code;
+        public string Code => Original.Code;
 
         [DisplayName("Кол-во курсов")]
-        public int MaxCourse => _specialty.MaxCourse;
-
-        private Specialty _specialty;
+        public int MaxCourse => Original.MaxCourse;
     }
 }
