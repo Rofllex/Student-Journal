@@ -15,6 +15,8 @@ namespace Journal.ClientLib.Infrastructure
             base.SetExecuter(client.QueryExecuter ?? throw new ArgumentNullException(nameof(client)));
         }
 
+        private DatabaseManager() { }
+
         public async Task<Specialty> CreateSpecialtyAsync(string name, string code, int maxCourse, int[] subjectIds)
         {
             if (maxCourse <= 0)

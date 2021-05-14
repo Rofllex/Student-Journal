@@ -93,9 +93,7 @@ namespace Journal.Server.Controllers
         
         public IActionResult GetStudent([FromQuery(Name = "id")] int userId)
         {
-            Student student = _dbContext.Students.Include(s => s.UserEnt)
-                                                    .Include(s => s.GroupEnt)
-                                                    .FirstOrDefault(s => s.UserId == userId);
+            Student student = _dbContext.Students.FirstOrDefault(s => s.UserId == userId);
             if (student != null)
             {
                 return Json(student);

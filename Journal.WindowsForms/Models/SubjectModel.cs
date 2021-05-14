@@ -11,7 +11,7 @@ namespace Journal.WindowsForms.Models
         public static SubjectModel[] FromOriginal(IEnumerable<Subject> subjects)
             => subjects.ToList().ConvertAll(s => new SubjectModel(s)).ToArray();
         
-        public static implicit operator Subject(SubjectModel subj)
+        public static explicit operator Subject(SubjectModel subj)
                 => subj.Original;
 
         public SubjectModel(Subject original) : base(original) { }

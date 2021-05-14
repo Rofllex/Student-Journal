@@ -14,6 +14,8 @@ namespace Journal.ClientLib.Entities
 
         public int Id { get; private set; }
 
+        [JsonProperty("timestamp")
+            , JsonRequired]
         public DateTime Timestamp { get; private set; }
 
         
@@ -26,14 +28,16 @@ namespace Journal.ClientLib.Entities
         public int SubjectId { get; private set; }
         
         public Subject Subject { get; private set; }
+
+        [JsonProperty("reason")]
         public string Reason { get; private set; }
 
         [JsonRequired]
         public int StudentId { get; private set; }
         public Student Student { get; private set; }
 
-
-
+        [JsonProperty("gradeLevel"),
+            JsonRequired]
         public GradeLevel GradeLevel { get; private set; }
 
         IUser IGrade.RatedBy => RatedBy;

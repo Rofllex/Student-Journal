@@ -11,9 +11,9 @@ namespace Journal.ClientLib.Infrastructure
     {
         private UsersManager() { }
 
-        public async Task<Student> GetStudentAsync(int studentId)
+        public async Task<Student> GetStudentByIdAsync(int studentId)
         {
-            return await QueryExecuter.ExecuteGetQuery<Student>(CONTROLLER_NAME, "GetStudentById", new Dictionary<string, string>() 
+            return await QueryExecuter.ExecuteGetQuery<Student>(CONTROLLER_NAME, "GetStudent", new Dictionary<string, string>() 
             {
                 ["id"] = studentId.ToString()
             });

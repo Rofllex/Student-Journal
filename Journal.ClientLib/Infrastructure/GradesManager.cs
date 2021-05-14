@@ -12,6 +12,13 @@ namespace Journal.ClientLib.Infrastructure
 {
     public class GradesManager : ControllerManagerBase
     {
+        public GradesManager(IJournalClient client)
+        {
+            SetExecuter(client.QueryExecuter);
+        }
+
+        private GradesManager() { }
+
         public Task<Grade> Paste(int studentId, int subjectId, GradeLevel gradeLevel, string reason = null)
         {
             Dictionary<string, string> args = new Dictionary<string, string>
@@ -68,6 +75,20 @@ namespace Journal.ClientLib.Infrastructure
         /// <returns></returns>
         public Task<Grade[]> PasteMultiple(IEnumerable<Student> students, Subject subject, GradeLevel grade, string reason = null)
             => PasteMultiple(students.Select(s => s.UserId), subject.Id, grade, reason);
+
+        public Task<Grade[]> GetGradesInMonthAsync(DateTime date,  int groupId, int subjectId)
+        {
+            return QueryExecuter.ExecuteGetQuery<Grade[]>(CONTROLLER_NAME, "GetMonthGrades", new Dictionary<string, string>() 
+            {
+                ["year"] = date.Year.ToString(), 
+                ["month"] = date.Month.ToString(),
+                ["groupId"] = groupId.ToString(),
+                ["subjectId"] = subjectId.ToString()
+            });
+        }
+
+        public Task<Grade[]> GetGradesInMonthAsync(DateTime date, StudentGroup group, Subject subject)
+            => GetGradesInMonthAsync(date, group.Id, subject.Id);
 
 
         private const string CONTROLLER_NAME = "Grades";

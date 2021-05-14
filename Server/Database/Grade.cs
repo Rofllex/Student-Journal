@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 using Journal.Common.Entities;
 
+using Newtonsoft.Json;
+
 #nullable enable
 
 namespace Journal.Server.Database
@@ -20,13 +22,15 @@ namespace Journal.Server.Database
         /// <summary>
         /// Дата выставления оценки
         /// </summary>
-        [Required]
+        [JsonProperty("timestamp")
+            , Required]
         public DateTime Timestamp { get; set; }
     
         /// <summary>
         /// Уровень оценки
         /// </summary>
-        [Required]
+        [JsonProperty("gradeLevel")
+            , Required]
         public GradeLevel GradeLevel { get; set; }
 
         /// <summary>
@@ -56,6 +60,7 @@ namespace Journal.Server.Database
         /// Причина выставления оценки
         /// </summary>
         /// <value>Может быть null.</value>
+        [JsonProperty("reason")]
         public string? Reason { get; set; }
 
         [Required

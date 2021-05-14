@@ -20,7 +20,7 @@ namespace Journal.WindowsForms.Forms
             JournalClient = journalClient;
             InitializeComponent();
 
-            _vm = new StudentFormViewModel(JournalClient);
+            _vm = new StudentFormViewModel(this, JournalClient);
             _InitBindings(_vm);
         }
 
@@ -35,6 +35,10 @@ namespace Journal.WindowsForms.Forms
 
             //groupNameLabel.DataBindings.Add(nameof(groupNameLabel.Text), _vm, nameof(_vm.GroupName));
             groupNameLabel.Bind( viewModel, c => c.Text, vm => vm.GroupName );
+
+            subjectsListBox.Bind(viewModel, c => c.DataSource, vm => vm.Subjects);
+            subjectsListBox.Bind(viewModel, c => c.SelectedIndex, vm => vm.SelectedSubjectIndex);
+            subjectsListBox.MouseDoubleClick += viewModel.ShowGrades;
         }
     }
 }

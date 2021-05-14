@@ -29,7 +29,7 @@ namespace Journal.Common.Models
         /// Выбросить исключение <see cref="RequestErrorException"/>
         /// </summary>
         public void Throw()
-            => Throw(null);
+            => Throw(Message);
 
         /// <summary>
         /// Выбросить исключение RequestErrorException с сообщением.

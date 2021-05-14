@@ -160,7 +160,7 @@ namespace Journal.Server.Controllers
         /// <param name="studentId">Идентификатор студента</param>
         /// <param name="subjectId">Идентификатор предмета</param>
         [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Teacher) + "," + nameof(UserRole.StudentParent))]
-        public Task<IActionResult> GetGrades([FromQuery(Name = "studentId")] int studentId, [FromQuery(Name = "subjectId")]int subjectId)
+        public  Task<IActionResult> GetGrades([FromQuery(Name = "studentId")] int studentId, [FromQuery(Name = "subjectId")]int subjectId)
         {
             return Task.Run(() =>
             {
@@ -197,6 +197,29 @@ namespace Journal.Server.Controllers
                 }
                 else
                     return Json(new RequestError($"Предмет с идентификатором { subjectId } не найдена."));
+            });
+        }
+
+        [Authorize]
+        public Task<IActionResult> GetMonthGrades([FromQuery(Name ="year")] int year, [FromQuery(Name = "month")] int month, [FromQuery(Name = "groupId")] int groupId, [FromQuery(Name = "subjectId")] int subjectId)
+        {
+            return Task.Run(() => 
+            {
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                if (month < 1 || month > 12)
+                    return (IActionResult)Json(new RequestError("Параметр \"month\" не может быть меньше 1 или больше 12"));
+                int[] studentIds = _dbContext.Students.Where(s => s.GroupId == groupId).Select(s => s.UserId).ToArray();
+                if (studentIds.Length == 0)
+                    return Json(new RequestError($"Нет студентов в группе с идентификатором { groupId }"));
+                Subject subject = _dbContext.Subjects.FirstOrDefault(s => s.Id == subjectId);
+                if (subject == null)
+                    return Json(new RequestError($"Пердмет с идентификатором { subjectId } не найден"));
+                DateTime startDate = new DateTime(year, month, 1);
+                int days = DateTime.DaysInMonth(year, month);
+                DateTime endDate = startDate.AddDays(days - 1);
+                Response.StatusCode = StatusCodes.Status200OK;
+                Grade[] grades = _dbContext.Grades.Where(g => studentIds.Contains(g.StudentId) && g.Timestamp >= startDate && g.Timestamp <= endDate && g.SubjectId == subjectId).ToArray();
+                return Json(grades);
             });
         }
 
