@@ -13,6 +13,7 @@ using Journal.ClientLib.Infrastructure;
 using Journal.ClientLib.Entities;
 using Journal.WindowsForms.Models;
 using System.Collections;
+using System.Linq;
 
 namespace Journal.WindowsForms.ViewModels
 {
@@ -29,8 +30,10 @@ namespace Journal.WindowsForms.ViewModels
                 Task<int> usersCountTask = _adminPanel.GetUsersCountAsync();
                 usersCountTask.Wait();
                 UsersCount = usersCountTask.Result;
-                CurrentPage = 0;
+                CurrentPage = 1;
             });
+
+            Users.Add(new UserModel(new User(0, "", "", "", "")));
         }
         
         public int CurrentPage
@@ -39,7 +42,8 @@ namespace Journal.WindowsForms.ViewModels
             set
             {
                 ChangeProperty(ref _currentPage, value);
-                _ = _LoadUsers();
+                _LoadUsers(value - 1);
+                //_callerForm.Refresh();
             }
         }
 
@@ -61,7 +65,7 @@ namespace Journal.WindowsForms.ViewModels
             set => ChangeProperty(ref _usersCount, value);
         }
 
-        public BindingList<UserModel> Users { get; private set; } = new BindingList<UserModel>();
+        public BindingList<UserModel> Users { get; } = new BindingList<UserModel>();
 
 
         public void ScrollRight(object sender, EventArgs e)
@@ -78,39 +82,54 @@ namespace Journal.WindowsForms.ViewModels
 
         private Form _callerForm;
 
-        private const int USERS_PER_PAGE = 50;
+        private const int USERS_PER_PAGE = 15;
 
-        private int _currentPage = 0;
+        private int _currentPage = 1;
         private bool _canScrollLeft, _canScrollRight;
         private int _usersCount = 0;
 
         private AdminManager _adminPanel;
         private JournalClient _client;
         
-        private void _AddUsers(User[] users)
+        private async void _LoadUsers(int pageIndex)
         {
-            foreach (UserModel model in UserModel.FromUsers(users))
-                Users.Add(model);
-        }
-
-        private async Task _LoadUsers()
-        {
-            User[] users = await _adminPanel.GetUsersAsync(_currentPage * USERS_PER_PAGE, USERS_PER_PAGE);
-            if (users != null)
+            User[] users;
+            try
             {
-                _ClearUsers();
-                if (users.Length > 0)
-                {
-                    _AddUsers(users);
-                    CanScrollRight = (_currentPage + 1) * USERS_PER_PAGE < UsersCount;
-                    CanScrollLeft = _currentPage > 0;
-                }
-                else
-                    CanScrollLeft = CanScrollRight = false;
+                users = await _adminPanel.GetUsersAsync(pageIndex * USERS_PER_PAGE, USERS_PER_PAGE);
             }
+            catch (Exception e)
+            {
+                MessageBox.Show("Не удалось загрузить список пользователей.\nEx: " + e.ToString());
+
+                return;
+            }
+            
+            if (users != null && users.Length > 0)
+            {
+                while (Users.Count > users.Length)
+                    Users.RemoveAt(Users.Count - 1);
+                
+                if (users.Length >= Users.Count)
+                {
+                    int userIndex = 0;
+                    for (; userIndex < Users.Count; userIndex++)
+                    {
+                        Users[userIndex] = new UserModel(users[userIndex]);
+                    }
+
+                    while (userIndex < users.Length)
+                    {
+                        Users.Add(new UserModel(users[userIndex]));
+                        userIndex++;
+                    }
+                }
+                
+                CanScrollRight = (_currentPage) * USERS_PER_PAGE < UsersCount;
+                CanScrollLeft = _currentPage > 1;
+            }
+            InvokePropertyChanged(nameof(Users));
         }
 
-        private void _ClearUsers()
-            => Users.Clear();
     }
 }

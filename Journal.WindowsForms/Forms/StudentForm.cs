@@ -39,6 +39,8 @@ namespace Journal.WindowsForms.Forms
             subjectsListBox.Bind(viewModel, c => c.DataSource, vm => vm.Subjects);
             subjectsListBox.Bind(viewModel, c => c.SelectedIndex, vm => vm.SelectedSubjectIndex);
             subjectsListBox.MouseDoubleClick += viewModel.ShowGrades;
+
+            exitMenuItem.Click += viewModel.ExitClicked;
         }
     }
 }

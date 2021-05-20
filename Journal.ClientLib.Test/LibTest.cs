@@ -47,8 +47,7 @@ namespace Journal.ClientLib.Test
         [Fact]
         public async Task CreateSubject()
         {
-            Specialty[] specialties = await _dbManager.GetSpecialtiesAsync(0, 1);
-            Subject subj = await _dbManager.CreateSubject("SOME123 SUBJ NAME", specialties[0]);
+            Subject subj = await _dbManager.CreateSubject("SOME123 SUBJ NAME");
         }
 
         [Fact]

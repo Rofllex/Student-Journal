@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 
-using System;
 using System.Diagnostics;
 
 namespace Journal.Common.Models
@@ -50,26 +49,4 @@ namespace Journal.Common.Models
         private string GetDebuggerDisplay()
             => Message;
     }
-
-    /// <summary>
-    /// Исключение при выполнении запроса.
-    /// </summary>
-    public class RequestErrorException : Exception
-    {
-        public RequestErrorException( RequestError error ) : this (error, message: default) { }
-
-        public RequestErrorException( RequestError error, string? message) : base (message)
-        {
-            Error = error;
-        }
-
-        public RequestErrorException(RequestError error, int statusCode, string? message = null) : this (error, message)
-        {
-            StatusCode = statusCode;
-        }
-
-        public RequestError Error { get; private set; }
-        public int? StatusCode { get; private set; }
-    }
-
 }

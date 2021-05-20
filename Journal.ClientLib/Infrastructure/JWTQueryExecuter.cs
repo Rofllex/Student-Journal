@@ -32,6 +32,29 @@ namespace Journal.ClientLib.Infrastructure
             } 
         }
 
+        /// <summary>
+        ///     Выполнить GET запрос на сервер с приведением ответа к указанному типу.
+        /// </summary>
+        /// <typeparam name="T">
+        ///     Тип к которому следует привести ответ.
+        /// </typeparam>
+        /// <param name="controller">
+        ///     Название контроллера.
+        /// </param>
+        /// <param name="method">
+        ///     Метод контроллера
+        /// </param>
+        /// <param name="getArgs">
+        ///     GET аргументы запроса
+        /// </param>
+        /// <param name="useToken">
+        ///     Если необходимо использовать токен авторизации
+        /// </param>
+        /// <returns>
+        ///     Десериализованный ответ от сервера.
+        /// </returns>
+        /// <exception cref="ExecuteQueryException" />
+        /// <inheritdoc cref="_HandleErrorRequest(HttpResponseMessage)"/>
         public async Task<T> ExecuteGetQuery<T>(string controller, string method, IEnumerable<KeyValuePair<string, string>>? getArgs = null, bool useToken = true)
         {
             Uri uri = _CreateUri(_uriBase, controller, method, getArgs);
@@ -57,6 +80,11 @@ namespace Journal.ClientLib.Infrastructure
             }
         }
 
+        /// <summary>
+        ///     Выполнение GET запроса без парсинга ответа от сервера.
+        /// </summary>
+        /// <returns>Задача по выполнению запроса</returns>
+        /// <inheritdoc cref="ExecuteGetQuery{T}(string, string, IEnumerable{KeyValuePair{string, string}}?, bool)"/>
         public async Task ExecuteGetQuery(string controller, string method, IEnumerable<KeyValuePair<string, string>>? getArgs = null, bool useToken = true)
         {
             Uri uri = _CreateUri(_uriBase, controller, method, getArgs);
@@ -68,6 +96,15 @@ namespace Journal.ClientLib.Infrastructure
             }
         }
 
+        /// <summary>
+        ///     Выполнение POST запроса с парсингом ответа от сервера.
+        /// </summary>
+        /// <typeparam name="T">
+        ///     Тип к которому необходимо привести ответ.
+        /// </typeparam>
+        /// <param name="postBody">Тело POST запроса</param>
+        /// <returns></returns>
+        /// <inheritdoc cref="ExecuteGetQuery(string, string, IEnumerable{KeyValuePair{string, string}}?, bool)"/>
         public async Task<T> ExecutePostQuery<T>(string controller, string method, object? postBody, IEnumerable<KeyValuePair<string, string>>? getArgs = null, bool useToken = true)
         {
             Uri uri = _CreateUri(_uriBase, controller, method, getArgs);
@@ -95,6 +132,10 @@ namespace Journal.ClientLib.Infrastructure
             }
         }
 
+        /// <summary>
+        ///     Выполнение POST запроса без парсинга ответа от сервера.
+        /// </summary>
+        /// <inheritdoc cref="ExecutePostQuery{T}(string, string, object?, IEnumerable{KeyValuePair{string, string}}?, bool)"/>
         public async Task ExecutePostQuery(string controller, string method, object? postBody, IEnumerable<KeyValuePair<string, string>>? getArgs = null, bool useToken = true)
         {
             Uri uri = _CreateUri(_uriBase, controller, method, getArgs);
@@ -162,7 +203,10 @@ namespace Journal.ClientLib.Infrastructure
                 throw new ConnectFaillureException(uri, ex);
             }
         }
-    
+        
+        
+        /// <exception cref="ExecuteQueryException" />
+        /// <exception cref="RequestErrorException" />
         private async Task _HandleErrorRequest(HttpResponseMessage response)
         {
             Debug.Assert(!response.IsSuccessStatusCode);

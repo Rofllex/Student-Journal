@@ -30,6 +30,7 @@ namespace Journal.WindowsForms.Models
 
         public UserModel(User user) : base (user) { }
 
+        [DisplayName("Id")]
         public int Id => Original.Id;
 
         [DisplayName("Имя")]
@@ -38,10 +39,12 @@ namespace Journal.WindowsForms.Models
         [DisplayName("Фамилия")]
         public string Surname => Original.Surname;
 
-        [DisplayName("Отчество")]
+        [DisplayName("Отчество")
+            , DefaultValue("")]
         public string Patronymic => Original.LastName;
 
-        [DisplayName("Номер")]
+        [DisplayName("Номер")
+            , DefaultValue("")]
         public string PhoneNumber => Original.PhoneNumber;
 
         [DisplayName("Роль")]

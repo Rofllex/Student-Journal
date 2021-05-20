@@ -29,12 +29,14 @@ namespace Journal.WindowsForms.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.gradesGridView = new System.Windows.Forms.DataGridView();
             this.monthNameLabel = new System.Windows.Forms.Label();
             this.predMonthButton = new System.Windows.Forms.Button();
             this.nextMonthButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.subjectNameLabel = new System.Windows.Forms.Label();
+            this.gradesContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.gradesGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -48,6 +50,7 @@ namespace Journal.WindowsForms.Forms
             this.gradesGridView.Location = new System.Drawing.Point(0, 53);
             this.gradesGridView.Margin = new System.Windows.Forms.Padding(4);
             this.gradesGridView.Name = "gradesGridView";
+            this.gradesGridView.ReadOnly = true;
             this.gradesGridView.RowHeadersVisible = false;
             this.gradesGridView.RowTemplate.Height = 25;
             this.gradesGridView.Size = new System.Drawing.Size(1021, 478);
@@ -98,6 +101,12 @@ namespace Journal.WindowsForms.Forms
             this.subjectNameLabel.TabIndex = 3;
             this.subjectNameLabel.Text = "subject";
             // 
+            // gradesContextMenu
+            // 
+            this.gradesContextMenu.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.gradesContextMenu.Name = "contextMenuStrip1";
+            this.gradesContextMenu.Size = new System.Drawing.Size(61, 4);
+            // 
             // GradesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
@@ -126,5 +135,6 @@ namespace Journal.WindowsForms.Forms
         private System.Windows.Forms.Button nextMonthButton;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label subjectNameLabel;
+        private System.Windows.Forms.ContextMenuStrip gradesContextMenu;
     }
 }

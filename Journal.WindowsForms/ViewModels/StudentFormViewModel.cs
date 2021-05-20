@@ -62,7 +62,10 @@ namespace Journal.WindowsForms.ViewModels
             _callerForm.Visible = true;
         }
 
-       
+        public void ExitClicked(object _, EventArgs __)
+            => Program.LogoutForm(_callerForm);
+        
+
         private JournalClient _journalClient;
         private UsersManager _userManager;
         private DatabaseManager _dbManager;

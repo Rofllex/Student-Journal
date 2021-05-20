@@ -1,5 +1,7 @@
 ﻿using Journal.Common.Entities;
 
+using Newtonsoft.Json;
+
 #nullable enable
 
 namespace Journal.ClientLib.Entities
@@ -18,7 +20,7 @@ namespace Journal.ClientLib.Entities
 
         public UserRole Role { get; private set; }
 
-        internal User(int id, string firstName, string surname, string lastName, string phoneNumber)
+        public User(int id, string firstName, string surname, string lastName, string phoneNumber)
         {
             Id = id;
             FirstName = firstName;
@@ -27,6 +29,8 @@ namespace Journal.ClientLib.Entities
             PhoneNumber = phoneNumber;
         }
 
+        [JsonConstructor]
         private User() { }
+
     }
 }

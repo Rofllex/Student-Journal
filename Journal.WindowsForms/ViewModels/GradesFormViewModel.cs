@@ -2,20 +2,22 @@
 using Journal.ClientLib.Entities;
 using Journal.ClientLib.Infrastructure;
 using Journal.Common.Entities;
-using Journal.WindowsForms.Models;
+using Journal.Common.Models;
 
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Journal.WindowsForms.ViewModels
 {
     public class GradesFormViewModel : ViewModel
     {
-        public GradesFormViewModel(IJournalClient journalClient, Subject subject, StudentGroup group)
+        public GradesFormViewModel(IJournalClient journalClient, Form callerForm, Subject subject, StudentGroup group, ContextMenuStrip gradesContextMenu, bool allowEdit = false)
         {
             if (subject == null)
                 throw new ArgumentNullException(nameof(subject));
@@ -23,6 +25,9 @@ namespace Journal.WindowsForms.ViewModels
                 throw new ArgumentNullException(nameof(group));
             this._subject = subject ?? throw new ArgumentNullException(nameof(subject));
             this._group = group ?? throw new ArgumentNullException(nameof(group));
+            this._gradesContextMenu = gradesContextMenu ?? throw new ArgumentNullException(nameof(gradesContextMenu));
+            this._allowEdit = allowEdit;
+            this._callerForm = callerForm ?? throw new ArgumentNullException(nameof(callerForm));
 
             SubjectName = subject.Name;
             GroupName = $"{group.SpecialtyEnt.Name} {group.CurrentCourse}{group.Subgroup}";
@@ -64,6 +69,57 @@ namespace Journal.WindowsForms.ViewModels
             await _LoadGrades(Month);
         }
 
+        public void GradesCellClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (_allowEdit && e.Button == MouseButtons.Right
+                 && e.ColumnIndex > 0 && e.RowIndex >= 0)
+            {
+                int day = _gradesToDataTable.GetDayByColumnIndex(e.ColumnIndex);
+                DateTime timestamp = new DateTime(_monthDate.Year, _monthDate.Month, day);
+                if (timestamp >= DateTime.Now.AddDays(1))
+                    return;
+                DataGridView gridView = (DataGridView)sender;
+                if (gridView.SelectedCells.Count == 2)
+                    gridView.SelectedCells[1].Selected = false;
+                int studentId = _gradesToDataTable.GetStudentIdByRowIndex(e.RowIndex);
+                _gradesContextMenu.Items.Clear();
+                foreach (GradeLevel gradeLevel in Enum.GetValues(typeof(GradeLevel)))
+                {
+                    _gradesContextMenu.Items.Add(Culture.GradeFormatProvider.ShortFormat(gradeLevel), null, (_, __) =>
+                    {
+                        int subjectId = _subject.Id;
+                        Task.Run(() =>
+                        {
+                            Grade grade;
+                            try
+                            {
+                                Task<Grade> pasteGradeTask = _gradesManager.Paste(studentId, _subject.Id, gradeLevel, timestamp: timestamp);
+                                pasteGradeTask.Wait();
+                                grade = pasteGradeTask.Result;
+                            }
+                            catch (AggregateException ae)
+                            {
+                                ae.Handle(e =>
+                                {
+                                    if (e.GetType() != typeof(RequestErrorException))
+                                        return false;
+                                    RequestErrorException rex = (RequestErrorException)e;
+                                    MessageBox.Show(rex.Error.Message);
+                                    return true;
+                                });
+                                
+                                return;
+                            }
+                            _gradesToDataTable.SetGrade(grade);
+                        });
+
+                    });
+                }
+
+                _gradesContextMenu.Show(Cursor.Position);
+            }
+        }
+
         private DataTable _gradesTable = new DataTable();
        
         private DateTime _monthDate;
@@ -74,7 +130,9 @@ namespace Journal.WindowsForms.ViewModels
         private StudentGroup _group;
         private Student[] _students;
         private GradesToDataTableAdapter _gradesToDataTable;
-
+        private readonly bool _allowEdit;
+        private ContextMenuStrip _gradesContextMenu;
+        private readonly Form _callerForm;
 
         private async void _Initialize()
         {
@@ -84,12 +142,20 @@ namespace Journal.WindowsForms.ViewModels
             _monthDate = currentMonth;
             base.InvokePropertyChanged(nameof(Month));
             _gradesToDataTable = new GradesToDataTableAdapter(_gradesTable, currentMonth, _students);
-            await _LoadGrades(Month);
+            try
+            {
+                await _LoadGrades(Month);
+            }
+            catch (RequestErrorException e)
+            {
+                MessageBox.Show(e.Error.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _callerForm.Close();
+            }
         }
 
         private async Task _LoadGrades(DateTime date)
         {
-            Grade[] grades = await _gradesManager.GetGradesInMonthAsync(Month, _group, _subject);
+            Grade[] grades = await _gradesManager.GetGradesInMonthAsync(date, _group, _subject);
             _gradesToDataTable.ClearGrades();
             _gradesToDataTable.SetGrades(grades);
         }
@@ -99,6 +165,7 @@ namespace Journal.WindowsForms.ViewModels
             public GradesToDataTableAdapter(DataTable dataTable, DateTime currentDate, Student[] students)
             {
                 _dataTable = dataTable ?? throw new ArgumentNullException(nameof(dataTable));
+                _date = currentDate;
                 _Initialize(students);
             }
 
@@ -107,10 +174,26 @@ namespace Journal.WindowsForms.ViewModels
                 get => _date;
                 set
                 {
-                    _FillColumnsInDateTime(value);
-                    _date = value;
+                    if (_date.Year != value.Year
+                         || _date.Month != value.Month)
+                    {
+                        _FillColumnsInDateTime(value);
+                        _date = value;
+                    }
                 }
             }
+
+            /// <summary>
+            ///     Кол-во пользователей.
+            /// </summary>
+            public int UsersCount
+                => _userIdToRow.Count;
+
+            /// <summary>
+            ///     Кол-во дней.
+            /// </summary>
+            public int DaysCount
+                => _dataTable.Columns.Count - 1;
 
             public void SetGrade(Grade grade)
             {
@@ -135,6 +218,15 @@ namespace Journal.WindowsForms.ViewModels
                     SetGrade(grade);
                 }
             }
+
+            public bool ContainsStudent(Student student)
+                => _userIdToRow.ContainsKey(student.UserId);
+
+            public int GetStudentIdByRowIndex(int rowIndex)
+                => _userIdToRow.FirstOrDefault(p => ReferenceEquals(p.Value, _dataTable.Rows[rowIndex])).Key;
+
+            public int GetDayByColumnIndex(int columnIndex)
+                => columnIndex;
 
             public void ClearGrades()
             {

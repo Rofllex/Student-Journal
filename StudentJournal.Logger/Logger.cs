@@ -182,10 +182,13 @@ namespace Journal.Logging
         {
             _LockInvoke( () =>
             {
-                ConsoleColor backForegroundColor = Console.ForegroundColor;
+                Console.Write(DateTime.Now + " ");
+
+                ConsoleColor tempForegroundColor = Console.ForegroundColor;
                 Console.ForegroundColor = foregroundColor;
-                Console.WriteLine( $"{DateTime.Now} [{prefix}] {text}" );
-                Console.ForegroundColor = backForegroundColor;
+                Console.Write($"[{prefix}]");
+                Console.ForegroundColor = tempForegroundColor;
+                Console.WriteLine($" {text}");
             } );
         }
         

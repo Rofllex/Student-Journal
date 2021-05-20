@@ -24,14 +24,9 @@ namespace Journal.WindowsForms.Forms
             CheckForIllegalCrossThreadCalls = false;
             _adminPanelViewModel = new AdminPanelViewModel(journalClient, this);
             _InitAdminPanelFormBinding(_adminPanelViewModel);
-
-            IControllerManagerFactory factory = new ControllerManagerFactory();
-            _databasePageViewModel = new DatabasePageViewModel(factory.Create<DatabaseManager>(journalClient));
-            _InitDatabasePageBinding(_databasePageViewModel);
         }
 
         private AdminPanelViewModel _adminPanelViewModel;
-        private DatabasePageViewModel _databasePageViewModel;
         private IJournalClient _journalClient;
 
         private void _InitAdminPanelFormBinding(AdminPanelViewModel viewModel)
@@ -40,6 +35,9 @@ namespace Journal.WindowsForms.Forms
 
             //usersGridView.CellFormatting += UsersGridView_CellFormatting;
             usersGridView.Bind( viewModel, c => c.DataSource, vm => vm.Users );
+            usersGridView.DataError += (object sender, DataGridViewDataErrorEventArgs e) => 
+            {
+            };
 
             currentPageTextBox.TextChanged += CurrentPageTextBox_TextChanged;
             currentPageTextBox.Bind( viewModel, c => c.Text, vm => vm.CurrentPage );
@@ -60,20 +58,7 @@ namespace Journal.WindowsForms.Forms
 
             logoutMenuItem.Click += viewModel.LogoutClicked;
         }
-
-        private void _InitDatabasePageBinding(DatabasePageViewModel viewModel)
-        {
-            //specialtyNameTextBox.Bind(viewModel, c => c.Text, vm => vm.SpecialtyName);
-
-            //specialtyCodeTextBox.Bind(viewModel, c => c.Text, vm => vm.SpecialtyCode);
-
-            //courseCountTextBox.Bind(viewModel, c => c.Text, vm => vm.MaxCourse);
-
-            //createSpecialtyButton.Click += viewModel.CreateSpecialtyButtonClicked;
-        }
-
-
-
+                
         private void CurrentPageTextBox_TextChanged(object? sender, EventArgs e)
         {
             TextBox? textBox = sender as TextBox;
@@ -146,6 +131,12 @@ namespace Journal.WindowsForms.Forms
         {
             using SpecialtiesForm specForm = new SpecialtiesForm(this._journalClient);
             specForm.ShowDialog();
+        }
+
+        private void subjectsButton_Click(object sender, EventArgs e)
+        {
+            using SubjectsConstructorForm subjForm = new SubjectsConstructorForm(this._journalClient);
+            subjForm.ShowDialog();
         }
     }
 }

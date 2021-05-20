@@ -19,7 +19,7 @@ namespace Journal.ClientLib.Infrastructure
 
         private GradesManager() { }
 
-        public Task<Grade> Paste(int studentId, int subjectId, GradeLevel gradeLevel, string reason = null)
+        public Task<Grade> Paste(int studentId, int subjectId, GradeLevel gradeLevel, DateTime? timestamp = null, string reason = null)
         {
             Dictionary<string, string> args = new Dictionary<string, string>
             {
@@ -27,14 +27,18 @@ namespace Journal.ClientLib.Infrastructure
                 ["subjectId"] = subjectId.ToString(),
                 ["level"] = ((int)gradeLevel).ToString()
             };
+
+            if (timestamp.HasValue)
+                args["timestamp"] = timestamp.Value.ToString();
+            
             if (!string.IsNullOrWhiteSpace(reason))
                 args["reason"] = reason;
 
             return QueryExecuter.ExecuteGetQuery<Grade>(CONTROLLER_NAME, "Paste", args);
         }
 
-        public Task<Grade> Paste(Student student, Subject subject, GradeLevel gradeLevel, string reason = null)
-            => Paste(student.UserId, subject.Id, gradeLevel, reason);
+        public Task<Grade> Paste(Student student, Subject subject, GradeLevel gradeLevel, DateTime? timestamp = null, string reason = null)
+            => Paste(student.UserId, subject.Id, gradeLevel, timestamp: timestamp, reason: reason);
 
         /// <summary>
         ///     Множественное выставление оценок
@@ -45,7 +49,7 @@ namespace Journal.ClientLib.Infrastructure
         /// <param name="reason">Причина выставления</param>
         /// <exception cref="ArgumentException" />
         /// <exception cref="ArgumentNullException" />
-        public Task<Grade[]> PasteMultiple(IEnumerable<int> studentIds, int subjectId, GradeLevel grade, string reason = null)
+        public Task<Grade[]> PasteMultiple(IEnumerable<int> studentIds, int subjectId, GradeLevel grade, DateTime? timestamp = null, string reason = null)
         {
             if (studentIds == null)
                 throw new ArgumentNullException(nameof(studentIds));
@@ -60,8 +64,13 @@ namespace Journal.ClientLib.Infrastructure
                 ["subjectId"] = subjectId.ToString(),
                 ["gradeLevel"] = ((int)grade).ToString(),
             };
+
+            if (timestamp.HasValue)
+                getArgs["timestamp"] = timestamp.ToString();
+            
             if (!string.IsNullOrWhiteSpace(reason))
                 getArgs["reason"] = reason;
+
             return QueryExecuter.ExecutePostQuery<Grade[]>(CONTROLLER_NAME, "PasteMultiple", idsArray, getArgs);
         }
 
@@ -73,8 +82,8 @@ namespace Journal.ClientLib.Infrastructure
         /// <param name="grade"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        public Task<Grade[]> PasteMultiple(IEnumerable<Student> students, Subject subject, GradeLevel grade, string reason = null)
-            => PasteMultiple(students.Select(s => s.UserId), subject.Id, grade, reason);
+        public Task<Grade[]> PasteMultiple(IEnumerable<Student> students, Subject subject, GradeLevel grade, DateTime? timestamp = null, string reason = null)
+            => PasteMultiple(students.Select(s => s.UserId), subject.Id, grade, timestamp: timestamp, reason: reason);
 
         public Task<Grade[]> GetGradesInMonthAsync(DateTime date,  int groupId, int subjectId)
         {

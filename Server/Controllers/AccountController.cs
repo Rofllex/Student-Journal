@@ -10,12 +10,13 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 using Journal.Common.Models;
 using Journal.Server.Database;
 using Journal.Common.Entities;
 using Journal.Server.Security;
-using Microsoft.AspNetCore.Http;
+using Journal.Logging;
 
 #nullable enable
 
@@ -48,6 +49,8 @@ namespace Journal.Server.Controllers
                     User? user = _AuthenticateUser(login, password);
                     if (user != null)
                     {
+                        Logger.Instance.Info($"Пользователь: { user.Login } авторизован");
+
                         string token = _GenerateJWT(user, out DateTime tokenExpire),
                                 refreshToken = _GenerateRefreshToken(user, token, out DateTime refreshTokenExpire);
                         return (IActionResult)Json(new
@@ -140,7 +143,6 @@ namespace Journal.Server.Controllers
                  }
              } );
         }
-
 
         private bool _IsUserAuthenticated()
             => User.Claims.FirstOrDefault(c => c.Type == JwtTokenOptions.NAME_TYPE) != default;

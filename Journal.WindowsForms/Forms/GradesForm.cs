@@ -1,36 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
+using System.Globalization;
 
 using Journal.WindowsForms.ViewModels;
 using Journal.WindowsForms.FormUtils;
 using Journal.ClientLib.Entities;
 using Journal.ClientLib;
-using System.Globalization;
 
 namespace Journal.WindowsForms.Forms
 {
     public partial class GradesForm : Form
     {
-        public GradesForm(JournalClient journalClient, Subject subject, StudentGroup group)
+        public GradesForm(IJournalClient journalClient, Subject subject, StudentGroup group, bool allowEdit = false)
         {
             InitializeComponent();
 
-            
-
-            _viewModel = new GradesFormViewModel(journalClient, subject, group);
+            _viewModel = new GradesFormViewModel(journalClient, this, subject, group, gradesContextMenu, allowEdit);
             _InitBinding(_viewModel);
             
         }
 
         private GradesFormViewModel _viewModel;
-    
+
         private void _InitBinding(GradesFormViewModel viewModel)
         {
+            gradesGridView.CellMouseClick += (object sender, DataGridViewCellMouseEventArgs e) => 
+            {
+                DataGridView gridView = (DataGridView)sender;
+                if (e.ColumnIndex == 0)
+                {
+                    gridView[e.ColumnIndex, e.RowIndex].Selected = false;
+                    return;
+                }
+                else if (e.Button == MouseButtons.Right)
+                    gridView[e.ColumnIndex, e.RowIndex].Selected = true;
+
+            };
+
+            
+
             gradesGridView.Bind(viewModel, c => c.DataSource, vm => vm.Grades);
 
             predMonthButton.Click += (_, __) => { viewModel.PredMonth(); };
@@ -40,6 +47,8 @@ namespace Journal.WindowsForms.Forms
             subjectNameLabel.Bind(viewModel, c => c.Text, vm => vm.SubjectName);
 
             monthNameLabel.Bind(viewModel, c => c.Text, vm => vm.Month, true, DataSourceUpdateMode.OnPropertyChanged, "", "MMMM", CultureInfo.CurrentCulture);
+
+            gradesGridView.CellMouseClick += viewModel.GradesCellClick;
         }
     }
 }

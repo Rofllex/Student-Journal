@@ -6,8 +6,6 @@ using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-using Newtonsoft.Json.Linq;
-
 using Journal.Server.Database;
 using Journal.Logging;
 
@@ -23,6 +21,7 @@ namespace Journal.Server
         static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             _InitializeLogging();
             Logger logger = Logger.Instance;
             try
@@ -43,9 +42,9 @@ namespace Journal.Server
 
 #if DEBUG
             // Если в конфигурации прописано что необходимо поставить на паузу.
-            if (Server.Config.JournalConfiguration.Single.Pause 
+            if (Server.Config.JournalConfiguration.Single.Pause
                 // Или если это указано в аргументах
-                || args.FirstOrDefault(a => a == "+pause" && a == "+p") != default)
+                || args.FirstOrDefault(a => a == "--pause" || a == "-p") != default)
             {
                 Console.WriteLine("Нажмите любую кнопку чтобы продолжить...");
                 Console.ReadKey(true);
@@ -55,6 +54,15 @@ namespace Journal.Server
             CreateHostBuilder(args).Build().Run();
         }
 
+        /// <summary>
+        ///     Обработчик неперехваченного исключения.
+        /// </summary>
+        /// <param name="sender">
+        ///     Объект, вызвавший исключение.
+        /// </param>
+        /// <param name="e">
+        ///     Параметр события
+        /// </param>
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             if (Logger.Instance != null)

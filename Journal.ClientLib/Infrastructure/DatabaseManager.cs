@@ -143,22 +143,21 @@ namespace Journal.ClientLib.Infrastructure
             return subj;
         }
 
-        public async Task<Subject> CreateSubject(string subjectName, int specialtyId)
+        /// <summary>
+        ///     Добавить новый предмет
+        /// </summary>
+        /// <param name="subjectName">Название предмета</param>
+        /// <returns>Созданный предмет</returns>
+        /// <inheritdoc cref="JWTQueryExecuter.ExecuteGetQuery{T}(string, string, IEnumerable{KeyValuePair{string, string}}?, bool)"/>
+        public async Task<Subject> CreateSubject(string subjectName)
         {
             if (string.IsNullOrWhiteSpace(subjectName))
                 throw new ArgumentNullException(nameof(subjectName));
-            if (specialtyId < 0)
-                throw new ArgumentOutOfRangeException(nameof(specialtyId));
-
             return await QueryExecuter.ExecuteGetQuery<Subject>(CONTROLLER_NAME, "CreateSubject", new Dictionary<string, string>()
             {
                 ["name"] = subjectName
-                , ["specialtyId"] = specialtyId.ToString()
             });
         }
-
-        public Task<Subject> CreateSubject(string subjectName, ISpecialty specialty)
-            => CreateSubject(subjectName, specialty.Id);
 
         /// <summary>
         ///     Метод получения группы студентов по идентификатору

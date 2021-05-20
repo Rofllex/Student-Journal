@@ -1,26 +1,20 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+
 using Journal.Server.Database;
-using System.Security.Claims;
 using Journal.Server.Infrastructure;
 using Journal.Common.Models;
 using Journal.Common.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
-using System;
-
 using Journal.Server.Utils;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-/*
-* Студент не должен видеть оценки других студентов.
-* Родители могут видеть оценки лишь своих детей.
-* Администратор может просматривать все оценки.
-*/
 
 namespace Journal.Server.Controllers
 {
@@ -36,20 +30,45 @@ namespace Journal.Server.Controllers
 
 
         /// <summary>
-        /// Выставить оценку.
+        ///     Выставить оценку.
         /// </summary>
         /// <param name="studentId">Идентификатор студента</param>
         /// <param name="level">Уровень оценки</param>
         /// <returns></returns>
         [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Teacher))]
         public async Task<IActionResult> Paste([FromQuery(Name = "studentId")] int studentId
-                                            , [FromQuery(Name = "subjectId")] int subjectId
-                                            , [FromQuery(Name = "level")] GradeLevel level 
-                                            , [FromQuery(Name = "reason")] string reason = null)
+                                             , [FromQuery(Name = "subjectId")] int subjectId
+                                             , [FromQuery(Name = "level")] GradeLevel level
+                                             , [FromQuery(Name = "timestamp")] string timestamp = null
+                                             , [FromQuery(Name = "reason")] string reason = null)
         {
             return await Task.Run(() =>
             {
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                DateTime gradeDate;
+                if (!string.IsNullOrWhiteSpace(timestamp))
+                {
+                    try
+                    {
+                        gradeDate = DateTime.Parse(timestamp);
+                        if (!_CheckGradeTimestamp(gradeDate))
+                            throw new Exception();
+                    }
+                    catch
+                    {
+                        return Json(new RequestError($"Неверная дата."));
+                    }
+                }
+                else
+                    gradeDate = DateTime.Now;
+                Grade grade = _dbContext.Grades.FirstOrDefault(g => g.StudentId == studentId
+                                                                    && g.SubjectId == subjectId
+                                                                    && g.Timestamp.Year == gradeDate.Year
+                                                                    && g.Timestamp.Month == gradeDate.Month
+                                                                    && g.Timestamp.Day == gradeDate.Day);
+                if (grade != null)
+                    return Json(new RequestError($"Оценка уже выставлена"));
+
                 Student student = _dbContext.Students.Where(s => s.UserId == studentId)
                                                      .Include(s => s.UserEnt)
                                                      .FirstOrDefault();
@@ -59,7 +78,7 @@ namespace Journal.Server.Controllers
                     if ( subject != null )
                     {
                         User user = this.GetUserFromClaims( _dbContext.Users );
-                        Grade grade = new Grade( user, subject, student, level, reason: reason );
+                        grade = new Grade( user, subject, student, level, timestamp: gradeDate, reason: reason );
                         _dbContext.Grades.Add( grade );
                         _dbContext.SaveChanges();
                         Response.StatusCode = StatusCodes.Status200OK;
@@ -84,11 +103,31 @@ namespace Journal.Server.Controllers
         /// <param name="level"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        public async Task<IActionResult> PasteMultiple([FromQuery(Name = "subjectId")] int subjectId, [FromQuery(Name = "gradeLevel")] GradeLevel level, [FromQuery(Name = "reason")] string reason = null)
+        public async Task<IActionResult> PasteMultiple([FromQuery(Name = "subjectId")] int subjectId
+                                                     , [FromQuery(Name = "gradeLevel")] GradeLevel level
+                                                     , [FromQuery(Name = "timestamp")] string? timestamp = null
+                                                     , [FromQuery(Name = "reason")] string reason = null)
         {
             Response.StatusCode = StatusCodes.Status400BadRequest;
             if (!Request.ContentType.Contains("application/json"))
                 return Json(new RequestError("Неверный тип контента. Не содержит \"application/json\""));
+
+            DateTime gradesTimeStamp;
+            if (!string.IsNullOrWhiteSpace(timestamp))
+            {
+                try
+                {
+                    gradesTimeStamp = DateTime.Parse(timestamp);
+                    if (!_CheckGradeTimestamp(gradesTimeStamp))
+                        throw new Exception();
+                }
+                catch 
+                {
+                    return Json(new RequestError("Неверная дата выставления оценок"));
+                }
+            }
+            else
+                gradesTimeStamp = DateTime.Now;
 
             Subject subject = _dbContext.Subjects.FirstOrDefault(s => s.Id == subjectId);
             if (subject == null)
@@ -236,5 +275,8 @@ namespace Journal.Server.Controllers
                                             && g.Timestamp >= startDate 
                                             && g.Timestamp < endDate)
                                 .ToArray();
+
+        private bool _CheckGradeTimestamp(DateTime timestamp)
+            => timestamp > new DateTime(2019, 1, 1) && timestamp < DateTime.Now.AddDays(1);
     }
 }
