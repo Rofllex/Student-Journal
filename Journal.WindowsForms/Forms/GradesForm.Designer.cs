@@ -30,13 +30,14 @@ namespace Journal.WindowsForms.Forms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GradesForm));
             this.gradesGridView = new System.Windows.Forms.DataGridView();
             this.monthNameLabel = new System.Windows.Forms.Label();
-            this.predMonthButton = new System.Windows.Forms.Button();
-            this.nextMonthButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.subjectNameLabel = new System.Windows.Forms.Label();
             this.gradesContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.nextMonthButton = new System.Windows.Forms.Button();
+            this.predMonthButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.gradesGridView)).BeginInit();
             this.SuspendLayout();
             // 
@@ -61,32 +62,12 @@ namespace Journal.WindowsForms.Forms
             // monthNameLabel
             // 
             this.monthNameLabel.AutoSize = true;
-            this.monthNameLabel.Location = new System.Drawing.Point(372, 25);
+            this.monthNameLabel.Location = new System.Drawing.Point(361, 25);
             this.monthNameLabel.Name = "monthNameLabel";
             this.monthNameLabel.Size = new System.Drawing.Size(62, 18);
             this.monthNameLabel.TabIndex = 1;
             this.monthNameLabel.Text = "Январь";
-            this.monthNameLabel.Click += new System.EventHandler(this.monthNameLabel_Click);
-            // 
-            // predMonthButton
-            // 
-            this.predMonthButton.Location = new System.Drawing.Point(291, 23);
-            this.predMonthButton.Name = "predMonthButton";
-            this.predMonthButton.Size = new System.Drawing.Size(75, 23);
-            this.predMonthButton.TabIndex = 2;
-            this.predMonthButton.Text = "<";
-            this.predMonthButton.UseVisualStyleBackColor = true;
-            this.predMonthButton.Click += new System.EventHandler(this.predMonthButton_Click);
-            // 
-            // nextMonthButton
-            // 
-            this.nextMonthButton.Location = new System.Drawing.Point(440, 23);
-            this.nextMonthButton.Name = "nextMonthButton";
-            this.nextMonthButton.Size = new System.Drawing.Size(75, 23);
-            this.nextMonthButton.TabIndex = 2;
-            this.nextMonthButton.Text = ">";
-            this.nextMonthButton.UseVisualStyleBackColor = true;
-            this.nextMonthButton.Click += new System.EventHandler(this.nextMonthButton_Click);
+            this.monthNameLabel.TextChanged += new System.EventHandler(this.monthNameLabel_TextChanged);
             // 
             // label2
             // 
@@ -112,10 +93,41 @@ namespace Journal.WindowsForms.Forms
             this.gradesContextMenu.Name = "contextMenuStrip1";
             this.gradesContextMenu.Size = new System.Drawing.Size(61, 4);
             // 
+            // nextMonthButton
+            // 
+            this.nextMonthButton.BackColor = System.Drawing.Color.White;
+            this.nextMonthButton.BackgroundImage = global::Journal.WindowsForms.Properties.Resources.forward_arrow;
+            this.nextMonthButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.nextMonthButton.FlatAppearance.BorderSize = 0;
+            this.nextMonthButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.nextMonthButton.Font = new System.Drawing.Font("DejaVu Sans Mono", 12.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.nextMonthButton.Location = new System.Drawing.Point(423, 23);
+            this.nextMonthButton.Name = "nextMonthButton";
+            this.nextMonthButton.Size = new System.Drawing.Size(38, 23);
+            this.nextMonthButton.TabIndex = 2;
+            this.nextMonthButton.Text = " ";
+            this.nextMonthButton.UseVisualStyleBackColor = false;
+            // 
+            // predMonthButton
+            // 
+            this.predMonthButton.BackColor = System.Drawing.Color.White;
+            this.predMonthButton.BackgroundImage = global::Journal.WindowsForms.Properties.Resources.back_arrow;
+            this.predMonthButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.predMonthButton.FlatAppearance.BorderSize = 0;
+            this.predMonthButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.predMonthButton.Font = new System.Drawing.Font("DejaVu Sans Mono", 12.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.predMonthButton.Location = new System.Drawing.Point(323, 23);
+            this.predMonthButton.Name = "predMonthButton";
+            this.predMonthButton.Size = new System.Drawing.Size(38, 23);
+            this.predMonthButton.TabIndex = 2;
+            this.predMonthButton.Text = " ";
+            this.predMonthButton.UseVisualStyleBackColor = false;
+            // 
             // GradesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(931, 510);
             this.Controls.Add(this.subjectNameLabel);
             this.Controls.Add(this.label2);
@@ -124,6 +136,7 @@ namespace Journal.WindowsForms.Forms
             this.Controls.Add(this.monthNameLabel);
             this.Controls.Add(this.gradesGridView);
             this.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GradesForm";
             this.Text = "Журнал";
             ((System.ComponentModel.ISupportInitialize)(this.gradesGridView)).EndInit();
@@ -136,10 +149,10 @@ namespace Journal.WindowsForms.Forms
 
         private System.Windows.Forms.DataGridView gradesGridView;
         private System.Windows.Forms.Label monthNameLabel;
-        private System.Windows.Forms.Button predMonthButton;
-        private System.Windows.Forms.Button nextMonthButton;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label subjectNameLabel;
         private System.Windows.Forms.ContextMenuStrip gradesContextMenu;
+        private System.Windows.Forms.Button nextMonthButton;
+        private System.Windows.Forms.Button predMonthButton;
     }
 }

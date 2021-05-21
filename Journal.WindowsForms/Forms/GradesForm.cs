@@ -51,19 +51,15 @@ namespace Journal.WindowsForms.Forms
             gradesGridView.CellMouseClick += viewModel.GradesCellClick;
         }
 
-        private void predMonthButton_Click(object sender, System.EventArgs e)
+        
+        private void monthNameLabel_TextChanged(object sender, System.EventArgs e)
         {
+            Label label = (Label)sender;
+            System.Drawing.Size textSize = TextRenderer.MeasureText(label.Text, label.Font);
 
-        }
-
-        private void nextMonthButton_Click(object sender, System.EventArgs e)
-        {
-
-        }
-
-        private void monthNameLabel_Click(object sender, System.EventArgs e)
-        {
-
+            System.Drawing.Point nextMonthLocation = nextMonthButton.Location;
+            nextMonthLocation.X = label.Location.X + textSize.Width;
+            nextMonthButton.Location = nextMonthLocation;
         }
     }
 }
