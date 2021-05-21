@@ -3,11 +3,12 @@
 using Journal.ClientLib;
 using Journal.WindowsForms.ViewModels;
 
+
 #nullable enable
 
 namespace Journal.WindowsForms.Forms
 {
-    public partial class AuthenticationForm : Form
+    public partial class AuthenticationForm : MetroFramework.Forms.MetroForm
     {
         public AuthenticationForm( AuthenticationModel? model = null )
         {

@@ -42,7 +42,7 @@ namespace Journal.WindowsForms.Forms
             // loginTextBox
             // 
             this.loginTextBox.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.loginTextBox.Location = new System.Drawing.Point(122, 70);
+            this.loginTextBox.Location = new System.Drawing.Point(151, 110);
             this.loginTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.loginTextBox.Name = "loginTextBox";
             this.loginTextBox.Size = new System.Drawing.Size(170, 25);
@@ -51,7 +51,7 @@ namespace Journal.WindowsForms.Forms
             // passwordTextBox
             // 
             this.passwordTextBox.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.passwordTextBox.Location = new System.Drawing.Point(122, 117);
+            this.passwordTextBox.Location = new System.Drawing.Point(151, 157);
             this.passwordTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.passwordTextBox.Name = "passwordTextBox";
             this.passwordTextBox.PasswordChar = '*';
@@ -62,7 +62,7 @@ namespace Journal.WindowsForms.Forms
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(50, 74);
+            this.label1.Location = new System.Drawing.Point(79, 114);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(53, 18);
@@ -73,7 +73,7 @@ namespace Journal.WindowsForms.Forms
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label2.Location = new System.Drawing.Point(40, 121);
+            this.label2.Location = new System.Drawing.Point(69, 161);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(62, 18);
@@ -83,7 +83,7 @@ namespace Journal.WindowsForms.Forms
             // authorizeButton
             // 
             this.authorizeButton.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.authorizeButton.Location = new System.Drawing.Point(169, 151);
+            this.authorizeButton.Location = new System.Drawing.Point(198, 191);
             this.authorizeButton.Margin = new System.Windows.Forms.Padding(4);
             this.authorizeButton.Name = "authorizeButton";
             this.authorizeButton.Size = new System.Drawing.Size(123, 32);
@@ -95,7 +95,7 @@ namespace Journal.WindowsForms.Forms
             // 
             this.rememberPasswordCheckbox.AutoSize = true;
             this.rememberPasswordCheckbox.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.rememberPasswordCheckbox.Location = new System.Drawing.Point(50, 157);
+            this.rememberPasswordCheckbox.Location = new System.Drawing.Point(79, 197);
             this.rememberPasswordCheckbox.Margin = new System.Windows.Forms.Padding(4);
             this.rememberPasswordCheckbox.Name = "rememberPasswordCheckbox";
             this.rememberPasswordCheckbox.Size = new System.Drawing.Size(108, 22);
@@ -105,7 +105,7 @@ namespace Journal.WindowsForms.Forms
             // 
             // ipTextBox
             // 
-            this.ipTextBox.Location = new System.Drawing.Point(122, 29);
+            this.ipTextBox.Location = new System.Drawing.Point(151, 78);
             this.ipTextBox.Name = "ipTextBox";
             this.ipTextBox.Size = new System.Drawing.Size(170, 25);
             this.ipTextBox.TabIndex = 5;
@@ -113,7 +113,7 @@ namespace Journal.WindowsForms.Forms
             // ipLabel
             // 
             this.ipLabel.AutoSize = true;
-            this.ipLabel.Location = new System.Drawing.Point(76, 29);
+            this.ipLabel.Location = new System.Drawing.Point(186, 29);
             this.ipLabel.Name = "ipLabel";
             this.ipLabel.Size = new System.Drawing.Size(26, 18);
             this.ipLabel.TabIndex = 6;
@@ -123,8 +123,8 @@ namespace Journal.WindowsForms.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(351, 196);
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.ClientSize = new System.Drawing.Size(614, 405);
             this.Controls.Add(this.ipLabel);
             this.Controls.Add(this.ipTextBox);
             this.Controls.Add(this.rememberPasswordCheckbox);
@@ -135,7 +135,6 @@ namespace Journal.WindowsForms.Forms
             this.Controls.Add(this.loginTextBox);
             this.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "AuthenticationForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
