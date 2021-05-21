@@ -214,8 +214,18 @@ namespace Journal.ClientLib.Infrastructure
             if (contentType == "application/json")
             {
                 string contentString = await response.Content.ReadAsStringAsync();
-                RequestError requestError = JsonConvert.DeserializeObject<RequestError>(contentString);
+                RequestError requestError;
+                try
+                {
+                    requestError = JsonConvert.DeserializeObject<RequestError>(contentString);
+                }
+                catch (Exception ex)
+                {
+                    throw new ExecuteQueryException("Ошибка при десериализации ответ от сервера", (int)response.StatusCode, responseString: contentString, innerException: ex);    
+                }
+
                 requestError.Throw();
+                // Этот код не выполнится т.к. строка выше выбросит исключение
                 throw new InvalidOperationException();
             }
             else

@@ -22,7 +22,7 @@ namespace Journal.WindowsForms.Forms
             _journalClient = journalClient;
 
             CheckForIllegalCrossThreadCalls = false;
-            _adminPanelViewModel = new AdminPanelViewModel(journalClient, this);
+            _adminPanelViewModel = new AdminPanelViewModel(journalClient, this, contextMenuStrip1);
             _InitAdminPanelFormBinding(_adminPanelViewModel);
         }
 
@@ -53,6 +53,19 @@ namespace Journal.WindowsForms.Forms
 
             usersCountLabel.Bind( viewModel, c => c.Text, vm => vm.UsersCount );
             //usersCountLabel.DataBindings.Add(nameof(usersCountLabel.Text), viewModel, nameof(viewModel.UsersCount));
+
+            usersGridView.CellMouseClick += (object sender, DataGridViewCellMouseEventArgs e) => 
+            {
+                DataGridView gridView = (DataGridView)sender;
+                if (e.RowIndex > -1 && e.RowIndex < gridView.Rows.Count)
+                {
+                    if (gridView.SelectedCells.Count > 0)
+                        gridView.SelectedCells[0].Selected = false;
+                    gridView[e.ColumnIndex, e.RowIndex].Selected = true;
+                }
+            };
+            usersGridView.CellMouseClick += viewModel.UsersCellMouseClick;
+            
 
             #endregion
 
@@ -105,7 +118,7 @@ namespace Journal.WindowsForms.Forms
                 UserRole originalValue = (UserRole)e.Value!;
 
                 string formattedValue;
-                using (IEnumerator<UserRole> enumerator = originalValue.GetFlags().GetEnumerator())
+                using (IEnumerator<UserRole> enumerator = originalValue.GetContainsFlags().GetEnumerator())
                 {
                     if (enumerator.MoveNext())
                     {
@@ -137,6 +150,18 @@ namespace Journal.WindowsForms.Forms
         {
             using SubjectsConstructorForm subjForm = new SubjectsConstructorForm(this._journalClient);
             subjForm.ShowDialog();
+        }
+
+        private void createUserButton_Click(object sender, EventArgs e)
+        {
+            using CreateUserForm createUserForm = new CreateUserForm(this._journalClient);
+            createUserForm.ShowDialog();
+        }
+
+        private void createStudentGroupButton_Click(object sender, EventArgs e)
+        {
+            using CreateStudentGroupForm createGroupForm = new CreateStudentGroupForm(_journalClient);
+            createGroupForm.ShowDialog();
         }
     }
 }

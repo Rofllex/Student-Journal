@@ -50,5 +50,20 @@ namespace Journal.WindowsForms.Forms
 
             gradesGridView.CellMouseClick += viewModel.GradesCellClick;
         }
+
+        private void predMonthButton_Click(object sender, System.EventArgs e)
+        {
+
+        }
+
+        private void nextMonthButton_Click(object sender, System.EventArgs e)
+        {
+
+        }
+
+        private void monthNameLabel_Click(object sender, System.EventArgs e)
+        {
+
+        }
     }
 }

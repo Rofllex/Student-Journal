@@ -12,15 +12,18 @@ namespace Journal.WindowsForms.Forms
     {
         public static UserRole? SelectRoleDialog(UserRole[] rolesToSelect)
         {
-            SelectRoleForm form = new SelectRoleForm(rolesToSelect);
+            using SelectRoleForm form = new SelectRoleForm(rolesToSelect);
             form.ShowDialog();
             return form.SelectedRole;
         }
 
-
+        /// <summary>
+        ///     Конструктор формы выбора роли пользователя.
+        /// </summary>
+        /// <param name="rolesToSelect">Перечисление ролей для выбора</param>
+        /// <exception cref="ArgumentException">Если перечисление пустое</exception>
         public SelectRoleForm(IEnumerable<UserRole> rolesToSelect)
         {
-
             if (rolesToSelect == null)
                 throw new ArgumentNullException(nameof(rolesToSelect));
             InitializeComponent();
@@ -36,7 +39,7 @@ namespace Journal.WindowsForms.Forms
                     {
                         roleIndex++;
                         UserRole currentRole = enumerator.Current;
-                        Button btn = _CreateButton(currentRole.ToString());
+                        Button btn = _CreateButton(/*currentRole.ToString()*/ Culture.RoleFormatProvider.Format(currentRole));
                         btn.Location = new Point(_buttonsLocationOffset.X + _buttonRowOffset.X * roleIndex
                                                 , _buttonsLocationOffset.Y + _buttonRowOffset.Y * roleIndex);
                         btn.Tag = currentRole;

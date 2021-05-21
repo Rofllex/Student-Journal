@@ -8,6 +8,7 @@ using Journal.ClientLib.Entities;
 
 namespace Journal.WindowsForms.Models
 {
+
     public class UserModel : GenericModuleBase<User>
     {
         public static UserModel[] FromUsers(IEnumerable<User> users)
@@ -52,7 +53,7 @@ namespace Journal.WindowsForms.Models
         {
             get
             {
-                using IEnumerator<UserRole> rolesEnumerator = Original.Role.GetFlags().GetEnumerator();
+                using IEnumerator<UserRole> rolesEnumerator = Original.Role.GetContainsFlags().GetEnumerator();
                 if (rolesEnumerator.MoveNext())
                 {
                     string result = rolesEnumerator.Current.ToString();
@@ -64,5 +65,8 @@ namespace Journal.WindowsForms.Models
                     return string.Empty;
             }
         }
+
+        public override string ToString()
+            => $"{FirstName} {Surname} {Patronymic}";
     }
 }

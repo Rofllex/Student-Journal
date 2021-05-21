@@ -21,5 +21,8 @@ namespace Journal.WindowsForms.Models
 
         [DisplayName("Кол-во курсов")]
         public int MaxCourse => Original.MaxCourse;
+
+        public override string ToString()
+            => Name;
     }
 }

@@ -19,12 +19,14 @@ namespace Journal.WindowsForms.ViewModels
 {
     public class AdminPanelViewModel : ViewModel
     {
-        public AdminPanelViewModel(JournalClient client, Form form) 
+        public AdminPanelViewModel(JournalClient client, Form form, ContextMenuStrip contextMenu) 
         {
             _callerForm = form ?? throw new ArgumentNullException(nameof(form));
             _client = client ?? throw new ArgumentNullException(nameof(client));
+            _contextMenu = contextMenu ?? throw new ArgumentNullException(nameof(contextMenu));
             IControllerManagerFactory factory = new ControllerManagerFactory();
             this._adminPanel = factory.Create<AdminManager>(_client);
+            this._usersManager = factory.Create<UsersManager>(_client);
             Task.Run(() => 
             {
                 Task<int> usersCountTask = _adminPanel.GetUsersCountAsync();
@@ -80,6 +82,30 @@ namespace Journal.WindowsForms.ViewModels
             _callerForm.Close();
         }
 
+        public async void UsersCellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+
+
+            if (e.Button == MouseButtons.Right)
+            {
+                if (e.RowIndex > -1 && e.RowIndex < Users.Count)
+                {
+                    UserModel selectedUser = Users[e.RowIndex];
+                    if (selectedUser.Original.Role.HasFlag(Common.Entities.UserRole.Student))
+                    {
+                        _contextMenu.Items.Clear();
+                        Student student = await _usersManager.GetStudentByIdAsync(selectedUser.Original.Id);
+                        _contextMenu.Items.Add("Редактировать", null, (_, __) => 
+                        {
+                            using Forms.EditStudentForm editStudentForm = new Forms.EditStudentForm(_client, student);
+                            editStudentForm.ShowDialog();
+                        });
+                        _contextMenu.Show(Cursor.Position);
+                    }
+                }
+            }
+        }
+
         private Form _callerForm;
 
         private const int USERS_PER_PAGE = 15;
@@ -90,9 +116,14 @@ namespace Journal.WindowsForms.ViewModels
 
         private AdminManager _adminPanel;
         private JournalClient _client;
-        
+        private UsersManager _usersManager;
+
+        private ContextMenuStrip _contextMenu;
+
         private async void _LoadUsers(int pageIndex)
         {
+            await Task.Delay(50);
+
             User[] users;
             try
             {

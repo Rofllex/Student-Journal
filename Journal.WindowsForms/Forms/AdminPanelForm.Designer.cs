@@ -29,6 +29,7 @@ namespace Journal.WindowsForms.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.usersGridView = new System.Windows.Forms.DataGridView();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.usersTabPage = new System.Windows.Forms.TabPage();
@@ -39,10 +40,13 @@ namespace Journal.WindowsForms.Forms
             this.nextPageButton = new System.Windows.Forms.Button();
             this.predPageButton = new System.Windows.Forms.Button();
             this.databaseTabPage = new System.Windows.Forms.TabPage();
+            this.createStudentGroupButton = new System.Windows.Forms.Button();
+            this.createUserButton = new System.Windows.Forms.Button();
             this.subjectsButton = new System.Windows.Forms.Button();
             this.specialtiesButton = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.logoutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.usersGridView)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.usersTabPage.SuspendLayout();
@@ -173,6 +177,8 @@ namespace Journal.WindowsForms.Forms
             // 
             // databaseTabPage
             // 
+            this.databaseTabPage.Controls.Add(this.createStudentGroupButton);
+            this.databaseTabPage.Controls.Add(this.createUserButton);
             this.databaseTabPage.Controls.Add(this.subjectsButton);
             this.databaseTabPage.Controls.Add(this.specialtiesButton);
             this.databaseTabPage.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
@@ -184,6 +190,26 @@ namespace Journal.WindowsForms.Forms
             this.databaseTabPage.TabIndex = 1;
             this.databaseTabPage.Text = "БД";
             this.databaseTabPage.UseVisualStyleBackColor = true;
+            // 
+            // createStudentGroupButton
+            // 
+            this.createStudentGroupButton.Location = new System.Drawing.Point(43, 146);
+            this.createStudentGroupButton.Name = "createStudentGroupButton";
+            this.createStudentGroupButton.Size = new System.Drawing.Size(208, 28);
+            this.createStudentGroupButton.TabIndex = 1;
+            this.createStudentGroupButton.Text = "Группы";
+            this.createStudentGroupButton.UseVisualStyleBackColor = true;
+            this.createStudentGroupButton.Click += new System.EventHandler(this.createStudentGroupButton_Click);
+            // 
+            // createUserButton
+            // 
+            this.createUserButton.Location = new System.Drawing.Point(43, 112);
+            this.createUserButton.Name = "createUserButton";
+            this.createUserButton.Size = new System.Drawing.Size(208, 28);
+            this.createUserButton.TabIndex = 1;
+            this.createUserButton.Text = "Создать пользователя";
+            this.createUserButton.UseVisualStyleBackColor = true;
+            this.createUserButton.Click += new System.EventHandler(this.createUserButton_Click);
             // 
             // subjectsButton
             // 
@@ -223,6 +249,11 @@ namespace Journal.WindowsForms.Forms
             this.logoutMenuItem.Name = "logoutMenuItem";
             this.logoutMenuItem.Size = new System.Drawing.Size(65, 22);
             this.logoutMenuItem.Text = "Выйти";
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
             // 
             // AdminPanelForm
             // 
@@ -264,5 +295,9 @@ namespace Journal.WindowsForms.Forms
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem logoutMenuItem;
         private System.Windows.Forms.Button subjectsButton;
+        private System.Windows.Forms.Button createUserButton;
+        private System.Windows.Forms.Button crea;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.Button createStudentGroupButton;
     }
 }

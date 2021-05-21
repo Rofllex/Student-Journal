@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace Journal.WindowsForms.Models
 {
-    public abstract class GenericModuleBase<T> where T : class
+    public abstract class GenericModuleBase<T>
     {
         public static explicit operator T(GenericModuleBase<T> model)
             => model.Original;

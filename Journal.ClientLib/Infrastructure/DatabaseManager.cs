@@ -17,6 +17,14 @@ namespace Journal.ClientLib.Infrastructure
 
         private DatabaseManager() { }
 
+        public Task<Specialty> GetSpecialtyById(int specialtyId)
+        {
+            return QueryExecuter.ExecuteGetQuery<Specialty>(CONTROLLER_NAME, "GetSpecialtyById", new Dictionary<string, string>()
+            {
+                ["specialtyId"] = specialtyId.ToString()
+            });
+        }
+
         public async Task<Specialty> CreateSpecialtyAsync(string name, string code, int maxCourse, int[] subjectIds)
         {
             if (maxCourse <= 0)
@@ -38,7 +46,6 @@ namespace Journal.ClientLib.Infrastructure
 
         public Task<Specialty> CreateSpecialtyAsync(string name, string code, int maxCourse, ISubject[] subjects = null)
             => CreateSpecialtyAsync(name, code, maxCourse, subjects?.Select(s => s.Id).ToArray() ?? Array.Empty<int>());
-
 
         /// <summary>
         ///     Асинхронный метод получения специальностей.
@@ -106,15 +113,7 @@ namespace Journal.ClientLib.Infrastructure
         public Task<IReadOnlyCollection<Subject>> GetSpecialtySubjects(Specialty specialty)
             => GetSpecialtySubjects(specialty.Id);
 
-        public Task<Specialty> GetSpecialtyById(int specialtyId)
-        {
-            return QueryExecuter.ExecuteGetQuery<Specialty>(CONTROLLER_NAME, "GetSpecialtyById", new Dictionary<string, string>() 
-            {
-                ["specialtyId"] = specialtyId.ToString()
-            });
-        }
-
-
+        
         public async Task<Subject[]> GetSubjects(int offset, int count)
         {
             if (offset < 0)
@@ -170,6 +169,42 @@ namespace Journal.ClientLib.Infrastructure
             });
 
         /// <summary>
+        ///     Установить группу для студента
+        /// </summary>
+        /// <param name="studentId">Идентификатор студента</param>
+        /// <param name="groupId">Идентификатор группы</param>
+        public Task SetStudentGroupAsync(int studentId, int groupId)
+            => QueryExecuter.ExecuteGetQuery(CONTROLLER_NAME, "SetStudentGroup", new Dictionary<string, string>()
+            {
+                ["studentId"] = studentId.ToString(),
+                ["groupId"] = groupId.ToString()
+            });
+
+        /// <param name="student">Студент</param>
+        /// <param name="group">Группа</param>
+        /// <inheritdoc cref="SetStudentGroupAsync(int, int)"/>
+        public Task SetStudentGroupAsync(Student student, StudentGroup group)
+            => SetStudentGroupAsync(student.UserId, group.Id);
+
+        /// <summary>
+        ///     Создать группу студентов
+        /// </summary>
+        /// <param name="specialtyId">Идентификатор специальности</param>
+        /// <param name="curatorId">Идентификатор куратора группы</param>
+        /// <param name="subgroup">Номер подгруппы</param>
+        /// <param name="currentCourse">Текущий курс</param>
+        /// <returns></returns>
+        public Task<StudentGroup> CreateStudentGroupAsync(int specialtyId, int curatorId, int subgroup, int currentCourse = 1)
+            => QueryExecuter.ExecuteGetQuery<StudentGroup>(CONTROLLER_NAME, "CreateStudentGroup", new Dictionary<string, string>() 
+            {
+                ["specialtyId"] = specialtyId.ToString(),
+                ["curatorId"] = curatorId.ToString(),
+                ["currentCourse"] = currentCourse.ToString(),
+                ["subgroup"] = subgroup.ToString()
+            });
+
+
+        /// <summary>
         ///     Метод получения групп с сервера.
         /// </summary>
         /// <param name="offset">Смещение</param>
@@ -193,6 +228,8 @@ namespace Journal.ClientLib.Infrastructure
 
         public Task<StudentGroup[]> GetGroupsBySpecialty(Specialty specialty)
             => GetGroupsBySpecialty(specialty.Id);
+
+       
 
         public async Task<Student[]> GetStudentsInGroup(int groupId)
         {

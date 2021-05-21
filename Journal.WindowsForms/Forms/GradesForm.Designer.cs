@@ -44,44 +44,49 @@ namespace Journal.WindowsForms.Forms
             // 
             this.gradesGridView.AllowUserToAddRows = false;
             this.gradesGridView.AllowUserToDeleteRows = false;
+            this.gradesGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gradesGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.gradesGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.gradesGridView.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.gradesGridView.Location = new System.Drawing.Point(0, 53);
+            this.gradesGridView.Location = new System.Drawing.Point(0, 56);
             this.gradesGridView.Margin = new System.Windows.Forms.Padding(4);
             this.gradesGridView.Name = "gradesGridView";
             this.gradesGridView.ReadOnly = true;
             this.gradesGridView.RowHeadersVisible = false;
             this.gradesGridView.RowTemplate.Height = 25;
-            this.gradesGridView.Size = new System.Drawing.Size(1021, 478);
+            this.gradesGridView.Size = new System.Drawing.Size(931, 454);
             this.gradesGridView.TabIndex = 0;
             // 
             // monthNameLabel
             // 
             this.monthNameLabel.AutoSize = true;
-            this.monthNameLabel.Location = new System.Drawing.Point(444, 25);
+            this.monthNameLabel.Location = new System.Drawing.Point(372, 25);
             this.monthNameLabel.Name = "monthNameLabel";
             this.monthNameLabel.Size = new System.Drawing.Size(62, 18);
             this.monthNameLabel.TabIndex = 1;
             this.monthNameLabel.Text = "Январь";
+            this.monthNameLabel.Click += new System.EventHandler(this.monthNameLabel_Click);
             // 
             // predMonthButton
             // 
-            this.predMonthButton.Location = new System.Drawing.Point(363, 23);
+            this.predMonthButton.Location = new System.Drawing.Point(291, 23);
             this.predMonthButton.Name = "predMonthButton";
             this.predMonthButton.Size = new System.Drawing.Size(75, 23);
             this.predMonthButton.TabIndex = 2;
             this.predMonthButton.Text = "<";
             this.predMonthButton.UseVisualStyleBackColor = true;
+            this.predMonthButton.Click += new System.EventHandler(this.predMonthButton_Click);
             // 
             // nextMonthButton
             // 
-            this.nextMonthButton.Location = new System.Drawing.Point(512, 23);
+            this.nextMonthButton.Location = new System.Drawing.Point(440, 23);
             this.nextMonthButton.Name = "nextMonthButton";
             this.nextMonthButton.Size = new System.Drawing.Size(75, 23);
             this.nextMonthButton.TabIndex = 2;
             this.nextMonthButton.Text = ">";
             this.nextMonthButton.UseVisualStyleBackColor = true;
+            this.nextMonthButton.Click += new System.EventHandler(this.nextMonthButton_Click);
             // 
             // label2
             // 
@@ -111,7 +116,7 @@ namespace Journal.WindowsForms.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1021, 531);
+            this.ClientSize = new System.Drawing.Size(931, 510);
             this.Controls.Add(this.subjectNameLabel);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.nextMonthButton);

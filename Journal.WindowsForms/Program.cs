@@ -50,48 +50,40 @@ namespace Journal.WindowsForms
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+
+
             while (true)
             {
                 ViewModels.AuthenticationModel? authenticationModel = _LoadAuthenticationModel(AuthenticationConfigPath);
 
                 Forms.AuthenticationForm authenticationForm = new Forms.AuthenticationForm(authenticationModel);
-                if (authenticationForm.ShowDialog() == DialogResult.OK)
-                {
-                    authenticationModel = authenticationForm.ViewModel.Model;
-                    if (!authenticationModel.RememberPassword)
-                        authenticationModel.Password = string.Empty;
-                    _SaveAuthenticationModel(AuthenticationConfigPath, authenticationModel);
-
-                    JournalClient? journalClient = authenticationForm.JournalClient;
-                    Debug.Assert(journalClient != null);
-
-                    Form? currentForm = _ChoiseFormByRole(journalClient, journalClient.User.Role);
-                    if (currentForm == null)
-                    {
-                        List<UserRole> roles = new List<UserRole>();
-                        foreach (UserRole role in (UserRole[])Enum.GetValues(typeof(UserRole)))
-                        {
-                            if (journalClient.User.Role.HasFlag(role))
-                                roles.Add(role);
-                        }
-
-                        Forms.SelectRoleForm selectRoleForm = new Forms.SelectRoleForm(roles);
-                        if (selectRoleForm.ShowDialog() != DialogResult.OK)
-                            return;
-                        else
-                        {
-                            Debug.Assert(selectRoleForm.SelectedRole.HasValue);
-                            currentForm = _ChoiseFormByRole(journalClient, selectRoleForm.SelectedRole.Value);
-                            Debug.Assert(currentForm != null);
-                        }
-                    }
-
-                    DialogResult result = currentForm.ShowDialog();
-                    if (result != DialogResult.Retry)
-                        break;
-                }
-                else
+                if (authenticationForm.ShowDialog() != DialogResult.OK)
                     return;
+
+                authenticationModel = authenticationForm.ViewModel.Model;
+                if (!authenticationModel.RememberPassword)
+                    authenticationModel.Password = string.Empty;
+                _SaveAuthenticationModel(AuthenticationConfigPath, authenticationModel);
+
+                JournalClient? journalClient = authenticationForm.JournalClient;
+                Debug.Assert(journalClient != null);
+
+                Form? currentForm = _ChoiseFormByRole(journalClient, journalClient.User.Role);
+                if (currentForm == null)
+                {
+                    IEnumerable<UserRole> roles = Common.Extensions.EnumExtensions.GetContainsFlags(journalClient.User.Role);
+                    using Forms.SelectRoleForm selectRoleForm = new Forms.SelectRoleForm(roles);
+                    if (selectRoleForm.ShowDialog() != DialogResult.OK)
+                        return;
+
+                    Debug.Assert(selectRoleForm.SelectedRole.HasValue);
+                    currentForm = _ChoiseFormByRole(journalClient, selectRoleForm.SelectedRole.Value);
+                    Debug.Assert(currentForm != null, "Не найдена форма для выбранной роли");
+                }
+
+                DialogResult result = currentForm.ShowDialog();
+                if (result != DialogResult.Retry)
+                    break;
             }
         }
 

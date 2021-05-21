@@ -323,29 +323,27 @@ namespace Journal.Server.Controllers
                 return Json(new InvalidArgumentRequestError(nameof(specialtyId)));
             if (curatorId < 0)
                 return Json(new InvalidArgumentRequestError(nameof(curatorId)));
+            if (currentCourse < 1 || currentCourse > 4)
+                return Json(new InvalidArgumentRequestError(nameof(currentCourse)));
 
             Specialty specialty = _dbContext.Specialties.FirstOrDefault(s => s.Id == specialtyId);
-            if (specialty != default)
-            {
-                User curator = _dbContext.Users.FirstOrDefault(u => u.Id == curatorId);
-                if (curator != default)
-                {
-                    if (_dbContext.Groups.FirstOrDefault(g => g.SpecialtyId == specialtyId && g.CurrentCourse == currentCourse && g.Subgroup == subgroup) != null)
-                        return Json(new RequestError("Данная группа уже присутствует в системе."));
-
-                    StudentGroup studentGroup = new StudentGroup(specialty, currentCourse, subgroup, new List<Student>(), curator);
-                    _dbContext.Groups.Add(studentGroup);
-                    await _dbContext.SaveChangesAsync();
-
-                    Response.StatusCode = StatusCodes.Status200OK;
-                    return Json(studentGroup);
-                }
-                else
-                    return Json(new RequestError($"Пользователь с идентификатором {curatorId} не найден"));
-            }
-            else
+            if (specialty == default)
                 return Json(new RequestError($"Специальность с идентификатором {specialtyId} не найдена."));
+            if (currentCourse > specialty.MaxCourse)
+                return Json(new RequestError("Неверное значение параметра currentCourse"));
 
+            User curator = _dbContext.Users.FirstOrDefault(u => u.Id == curatorId);
+            if (curator == default)
+                return Json(new RequestError($"Пользователь с идентификатором {curatorId} не найден"));
+            if (_dbContext.Groups.FirstOrDefault(g => g.SpecialtyId == specialtyId && g.CurrentCourse == currentCourse && g.Subgroup == subgroup && !g.GraduatedDate.HasValue) != null)
+                return Json(new RequestError("Данная группа уже присутствует в системе."));
+
+            StudentGroup studentGroup = new StudentGroup(specialty, currentCourse, subgroup, new List<Student>(), curator);
+            _dbContext.Groups.Add(studentGroup);
+            await _dbContext.SaveChangesAsync();
+
+            Response.StatusCode = StatusCodes.Status200OK;
+            return Json(studentGroup);
         }
 
         /// <summary>
@@ -398,6 +396,8 @@ namespace Journal.Server.Controllers
 
             return Json(group);
         }
+
+        
 
         /// <summary>
         ///     Получение групп студентов

@@ -5,12 +5,38 @@ using System.Collections.Generic;
 
 namespace Journal.Common.Extensions
 {
+    /// <summary>
+    ///     Расширения перечисления.
+    /// </summary>
     public static class EnumExtensions
     {
-        public static IEnumerable<TEnum> GetFlags<TEnum>(this TEnum @enum) where TEnum : Enum
+        /// <summary>
+        ///     Получить перечисление всех имеющихся флагов.
+        /// </summary>
+        /// <typeparam name="TEnum"></typeparam>
+        /// <param name="enum"></param>
+        /// <returns></returns>
+        public static IEnumerable<TEnum> GetContainsFlags<TEnum>(this TEnum @enum) where TEnum : Enum
             => new EnumFlagsEnumerable<TEnum>(@enum);
 
-    
+        /// <summary>
+        ///     Получить все значения флагов.
+        /// </summary>
+        /// <typeparam name="TEnum">
+        ///     Тип перечисления.
+        /// </typeparam>
+        /// <param name="value">
+        ///     Значение 
+        /// </param>
+        /// <returns>
+        ///     Массив всех имеющихся значений во флаге.
+        /// </returns>
+        public static TEnum[] GetContainsFlagsAsArray<TEnum>(this TEnum value) where TEnum : Enum
+        {
+            TEnum[] allValues = (TEnum[])Enum.GetValues(typeof(TEnum));
+            return allValues.Where(v => value.HasFlag(v)).ToArray();
+        }
+
         private class EnumFlagsEnumerable<TEnum> : IEnumerable<TEnum> where TEnum : Enum
         {
             public class Enumerator<TEnum> : IEnumerator<TEnum> where TEnum : Enum
