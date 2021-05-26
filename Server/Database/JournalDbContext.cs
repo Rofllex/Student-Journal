@@ -29,7 +29,7 @@ namespace Journal.Server.Database
 
         public DbSet<Teacher> Teachers { get; set; }
 
-
+        public DbSet<Curriculum> Curriculums { get; set; }
 
         private readonly string _connectionString;
         private JournalDbContext(string connectionString) => _connectionString = connectionString;
