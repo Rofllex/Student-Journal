@@ -4,17 +4,17 @@ using System.ComponentModel;
 
 namespace Journal.WindowsForms.Models
 {
-    public abstract class GenericModuleBase<T>
+    public abstract class GenericModel<T>
     {
-        public static explicit operator T(GenericModuleBase<T> model)
+        public static explicit operator T(GenericModel<T> model)
             => model.Original;
 
-        public GenericModuleBase(T original)
+        public GenericModel(T original)
         {
             Original = original ?? throw new ArgumentNullException();
         }
 
-        public GenericModuleBase() { }
+        public GenericModel() { }
 
         [Browsable(false)]
         public virtual T Original { get; protected set; }

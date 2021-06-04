@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
+using System;
+using System.Net.Http;
 
 #nullable enable
 
@@ -30,7 +32,7 @@ namespace Journal.ClientLib.Infrastructure
         /// </param>
         /// <returns></returns>
         Task<T> ExecuteGetQuery<T>(string controller, string method, IEnumerable<KeyValuePair<string, string>>? getArgs = null, bool useToken = true);
-        
+            
         /// <summary>
         ///     Выполнить GET запрос без парсинга ответа
         /// </summary>
@@ -72,7 +74,7 @@ namespace Journal.ClientLib.Infrastructure
         /// </param>
         /// <returns></returns>
         Task<T> ExecutePostQuery<T>(string controller, string method, object? postBody, IEnumerable<KeyValuePair<string, string>>? getArgs = null, bool useToken = true);
-        
+
         /// <summary>
         ///     Выполнить POST запрос
         /// </summary>
@@ -93,5 +95,7 @@ namespace Journal.ClientLib.Infrastructure
         /// </param>
         /// <returns></returns>
         Task ExecutePostQuery(string controller, string method, object? postBody, IEnumerable<KeyValuePair<string, string>>? getArgs = null, bool useToken = true);
+
+        Task ExecuteRaw(Func<HttpClient, Task> rawAct, bool useToken = true);
     }
 }

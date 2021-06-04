@@ -85,15 +85,31 @@ namespace Journal.ClientLib.Infrastructure
         public Task<Grade[]> PasteMultiple(IEnumerable<Student> students, Subject subject, GradeLevel grade, DateTime? timestamp = null, string reason = null)
             => PasteMultiple(students.Select(s => s.UserId), subject.Id, grade, timestamp: timestamp, reason: reason);
 
-        public Task<Grade[]> GetGradesInMonthAsync(DateTime date,  int groupId, int subjectId)
+        public async Task<Grade[]> GetGradesInMonthAsync(DateTime date,  int groupId, int subjectId)
         {
-            return QueryExecuter.ExecuteGetQuery<Grade[]>(CONTROLLER_NAME, "GetMonthGrades", new Dictionary<string, string>() 
+            JObject response = await QueryExecuter.ExecuteGetQuery<JObject>(CONTROLLER_NAME, "GetMonthGrades", new Dictionary<string, string>()
+            {
+                ["year"] = date.Year.ToString(),
+                ["month"] = date.Month.ToString(),
+                ["groupId"] = groupId.ToString(),
+                ["subjectId"] = subjectId.ToString()
+            });
+
+            Grade[] grades = response["grades"].ToObject<Grade[]>();
+            User[] ratedByUsers = response["ratedByUsers"].ToObject<User[]>();
+
+            foreach (Grade grade in grades)
+                grade.RatedBy = ratedByUsers.FirstOrDefault(u => u.Id == grade.RatedById);
+
+            /*return QueryExecuter.ExecuteGetQuery<Grade[]>(CONTROLLER_NAME, "GetMonthGrades", new Dictionary<string, string>() 
             {
                 ["year"] = date.Year.ToString(), 
                 ["month"] = date.Month.ToString(),
                 ["groupId"] = groupId.ToString(),
                 ["subjectId"] = subjectId.ToString()
-            });
+            });*/
+
+            return grades;
         }
 
         public Task<Grade[]> GetGradesInMonthAsync(DateTime date, StudentGroup group, Subject subject)

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Journal.WindowsForms.Models
 {
-    public class SubjectModel : GenericModuleBase<Subject>
+    public class SubjectModel : GenericModel<Subject>
     {
         public static SubjectModel[] FromOriginal(IEnumerable<Subject> subjects)
             => subjects.ToList().ConvertAll(s => new SubjectModel(s)).ToArray();

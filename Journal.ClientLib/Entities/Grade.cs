@@ -21,7 +21,7 @@ namespace Journal.ClientLib.Entities
         
         [JsonRequired]
         public int RatedById { get; private set; }
-        public User RatedBy { get; private set; }
+        public User RatedBy { get; set; }
 
 
         [JsonRequired]
@@ -43,5 +43,6 @@ namespace Journal.ClientLib.Entities
         IUser IGrade.RatedBy => RatedBy;
         ISubject IGrade.Subject => Subject;
         IStudent IGrade.Student => Student;
+
     }
 }

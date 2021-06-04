@@ -4,7 +4,7 @@ using Journal.ClientLib.Entities;
 
 namespace Journal.WindowsForms.Models
 {
-    public class SpecialtyModel : GenericModuleBase<Specialty>
+    public class SpecialtyModel : GenericModel<Specialty>
     {
         public SpecialtyModel(Specialty specialty) : base(specialty)
         {

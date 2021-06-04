@@ -153,6 +153,8 @@ namespace Journal.ClientLib.Infrastructure
             }
         }
 
+        public Task ExecuteRaw(Func<HttpClient, Task> rawAct, bool useToken = true)
+            => rawAct(useToken ? _authorizedHttpClient : _unauthorizedHttpClient);
 
         private Uri _uriBase;
         private HttpClient _authorizedHttpClient = new HttpClient();

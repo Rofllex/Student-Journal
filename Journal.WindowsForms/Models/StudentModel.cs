@@ -2,7 +2,7 @@
 
 namespace Journal.WindowsForms.Models
 {
-    public class StudentModel : GenericModuleBase<Student>
+    public class StudentModel : GenericModel<Student>
     {
         public StudentModel(Student student) : base (student) { }
 

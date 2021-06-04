@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace Journal.WindowsForms.Models
 {
-    public class StudentGroupModel : GenericModuleBase<StudentGroup>
+    public class StudentGroupModel : GenericModel<StudentGroup>
     {
         public static explicit operator StudentGroup(StudentGroupModel model)
                 => model.Original;

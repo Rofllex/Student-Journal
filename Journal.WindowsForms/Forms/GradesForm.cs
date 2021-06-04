@@ -35,9 +35,7 @@ namespace Journal.WindowsForms.Forms
                     gridView[e.ColumnIndex, e.RowIndex].Selected = true;
 
             };
-
-            
-
+                    
             gradesGridView.Bind(viewModel, c => c.DataSource, vm => vm.Grades);
 
             predMonthButton.Click += (_, __) => { viewModel.PredMonth(); };

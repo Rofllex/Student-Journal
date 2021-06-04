@@ -40,12 +40,9 @@ namespace Journal.WindowsForms.ViewModels
         public string SubjectName { get; }
 
         public string GroupName { get; }
-    
-        public DataTable Grades 
-        {
-            get => _gradesTable;
-            set => ChangeProperty(ref _gradesTable, value);
-        }
+
+        public DataTable Grades => _gradesToDataTable.DataTable;
+        
 
         public DateTime Month
         {
@@ -82,6 +79,10 @@ namespace Journal.WindowsForms.ViewModels
                 if (gridView.SelectedCells.Count == 2)
                     gridView.SelectedCells[1].Selected = false;
                 int studentId = _gradesToDataTable.GetStudentIdByRowIndex(e.RowIndex);
+
+                if (_gradesToDataTable.ContainsGrade(studentId, day))
+                    return;
+
                 _gradesContextMenu.Items.Clear();
                 foreach (GradeLevel gradeLevel in Enum.GetValues(typeof(GradeLevel)))
                 {
@@ -120,8 +121,6 @@ namespace Journal.WindowsForms.ViewModels
             }
         }
 
-        private DataTable _gradesTable = new DataTable();
-       
         private DateTime _monthDate;
 
         private GradesManager _gradesManager;
@@ -141,7 +140,7 @@ namespace Journal.WindowsForms.ViewModels
             DateTime currentMonth = new DateTime(now.Year, now.Month, 1);
             _monthDate = currentMonth;
             base.InvokePropertyChanged(nameof(Month));
-            _gradesToDataTable = new GradesToDataTableAdapter(_gradesTable, currentMonth, _students);
+            _gradesToDataTable = new GradesToDataTableAdapter(currentMonth, _students);
             try
             {
                 await _LoadGrades(Month);
@@ -160,14 +159,29 @@ namespace Journal.WindowsForms.ViewModels
             _gradesToDataTable.SetGrades(grades);
         }
 
-        private class GradesToDataTableAdapter
+        /// <summary>
+        ///     Адаптер для <see cref="DataTable"/> для составления таблицы журнала.
+        /// </summary>
+        private sealed class GradesToDataTableAdapter
         {
-            public GradesToDataTableAdapter(DataTable dataTable, DateTime currentDate, Student[] students)
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="dataTable"></param>
+            /// <param name="currentDate"></param>
+            /// <param name="students"></param>
+            public GradesToDataTableAdapter(DateTime currentDate, Student[] students)
             {
-                _dataTable = dataTable ?? throw new ArgumentNullException(nameof(dataTable));
+                _dataTable = new DataTable();
                 _date = currentDate;
                 _Initialize(students);
             }
+
+            /// <summary>
+            ///     Таблица данных для возможности связывания с контролом. 
+            ///     Крайне не рекомендуется изменять таблицу.
+            /// </summary>
+            public DataTable DataTable => _dataTable;
 
             public DateTime CurrentMonth
             {
@@ -195,28 +209,24 @@ namespace Journal.WindowsForms.ViewModels
             public int DaysCount
                 => _dataTable.Columns.Count - 1;
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="grade"></param>
+            /// <exception cref="InvalidOperationException" />
             public void SetGrade(Grade grade)
             {
-                var row = _userIdToRow[grade.StudentId];
-                row[grade.Timestamp.Day] = grade.GradeLevel switch
-                {
-                    GradeLevel.Five => "5",
-                    GradeLevel.Four => "4",
-                    GradeLevel.Three => "3",
-                    GradeLevel.Two => "2",
-                    GradeLevel.Miss => "НБ",
-                    GradeLevel.Offset => "Зач",
-                    GradeLevel.Fail => "Н/Зач",
-                    _ => "err"
-                };
+                if (!_userIdToRow.ContainsKey(grade.StudentId))
+                    throw new InvalidOperationException($"Студент с идентификатором { grade.StudentId } не найден в таблице");
+
+                DataRow row = _userIdToRow[grade.StudentId];
+                row[grade.Timestamp.Day] = new Models.GradeModel(grade);
             }
 
             public void SetGrades(IEnumerable<Grade> grades)
             {
                 foreach (Grade grade in grades) 
-                {
                     SetGrade(grade);
-                }
             }
 
             public bool ContainsStudent(Student student)
@@ -227,6 +237,16 @@ namespace Journal.WindowsForms.ViewModels
 
             public int GetDayByColumnIndex(int columnIndex)
                 => columnIndex;
+
+            public bool ContainsGrade(int studentId, int day)
+            {
+                if (day <= 1 || day >= _dataTable.Columns.Count)
+                    throw new ArgumentOutOfRangeException(nameof(day));
+                DataRow row;
+                if (!_userIdToRow.TryGetValue(studentId, out row))
+                    throw new ArgumentException($"Студент с идентификатором { studentId } не найден");
+                return row[day] != null;
+            }
 
             public void ClearGrades()
             {
@@ -265,15 +285,13 @@ namespace Journal.WindowsForms.ViewModels
                 {
                     while (daysInMonth != _dataTable.Columns.Count - 1)
                         _dataTable.Columns.RemoveAt(_dataTable.Columns.Count - 1);
-
-                    //for (int columnIndex = daysDifference - 1; columnIndex < daysInMonth; columnIndex++)
-                    //    _gradesTable.Columns.RemoveAt(columnIndex);
                 }
                 else
                 {
                     for (int columnIndex = _dataTable.Columns.Count; columnIndex < daysInMonth + 1; columnIndex++)
                     {
-                        _dataTable.Columns.Add((columnIndex).ToString());
+                        DataColumn column = _dataTable.Columns.Add((columnIndex).ToString());
+                        column.DefaultValue = null; 
                     }
                 }
             }

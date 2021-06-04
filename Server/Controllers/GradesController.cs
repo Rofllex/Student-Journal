@@ -239,8 +239,18 @@ namespace Journal.Server.Controllers
             });
         }
 
+        /// <summary>
+        ///     Получить оценки за месяц.
+        /// </summary>
+        /// <param name="year">Год</param>
+        /// <param name="month">Месяц</param>
+        /// <param name="groupId">Идентификатор группы</param>
+        /// <param name="subjectId">Идентификатор предмета</param>
         [Authorize]
-        public Task<IActionResult> GetMonthGrades([FromQuery(Name ="year")] int year, [FromQuery(Name = "month")] int month, [FromQuery(Name = "groupId")] int groupId, [FromQuery(Name = "subjectId")] int subjectId)
+        public Task<IActionResult> GetMonthGrades([FromQuery(Name ="year")] int year
+                                                , [FromQuery(Name = "month")] int month
+                                                , [FromQuery(Name = "groupId")] int groupId
+                                                , [FromQuery(Name = "subjectId")] int subjectId)
         {
             return Task.Run(() => 
             {
@@ -250,16 +260,59 @@ namespace Journal.Server.Controllers
                 int[] studentIds = _dbContext.Students.Where(s => s.GroupId == groupId).Select(s => s.UserId).ToArray();
                 if (studentIds.Length == 0)
                     return Json(new RequestError($"Нет студентов в группе с идентификатором { groupId }"));
+                
                 Subject subject = _dbContext.Subjects.FirstOrDefault(s => s.Id == subjectId);
                 if (subject == null)
                     return Json(new RequestError($"Пердмет с идентификатором { subjectId } не найден"));
+                
                 DateTime startDate = new DateTime(year, month, 1);
                 int days = DateTime.DaysInMonth(year, month);
                 DateTime endDate = startDate.AddDays(days - 1);
                 Response.StatusCode = StatusCodes.Status200OK;
-                Grade[] grades = _dbContext.Grades.Where(g => studentIds.Contains(g.StudentId) && g.Timestamp >= startDate && g.Timestamp <= endDate && g.SubjectId == subjectId).ToArray();
-                return Json(grades);
+                Grade[] grades = _dbContext.Grades.Where(g => studentIds
+                                                  .Contains(g.StudentId) && g.Timestamp >= startDate && g.Timestamp <= endDate && g.SubjectId == subjectId)
+                                                  .Include(g => g.RatedByEnt)
+                                                  .ToArray();
+                var ratedByUsers = grades.GroupBy(g => g.RatedByEnt)
+                                         .Select(g => g.Key)
+                                         .ToList();
+                return Json(new 
+                { 
+                    grades,
+                    ratedByUsers
+                });
             });
+        }
+
+        /// <summary>
+        ///     Получить оценку за день
+        /// </summary>
+        /// <param name="date">Дата получения оценки</param>
+        /// <param name="studentId">Идентификатор студента</param>
+        /// <param name="subjectId">Идентификатор предмета</param>
+        /// <returns></returns>
+        public IActionResult GetGradeForDay([FromQuery(Name = "date")] string date,
+                                                  [FromQuery(Name = "studentId")] int studentId,
+                                                  [FromQuery(Name = "subjectId")] int subjectId)
+        {
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            DateTime dateTime;
+            if (!DateTime.TryParse(date, out dateTime))
+                return Json(new RequestError("Не удалось спарсить параметр \"date\""));
+
+            if (studentId <= 0)
+                return Json(new RequestError("Идентификатор студента не может быть меньше или равным 0"));
+
+            if (subjectId <= 0)
+                return Json(new RequestError("Идентификатор предмета не может быть меньше или равным 0"));
+
+            Response.StatusCode = StatusCodes.Status200OK;
+            Grade grade = _dbContext.Grades.FirstOrDefault(g => g.Timestamp >= dateTime
+                                                                && g.Timestamp < dateTime.AddDays(1)
+                                                                && g.StudentId == studentId
+                                                                && g.SubjectId == subjectId);
+            return Json(grade);    
         }
 
         private readonly JournalDbContext _dbContext;

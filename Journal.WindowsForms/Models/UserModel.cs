@@ -9,7 +9,7 @@ using Journal.ClientLib.Entities;
 namespace Journal.WindowsForms.Models
 {
 
-    public class UserModel : GenericModuleBase<User>
+    public class UserModel : GenericModel<User>
     {
         public static UserModel[] FromUsers(IEnumerable<User> users)
         {
@@ -56,9 +56,9 @@ namespace Journal.WindowsForms.Models
                 using IEnumerator<UserRole> rolesEnumerator = Original.Role.GetContainsFlags().GetEnumerator();
                 if (rolesEnumerator.MoveNext())
                 {
-                    string result = rolesEnumerator.Current.ToString();
+                    string result = Culture.RoleFormatProvider.Format(rolesEnumerator.Current);
                     while (rolesEnumerator.MoveNext())
-                        result += $", { rolesEnumerator.Current }";
+                        result += $", { Culture.RoleFormatProvider.Format(rolesEnumerator.Current) }";
                     return result;
                 }
                 else

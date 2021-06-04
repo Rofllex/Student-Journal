@@ -2,11 +2,17 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using Journal.Common.Entities;
+
 using Newtonsoft.Json;
 
 namespace Journal.Server.Database
 {
-    public class Curriculum
+    /// <summary>
+    ///     Учебный план.
+    /// </summary>
+    /// <inheritdoc cref="ICurriculum" />
+    public class Curriculum : ICurriculum
     {
         [Key
             , DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -21,6 +27,9 @@ namespace Journal.Server.Database
             , ForeignKey(nameof(Specialty))]
         public int SpecialtyId { get; set; }
 
+        /// <summary>
+        ///     Идентификатор специальности.
+        /// </summary>
         public Specialty Specialty { get; set; }
 
         [Required
@@ -28,6 +37,9 @@ namespace Journal.Server.Database
         public int SubjectId { get; set; }
         public Subject Subject { get; set; }
 
+        ISpecialty ICurriculum.Specialty => Specialty;
+
+        ISubject ICurriculum.Subject => Subject;
 
         public Curriculum() { }
 
