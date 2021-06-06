@@ -3,6 +3,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 using Journal.ClientLib;
+using Journal.Common.Models;
 
 #nullable enable
 
@@ -119,6 +120,10 @@ namespace Journal.WindowsForms.ViewModels
                 catch ( ConnectFaillureException )
                 {
                     _showError("Не удалось подключиться к серверу");
+                }
+                catch (RequestErrorException ree)
+                {
+                    _showError(ree.Error.Message);
                 }
             }
             else

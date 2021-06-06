@@ -78,12 +78,13 @@ namespace Journal.WindowsForms.ViewModels
         private async void _Initialize()
         {
             IUser user = _journalClient.User;
-            _studentName = $"{user.FirstName} { user.Surname }";
+            StudentName = $"{user.FirstName} { user.Surname }";
 
             Student student = await _userManager.GetStudentByIdAsync(user.Id);
             if (student.GroupId.HasValue)
             {
                 _currentGroup = await _dbManager.GetStudentGroupAsync(student.GroupId.Value);
+                GroupName = $"{_currentGroup.SpecialtyEnt.Name} {_currentGroup.CurrentCourse}{ _currentGroup.Subgroup }";
                 IReadOnlyCollection<Subject> subjects = await _dbManager.GetSpecialtySubjects(_currentGroup.SpecialtyId);
                 _AddSubjects(subjects);
             }

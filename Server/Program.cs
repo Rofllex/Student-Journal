@@ -20,15 +20,19 @@ namespace Journal.Server
 
         static void Main(string[] args)
         {
+            // Подписка на событие неперехваченного исключения в приложении
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
+            // Инициализация системы логирования
             _InitializeLogging();
             Logger logger = Logger.Instance;
             try
             {
+                // Загрузка конфигурации
                 _LoadConfig();
                 logger.Info($"{nameof(Main)} Конфигурация загружена");
 
+                // Инициализация базы данных
                 _InitializeDatabase();
                 logger.Info($"{ nameof(Main) } База данных инициализирована");
 

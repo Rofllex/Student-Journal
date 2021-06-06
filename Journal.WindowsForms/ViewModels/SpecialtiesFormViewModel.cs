@@ -30,7 +30,7 @@ namespace Journal.WindowsForms.ViewModels
             {
                 ChangeProperty(ref _selectedTabPageIndex, value);
                 if (value == 1)
-                    _InitSpecialtiesConstructor();
+                    _ = _InitSpecialtiesConstructor();
             }
         }
 
@@ -142,10 +142,10 @@ namespace Journal.WindowsForms.ViewModels
 
         private async Task _InitSpecialtiesConstructor()
         {
-            var subjects = await _dbManager.GetSubjects(0, 1000);
+            _availableSubjects.Clear();
+            Subject[] subjects = await _dbManager.GetSubjects(0, 1000);
             foreach (Subject subj in subjects)
                 _availableSubjects.Add(new SubjectModel(subj));
-            //AvailableSubjects = new BindingList<SubjectModel>(SubjectModel.FromOriginal(subjects));
         }
 
         #endregion

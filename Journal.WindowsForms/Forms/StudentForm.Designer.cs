@@ -84,6 +84,9 @@ namespace Journal.WindowsForms.Forms
             // 
             // subjectsListBox
             // 
+            this.subjectsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.subjectsListBox.FormattingEnabled = true;
             this.subjectsListBox.ItemHeight = 18;
             this.subjectsListBox.Location = new System.Drawing.Point(12, 192);
@@ -116,7 +119,7 @@ namespace Journal.WindowsForms.Forms
             this.exitMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(382, 26);
+            this.menuStrip1.Size = new System.Drawing.Size(371, 26);
             this.menuStrip1.TabIndex = 6;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -132,7 +135,7 @@ namespace Journal.WindowsForms.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(382, 424);
+            this.ClientSize = new System.Drawing.Size(371, 424);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.subjectsListBox);
@@ -144,7 +147,7 @@ namespace Journal.WindowsForms.Forms
             this.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "StudentForm";
-            this.Text = "StudentForm";
+            this.Text = "Студент";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

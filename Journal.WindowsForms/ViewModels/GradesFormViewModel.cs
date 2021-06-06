@@ -41,7 +41,7 @@ namespace Journal.WindowsForms.ViewModels
 
         public string GroupName { get; }
 
-        public DataTable Grades => _gradesToDataTable.DataTable;
+        public DataTable Grades => _gradesDataTable;
         
 
         public DateTime Month
@@ -132,15 +132,16 @@ namespace Journal.WindowsForms.ViewModels
         private readonly bool _allowEdit;
         private ContextMenuStrip _gradesContextMenu;
         private readonly Form _callerForm;
+        private DataTable _gradesDataTable = new DataTable();
 
-        private async void _Initialize()
+        private async Task _Initialize()
         {
             _students = await _dbManager.GetStudentsInGroup(_group);
             DateTime now = DateTime.Now;
             DateTime currentMonth = new DateTime(now.Year, now.Month, 1);
             _monthDate = currentMonth;
             base.InvokePropertyChanged(nameof(Month));
-            _gradesToDataTable = new GradesToDataTableAdapter(currentMonth, _students);
+            _gradesToDataTable = new GradesToDataTableAdapter(_gradesDataTable, currentMonth, _students);
             try
             {
                 await _LoadGrades(Month);
@@ -170,9 +171,9 @@ namespace Journal.WindowsForms.ViewModels
             /// <param name="dataTable"></param>
             /// <param name="currentDate"></param>
             /// <param name="students"></param>
-            public GradesToDataTableAdapter(DateTime currentDate, Student[] students)
+            public GradesToDataTableAdapter(DataTable gradesDataTable, DateTime currentDate, Student[] students)
             {
-                _dataTable = new DataTable();
+                _dataTable = gradesDataTable ?? new DataTable();
                 _date = currentDate;
                 _Initialize(students);
             }
@@ -240,12 +241,12 @@ namespace Journal.WindowsForms.ViewModels
 
             public bool ContainsGrade(int studentId, int day)
             {
-                if (day <= 1 || day >= _dataTable.Columns.Count)
+                if (day < 1 || day >= _dataTable.Columns.Count)
                     throw new ArgumentOutOfRangeException(nameof(day));
                 DataRow row;
                 if (!_userIdToRow.TryGetValue(studentId, out row))
                     throw new ArgumentException($"Студент с идентификатором { studentId } не найден");
-                return row[day] != null;
+                return row[day] != DBNull.Value && row[day] != null;
             }
 
             public void ClearGrades()

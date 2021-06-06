@@ -25,6 +25,9 @@ namespace Journal.WindowsForms.Forms
         {
             gradesGridView.CellMouseClick += (object sender, DataGridViewCellMouseEventArgs e) => 
             {
+                if (e.ColumnIndex < 0 || e.RowIndex < 0)
+                    return;
+
                 DataGridView gridView = (DataGridView)sender;
                 if (e.ColumnIndex == 0)
                 {
