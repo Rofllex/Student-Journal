@@ -31,9 +31,6 @@ namespace Journal.WindowsForms.Forms
 
         private void _InitAdminPanelFormBinding(AdminPanelViewModel viewModel)
         {
-            #region AdminPanelFormViewModel
-
-            //usersGridView.CellFormatting += UsersGridView_CellFormatting;
             usersGridView.Bind( viewModel, c => c.DataSource, vm => vm.Users );
             usersGridView.DataError += (object sender, DataGridViewDataErrorEventArgs e) => 
             {
@@ -41,19 +38,15 @@ namespace Journal.WindowsForms.Forms
 
             currentPageTextBox.TextChanged += CurrentPageTextBox_TextChanged;
             currentPageTextBox.Bind( viewModel, c => c.Text, vm => vm.CurrentPage );
-            //currentPageTextBox.DataBindings.Add(nameof(TextBox.Text), viewModel, nameof(viewModel.CurrentPage));
-
+            
             predPageButton.Click += viewModel.ScrollLeft;
             predPageButton.Bind( viewModel, c => Enabled, vm => vm.CanScrollLeft );
-            //predPageButton.DataBindings.Add(nameof(predPageButton.Enabled), viewModel, nameof(viewModel.CanScrollLeft));
-
+            
             nextPageButton.Click += viewModel.ScrollRight;
             nextPageButton.Bind( viewModel, c => c.Enabled, vm => vm.CanScrollRight );
-            //nextPageButton.DataBindings.Add(nameof(nextPageButton.Enabled), viewModel, nameof(viewModel.CanScrollRight));
-
+            
             usersCountLabel.Bind( viewModel, c => c.Text, vm => vm.UsersCount );
-            //usersCountLabel.DataBindings.Add(nameof(usersCountLabel.Text), viewModel, nameof(viewModel.UsersCount));
-
+            
             usersGridView.CellMouseClick += (object sender, DataGridViewCellMouseEventArgs e) => 
             {
                 DataGridView gridView = (DataGridView)sender;
@@ -66,9 +59,6 @@ namespace Journal.WindowsForms.Forms
             };
             usersGridView.CellMouseClick += viewModel.UsersCellMouseClick;
             
-
-            #endregion
-
             logoutMenuItem.Click += viewModel.LogoutClicked;
         }
                 

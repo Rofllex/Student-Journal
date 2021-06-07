@@ -78,41 +78,33 @@ namespace Journal.Server.Controllers
         [Authorize]
         public async Task<IActionResult> ChangePassword([FromQuery(Name = "oldPassword")] string oldPassword, [FromQuery(Name = "newPassword")] string newPassword)
         {
-            if (!string.IsNullOrWhiteSpace(oldPassword) && !string.IsNullOrWhiteSpace(newPassword))
-            {
-                if (oldPassword != newPassword)
-                {
-                    User user = _GetUserFromClaims();
-                    if (user != null)
-                    {
-                        if (user.PasswordHash == Hash.GetFromString(oldPassword))
-                        {
-                            user.PasswordHash = Hash.GetFromString(newPassword);
-                            user.PasswordChanged = DateTime.Now;
-                            await _dbContext.SaveChangesAsync();
-                            string token = _GenerateJWT(user, out DateTime tokenExpire),
-                                    refreshToken = _GenerateRefreshToken(user, token, out DateTime refreshTokenExpire);
-                            return Json(new
-                            {
-                                token,
-                                tokenExpire,
-                                refreshToken,
-                                refreshTokenExpire,
-                            });
-
-                            //return _CreateJWTActionResult(token, tokenExpire, refreshToken, refreshTokenExpire, role: user.URole.ToString());
-                        }
-                        else
-                            return Json(new RequestError("Неверный старый пароль."));
-                    }
-                    else
-                        return Json(new RequestError("Аккаунт недоступен."));
-                }
-                else
-                    return Json(new RequestError("Новый пароль не может соответствовать старому."));
-            }
-            else
+            Response.StatusCode = StatusCodes.Status400BadRequest;
+            if (string.IsNullOrWhiteSpace(oldPassword) || string.IsNullOrWhiteSpace(newPassword))
                 return Json(new RequestError($"Поле \"{nameof(oldPassword)}\" или \"{nameof(newPassword)}\" было пустым"));
+            
+            if (oldPassword == newPassword)
+                return Json(new RequestError("Новый пароль не может соответствовать старому."));
+
+            User user = _GetUserFromClaims();
+            if (user == null)
+                return Json(new RequestError("Аккаунт недоступен"));
+
+            if (user.PasswordHash != Hash.GetFromString(oldPassword))
+                return Json(new RequestError("Неверный старый пароль"));
+
+            user.PasswordHash = Hash.GetFromString(newPassword);
+            user.PasswordChanged = DateTime.Now;
+            await _dbContext.SaveChangesAsync();
+            string token = _GenerateJWT(user, out DateTime tokenExpire),
+                    refreshToken = _GenerateRefreshToken(user, token, out DateTime refreshTokenExpire);
+            Response.StatusCode = StatusCodes.Status200OK;
+            return Json(new
+            {
+                token,
+                tokenExpire,
+                refreshToken,
+                refreshTokenExpire,
+            });
         }
 
 
