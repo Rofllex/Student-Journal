@@ -32,10 +32,7 @@ namespace Journal.WindowsForms.Forms
         private void _InitAdminPanelFormBinding(AdminPanelViewModel viewModel)
         {
             usersGridView.Bind( viewModel, c => c.DataSource, vm => vm.Users );
-            usersGridView.DataError += (object sender, DataGridViewDataErrorEventArgs e) => 
-            {
-            };
-
+            
             currentPageTextBox.TextChanged += CurrentPageTextBox_TextChanged;
             currentPageTextBox.Bind( viewModel, c => c.Text, vm => vm.CurrentPage );
             

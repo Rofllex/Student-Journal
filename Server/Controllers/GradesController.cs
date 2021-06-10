@@ -92,7 +92,6 @@ namespace Journal.Server.Controllers
             });
         }
 
-        // not implemented
         [Authorize(Roles = nameof(UserRole.Admin) + "," + nameof(UserRole.Teacher))
             , HttpPost]
         /// <summary>

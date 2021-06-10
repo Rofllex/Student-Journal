@@ -25,7 +25,6 @@ namespace Journal.ClientLib
         public static JournalClient Connect(string url, string login, string password)
             => throw new NotImplementedException();
 
-
         /// <summary>
         ///     Метод подключения к серверу.
         /// </summary>
@@ -43,14 +42,15 @@ namespace Journal.ClientLib
         public static async Task<JournalClient> ConnectAsync(string url, string login, string password)
         {
             JWTQueryExecuter clientQueryExecuter = new JWTQueryExecuter(new Uri(url), null);
-            //JObject? response = await clientQueryExecuter.ExecuteGetQuery<JObject>("Account", "Auth", new string[] { $"login={login}", $"password={password}" }, useToken: false);
             JObject response = await clientQueryExecuter.ExecuteGetQuery<JObject>("Account", "Auth", new Dictionary<string, string>()
             {
                 ["login"] = login,
                 ["password"] = password
             }, useToken: false);
 
-            if (response != null)
+            if (response == null)
+                throw new EmptyResponseException();
+            else
             {
                 // Метод проверки и выброса исключения.
                 _CheckAuthMethodResponse(response);
@@ -71,22 +71,31 @@ namespace Journal.ClientLib
                     , refreshTokenExpire: refreshTokenExpire);
                 return journalClient;
             }
-            else
-                throw new EmptyResponseException();
         }
 
         #endregion
 
-        private JournalClient(IClientQueryExecuter queryExecuter, IUser currentUser, string token, DateTime tokenExpire, string refreshToken, DateTime refreshTokenExpire)
+        private JournalClient(IClientQueryExecuter queryExecuter,
+                              IUser currentUser,
+                              string token,
+                              DateTime tokenExpire,
+                              string refreshToken,
+                              DateTime refreshTokenExpire)
             => (QueryExecuter, User, _token, _tokenExpire, _refreshToken, _refreshTokenExpire) = (queryExecuter, currentUser, token, tokenExpire, refreshToken, refreshTokenExpire);
         
         public IClientQueryExecuter QueryExecuter { get; private set; }
 
         public IUser User { get; private set; }
 
+        /// <summary>
+        /// not implemented
+        /// </summary>
         public bool CheckToken()
             => throw new NotImplementedException();
         
+        /// <summary>
+        ///  not implemented
+        /// </summary>
         public void RefreshToken()
             => throw new NotImplementedException();
         
@@ -104,7 +113,7 @@ namespace Journal.ClientLib
             string? message = null;
 
             if (!authMethodResponse.ContainsKey("token"))
-                message = "Неверный ответ от метода авторизации. Токен был null.";
+                message = "Неверный ответ от метода авторизации. Токен доступа был null.";
             else if (!authMethodResponse.ContainsKey("refreshToken"))
                 message = "Неверный ответ от метода авторизации. Токен обновления был null.";
             else if (!authMethodResponse.ContainsKey("tokenExpire"))

@@ -23,7 +23,9 @@ namespace Journal.ClientLib
         /// <summary>
         /// Проверить токен авторизации
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// True - если токен валидный.
+        /// </returns>
         bool CheckToken();
 
         /// <summary>

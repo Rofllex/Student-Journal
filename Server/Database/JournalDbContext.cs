@@ -11,6 +11,11 @@ namespace Journal.Server.Database
     /// </summary>
     public class JournalDbContext : DbContext
     {
+                
+        private readonly string _connectionString;
+        public JournalDbContext(string connectionString) => _connectionString = connectionString;
+
+
         public DbSet<User> Users { get; set; }
         
         public DbSet<Student> Students { get; set; }
@@ -31,8 +36,6 @@ namespace Journal.Server.Database
 
         public DbSet<Curriculum> Curriculums { get; set; }
 
-        private readonly string _connectionString;
-        private JournalDbContext(string connectionString) => _connectionString = connectionString;
         
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -54,6 +57,7 @@ namespace Journal.Server.Database
         ///     Создание контекста бд.
         ///     Если до вызова этого метода не был вызван метод <see cref="SetConnectionString(string)"/>, то выбросит исключение <see cref="InvalidOperationException"/>
         /// </summary>
+        /// <exception cref="InvalidOperationException" />
         public static JournalDbContext CreateContext() => _createJournalDbContext();
         
         #endregion

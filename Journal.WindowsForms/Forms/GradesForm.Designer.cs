@@ -62,7 +62,7 @@ namespace Journal.WindowsForms.Forms
             // monthNameLabel
             // 
             this.monthNameLabel.AutoSize = true;
-            this.monthNameLabel.Location = new System.Drawing.Point(361, 25);
+            this.monthNameLabel.Location = new System.Drawing.Point(818, 22);
             this.monthNameLabel.Name = "monthNameLabel";
             this.monthNameLabel.Size = new System.Drawing.Size(62, 18);
             this.monthNameLabel.TabIndex = 1;
@@ -101,7 +101,7 @@ namespace Journal.WindowsForms.Forms
             this.nextMonthButton.FlatAppearance.BorderSize = 0;
             this.nextMonthButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.nextMonthButton.Font = new System.Drawing.Font("DejaVu Sans Mono", 12.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.nextMonthButton.Location = new System.Drawing.Point(423, 23);
+            this.nextMonthButton.Location = new System.Drawing.Point(880, 20);
             this.nextMonthButton.Name = "nextMonthButton";
             this.nextMonthButton.Size = new System.Drawing.Size(38, 23);
             this.nextMonthButton.TabIndex = 2;
@@ -116,7 +116,7 @@ namespace Journal.WindowsForms.Forms
             this.predMonthButton.FlatAppearance.BorderSize = 0;
             this.predMonthButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.predMonthButton.Font = new System.Drawing.Font("DejaVu Sans Mono", 12.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.predMonthButton.Location = new System.Drawing.Point(323, 23);
+            this.predMonthButton.Location = new System.Drawing.Point(780, 20);
             this.predMonthButton.Name = "predMonthButton";
             this.predMonthButton.Size = new System.Drawing.Size(38, 23);
             this.predMonthButton.TabIndex = 2;
