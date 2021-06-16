@@ -29,10 +29,11 @@ namespace Journal.WindowsForms.Forms
 
             availableSubjectsListBox.Bind(viewModel, c => c.DataSource, vm => vm.AvailableSubjects);
             availableSubjectsListBox.Bind(viewModel, c => c.SelectedIndex, vm => vm.AvailableSubjectSelectedIndex);
+            availableSubjectsListBox.DoubleClick += viewModel.AddSubject;
 
             subjectListBox.Bind(viewModel, c => c.DataSource, vm => vm.Subjects);
             subjectListBox.Bind(viewModel, c => c.SelectedIndex, vm => vm.SubjectSelectedIndex);
-
+            subjectListBox.DoubleClick += viewModel.RemoveSubject;
 
             specialtyNameTextBox.Bind(viewModel, c => c.Text, vm => vm.NewSpecialtyName);
 

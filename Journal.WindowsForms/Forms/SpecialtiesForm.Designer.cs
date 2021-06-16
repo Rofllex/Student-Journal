@@ -64,7 +64,7 @@ namespace Journal.WindowsForms.Forms
             this.specialtiesDataGrid.ReadOnly = true;
             this.specialtiesDataGrid.RowHeadersVisible = false;
             this.specialtiesDataGrid.RowTemplate.Height = 25;
-            this.specialtiesDataGrid.Size = new System.Drawing.Size(786, 272);
+            this.specialtiesDataGrid.Size = new System.Drawing.Size(993, 270);
             this.specialtiesDataGrid.TabIndex = 0;
             // 
             // tabControl1
@@ -75,7 +75,7 @@ namespace Journal.WindowsForms.Forms
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(800, 309);
+            this.tabControl1.Size = new System.Drawing.Size(1007, 307);
             this.tabControl1.TabIndex = 1;
             // 
             // tabPage1
@@ -84,7 +84,7 @@ namespace Journal.WindowsForms.Forms
             this.tabPage1.Location = new System.Drawing.Point(4, 27);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(792, 278);
+            this.tabPage1.Size = new System.Drawing.Size(999, 276);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Специальности";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -107,7 +107,7 @@ namespace Journal.WindowsForms.Forms
             this.tabPage2.Location = new System.Drawing.Point(4, 27);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(792, 278);
+            this.tabPage2.Size = new System.Drawing.Size(999, 276);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Конструктор";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -115,7 +115,7 @@ namespace Journal.WindowsForms.Forms
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(21, 143);
+            this.label3.Location = new System.Drawing.Point(8, 143);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(125, 18);
             this.label3.TabIndex = 3;
@@ -124,7 +124,7 @@ namespace Journal.WindowsForms.Forms
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(21, 112);
+            this.label2.Location = new System.Drawing.Point(8, 112);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 18);
             this.label2.TabIndex = 3;
@@ -133,7 +133,7 @@ namespace Journal.WindowsForms.Forms
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(569, 38);
+            this.label5.Location = new System.Drawing.Point(665, 38);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(170, 18);
             this.label5.TabIndex = 3;
@@ -151,7 +151,7 @@ namespace Journal.WindowsForms.Forms
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(21, 81);
+            this.label1.Location = new System.Drawing.Point(8, 81);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 18);
             this.label1.TabIndex = 3;
@@ -159,16 +159,16 @@ namespace Journal.WindowsForms.Forms
             // 
             // createSpecialtyButton
             // 
-            this.createSpecialtyButton.Location = new System.Drawing.Point(128, 196);
+            this.createSpecialtyButton.Location = new System.Drawing.Point(152, 190);
             this.createSpecialtyButton.Name = "createSpecialtyButton";
-            this.createSpecialtyButton.Size = new System.Drawing.Size(124, 23);
+            this.createSpecialtyButton.Size = new System.Drawing.Size(156, 23);
             this.createSpecialtyButton.TabIndex = 2;
             this.createSpecialtyButton.Text = "Добавить";
             this.createSpecialtyButton.UseVisualStyleBackColor = true;
             // 
             // removeSubjectButton
             // 
-            this.removeSubjectButton.Location = new System.Drawing.Point(523, 160);
+            this.removeSubjectButton.Location = new System.Drawing.Point(617, 169);
             this.removeSubjectButton.Name = "removeSubjectButton";
             this.removeSubjectButton.Size = new System.Drawing.Size(42, 23);
             this.removeSubjectButton.TabIndex = 2;
@@ -177,7 +177,7 @@ namespace Journal.WindowsForms.Forms
             // 
             // addSubjectButton
             // 
-            this.addSubjectButton.Location = new System.Drawing.Point(523, 112);
+            this.addSubjectButton.Location = new System.Drawing.Point(617, 121);
             this.addSubjectButton.Name = "addSubjectButton";
             this.addSubjectButton.Size = new System.Drawing.Size(42, 23);
             this.addSubjectButton.TabIndex = 2;
@@ -188,9 +188,9 @@ namespace Journal.WindowsForms.Forms
             // 
             this.availableSubjectsListBox.FormattingEnabled = true;
             this.availableSubjectsListBox.ItemHeight = 18;
-            this.availableSubjectsListBox.Location = new System.Drawing.Point(569, 71);
+            this.availableSubjectsListBox.Location = new System.Drawing.Point(665, 71);
             this.availableSubjectsListBox.Name = "availableSubjectsListBox";
-            this.availableSubjectsListBox.Size = new System.Drawing.Size(203, 166);
+            this.availableSubjectsListBox.Size = new System.Drawing.Size(295, 166);
             this.availableSubjectsListBox.TabIndex = 1;
             // 
             // subjectListBox
@@ -199,35 +199,35 @@ namespace Journal.WindowsForms.Forms
             this.subjectListBox.ItemHeight = 18;
             this.subjectListBox.Location = new System.Drawing.Point(314, 71);
             this.subjectListBox.Name = "subjectListBox";
-            this.subjectListBox.Size = new System.Drawing.Size(203, 166);
+            this.subjectListBox.Size = new System.Drawing.Size(295, 166);
             this.subjectListBox.TabIndex = 1;
             // 
             // specialtyCoursesTextBox
             // 
             this.specialtyCoursesTextBox.Location = new System.Drawing.Point(152, 140);
             this.specialtyCoursesTextBox.Name = "specialtyCoursesTextBox";
-            this.specialtyCoursesTextBox.Size = new System.Drawing.Size(100, 25);
+            this.specialtyCoursesTextBox.Size = new System.Drawing.Size(156, 25);
             this.specialtyCoursesTextBox.TabIndex = 0;
             // 
             // specialtyCodeTextBox
             // 
             this.specialtyCodeTextBox.Location = new System.Drawing.Point(152, 109);
             this.specialtyCodeTextBox.Name = "specialtyCodeTextBox";
-            this.specialtyCodeTextBox.Size = new System.Drawing.Size(100, 25);
+            this.specialtyCodeTextBox.Size = new System.Drawing.Size(156, 25);
             this.specialtyCodeTextBox.TabIndex = 0;
             // 
             // specialtyNameTextBox
             // 
             this.specialtyNameTextBox.Location = new System.Drawing.Point(152, 78);
             this.specialtyNameTextBox.Name = "specialtyNameTextBox";
-            this.specialtyNameTextBox.Size = new System.Drawing.Size(100, 25);
+            this.specialtyNameTextBox.Size = new System.Drawing.Size(156, 25);
             this.specialtyNameTextBox.TabIndex = 0;
             // 
             // SpecialtiesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 309);
+            this.ClientSize = new System.Drawing.Size(1007, 307);
             this.Controls.Add(this.tabControl1);
             this.Font = new System.Drawing.Font("DejaVu Sans Mono", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Name = "SpecialtiesForm";
