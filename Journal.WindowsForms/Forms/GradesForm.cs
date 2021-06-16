@@ -48,6 +48,7 @@ namespace Journal.WindowsForms.Forms
             subjectNameLabel.Bind(viewModel, c => c.Text, vm => vm.SubjectName);
 
             monthNameLabel.Bind(viewModel, c => c.Text, vm => vm.Month, true, DataSourceUpdateMode.OnPropertyChanged, "", "MMMM", CultureInfo.CurrentCulture);
+            monthNameLabel.Click += (_, __) => { viewModel.SelectMonth(); };
 
             gradesGridView.CellMouseClick += viewModel.GradesCellClick;
         }

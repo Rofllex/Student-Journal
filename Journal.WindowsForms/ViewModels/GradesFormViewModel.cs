@@ -34,7 +34,7 @@ namespace Journal.WindowsForms.ViewModels
 
             _gradesManager = new GradesManager(journalClient);
             _dbManager = new DatabaseManager(journalClient);
-            _Initialize();
+            _ =_Initialize();
         }
 
         public string SubjectName { get; }
@@ -64,6 +64,20 @@ namespace Journal.WindowsForms.ViewModels
         {
             Month = Month.AddMonths(-1);
             await _LoadGrades(Month);
+        }
+
+        public void SelectMonth()
+        {
+            using DateTimePicker dateTimePicker = new DateTimePicker() 
+            {
+                Enabled = true,
+                ShowCheckBox = true,
+                ShowUpDown = true,
+            };
+            dateTimePicker.Show();
+
+            var value = dateTimePicker.Value;
+            Month = value.AddDays(-value.Day);
         }
 
         public void GradesCellClick(object sender, DataGridViewCellMouseEventArgs e)
