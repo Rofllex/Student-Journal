@@ -29,6 +29,18 @@ namespace Journal.WindowsForms.FormUtils
                 if (control != null)
                 {
                     string text = control.Text;
+                    if (text.Length == 0)
+                    {
+                        control.Text = 0.ToString();
+                        TextBox? textBox = control as TextBox;
+                        if (textBox != null)
+                        {
+                            textBox.SelectionLength = 0;
+                            textBox.SelectionStart = 1;
+                        }
+
+                        return;
+                    }
                     //  Если первый символ минус или плюс, то пропускаем.
                     int iChar = (text[0] == '-' || text[0] == '+') ? 1 : 0;
 
